@@ -1,0 +1,43 @@
+{
+  "JobName": "Orchid",
+  "Renderer": "MVP",
+  "OutputPath": "\\Tmp\\Orchid",
+  "FieldOfView": 90.0,
+  "HogelSize": [ 4096, 4096 ],
+  "NumHogels": [ 128, 128 ],
+  "SliceMem": 8,
+  "Tasks": {
+    "ProofImage": false,
+    "WriteAVI": false,
+    "WritePNG": false,
+    "WriteDemo": false
+  },
+  "ViewVolume": {
+    "Translate": [ 0.0, 0.0, 0.0 ],
+    "Scale": [ 1.8, 1.8, 1.8 ],
+    "Rotate": [ 0.0, 0.0, 0.0 ]
+  },
+  "Scene": {
+    "Translate": [ -0.08, 0.0, 0.0 ],
+    "Scale": [ 1.0, 1.0, 1.0 ],
+    "Rotate": [ 0.0, 0.0, 0.0 ]
+  },
+  "Lights": {
+    "Light_0": {
+      "Ambient": [ 0.2, 0.2, 0.2, 0.0 ],
+      "Diffuse": [ 1.0, 1.0, 1.0, 0.0 ],
+      "Specular": [ 1.0, 1.0, 1.0, 0.0 ],
+      "Position": [ 10.0, 10.0, 10.0, 1.0 ]
+    }
+  },
+  "Models": [
+    {
+      "File": "Orchid.obj",
+      "Transform": {
+        "Translate": [ 0.0,-1.0, 0.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "Rotate": [ 0.0, 0.0, 0.0 ]
+      }
+    }
+  ]
+}
