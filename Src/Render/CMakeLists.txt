@@ -9,18 +9,35 @@ include_directories(${LIGHTFIELD_SRC_DIR})
 set (HEADERS
   Def.h
   Camera.h
+  Object.h
   Bound.h
   Texture.h
+  VtxLst.h
+  Mesh.h
+  Node.h
+  Model.h
+  VtxArrayObj.h
+  VtxBufferObj.h
   )
 
 set(SOURCE
   Texture.cpp
+  VtxLst.cpp
+  Mesh.cpp
+  Node.cpp
+  Model.cpp
+  VtxArrayObj.cpp
+  VtxBufferObj.cpp
   )
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCE} )
 
 target_link_libraries(${PROJECT_NAME} LfCore)
 target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${ASSIMP_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${OPENCV_RELEASE_DLL})
+
 
 ##########################################################################################################################################
 # Installation
