@@ -1,0 +1,26 @@
+
+
+LIST (APPEND CMAKE_PREFIX_PATH      ${3RDPARTY_LIB_DIR}/cmake/glfw3)
+
+find_package(glfw3		  REQUIRED)
+
+if (WIN32)
+  set (GLFW_INCLUDE_DIR                      ${3RDPARTY_INC_DIR}/GLFW)
+  set (GLFW3_DEBUG_LIBRARY                   debug     ${3RDPARTY_LIB_DIR}/glfw3d.lib)
+  set (GLFW3_RELEASE_LIBRARY                 optimized ${3RDPARTY_LIB_DIR}/glfw3.lib)
+
+  install (FILES      ${3RDPARTY_BIN_DIR}/glfw3d.dll             CONFIGURATIONS Debug   DESTINATION bin)
+  install (FILES      ${3RDPARTY_BIN_DIR}/glfw3.dll              CONFIGURATIONS Release DESTINATION bin)
+endif (WIN32)
+
+if (UNIX)
+  set (GLFW3_LIBRARY                         glfw3)
+endif (UNIX)
+
+message("")
+message("                 GLFW3 Variables")
+message("                   GLFW_VERSION:   " ${GLFW_VERSION})
+message("               GLFW_INCLUDE_DIR:   " ${GLFW_INCLUDE_DIR})
+message("            GLFW3_DEBUG_LIBRARY:   " ${GLFW3_DEBUG_LIBRARY})
+message("          GLFW3_RELEASE_LIBRARY:   " ${GLFW3_RELEASE_LIBRARY})
+message("")
