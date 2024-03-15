@@ -1,0 +1,23 @@
+
+if (WIN32)
+  message("           GLEW Variables")
+
+  #find_package(glew REQUIRED)
+
+  set( GLEW_LIBRARIES                               C:/3rdPartyLibs/VS2019/lib/glew32.lib)
+  set (GLEW_INCLUDE_DIR                             ${3RDPARTY_INC_DIR})
+
+  message("           GLEW_INCLUDE_DIR:     "      ${GLEW_INCLUDE_DIR})
+  message("             GLEW_LIBRARIES:     "      ${GLEW_LIBRARIES})
+  message("")
+
+endif(WIN32)
+
+message("OpenGL Variables")
+
+find_package(OpenGL REQUIRED)
+
+message("           OPENGL_INCLUDE_DIR:   "      ${OPENGL_INCLUDE_DIR})
+message("           OPENGL_gl_LIBRARY:    "      ${OPENGL_gl_LIBRARY})
+message("           OPENGL_glu_LIBRARY:   "      ${OPENGL_glu_LIBRARY})
+message("")
