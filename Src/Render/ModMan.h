@@ -36,6 +36,8 @@
 #include <filesystem>
 
 // LightField
+#include "Render/Def.h"
+#include "Core/Export.h"
 #include "Render/Model.h"
 //#include "Common/Light.h"
 #include "Render/Camera.h"
@@ -112,16 +114,16 @@ namespace Lf
  //       void setLightList(const Common::LightLst &lst);
  //       void addLight(const Common::Light &light);
 
-        void print(std::ostream &s);
-        void render(const Camera &camera,const glm::mat4 &mT, const int frustum = 0);
+        EXPORT void print(std::ostream &s);
+        EXPORT void render(const Camera &camera,const glm::mat4 &mT);
 
-        int  init(const std::filesystem::path &cPath);
-        int  load(const std::filesystem::path &mPath,const glm::mat4 &mT);
+        EXPORT int  init(const std::filesystem::path &cPath);
+        EXPORT int  load(const std::filesystem::path &mPath,const glm::mat4 &mT);
 
    //     void  createImagePlane(const glm::mat4 &mT,const glm::vec3 &hW);
 
-        ModMan(void);
-        virtual ~ModMan();
+        EXPORT ModMan(void);
+        EXPORT virtual ~ModMan();
     };
   };
 };

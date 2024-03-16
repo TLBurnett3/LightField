@@ -24,6 +24,7 @@
 
 // Thomas Burnett
 // Job.cpp
+
 //---------------------------------------------------------------------
 
 // Includes
@@ -36,8 +37,8 @@
 // 3rdPartyLibs
 #include "glm/gtc/type_ptr.hpp"
 
-// Hogel Render
-#include "Job.h"
+// LightField
+#include "Core/Job.h"
 
 using namespace Lf;
 using namespace Core;
@@ -172,19 +173,6 @@ JSon::Value &v = doc["Tasks"];
     _tasks[FetchImageBuffer] = _tasks[ProofImage] | _tasks[WriteAVI] |_tasks[WritePNG] | _tasks[WriteDemo];
     _tasks[FetchDepthBuffer] = _tasks[WriteDepth] | _tasks[ProofDepth];
 
-		std::cout << "FetchImageBuffer Task : " << (_tasks[FetchImageBuffer] ? "true" : "false") << std::endl;
-		std::cout << "FetchDeptchBuffer Task : " << (_tasks[FetchDepthBuffer] ? "true" : "false") << std::endl;
-		std::cout << "ProofImage Task : " << (_tasks[ProofImage] ? "true" : "false") << std::endl;
-		std::cout << "WriteAVI Task : " << (_tasks[WriteAVI] ? "true" : "false") << std::endl;
-		std::cout << "WritePNG Task : " << (_tasks[WritePNG] ? "true" : "false") << std::endl;
-		std::cout << "WriteDemo Task : " << (_tasks[WriteDemo] ? "true" : "false") << std::endl;
-		std::cout << "WriteDepth Task : " << (_tasks[WriteDepth] ? "true" : "false") << std::endl;
-		std::cout << "ProofDepth Task : " << (_tasks[ProofDepth] ? "true" : "false") << std::endl;
-		std::cout << "HogelView Task : " << (_tasks[HogelView] ? "true" : "false") << std::endl;
-		std::cout << "DisplayDepthBuffer Task : " << (_tasks[DisplayDepthBuffer] ? "true" : "false") << std::endl;
-
-		std::cout << std::endl;
-
 		rc = 0;
   }
 
@@ -203,12 +191,12 @@ int rc = 0;
 	JSon::parse(doc, "Renderer",   _renderer);
 	JSon::parse(doc, "OutputPath", _outputPath);
 
-  if (_renderer == "Hogel")
-    _renderType = Hogel;
-  else if (_renderer == "Model")
-    _renderType = Model;
+  if (_renderer == "DF")
+    _renderType = DoubleFrustum;
+//  else if (_renderer == "Model")
+//    _renderType = Model;
   else if (_renderer == "Oblique")
-    _renderType = Oblique;
+    _renderType = ObliqueSliceDice;
   else if (_renderer == "Slice")
     _renderType = Slice;
   else if (_renderer == "MVP")
@@ -265,42 +253,36 @@ int rc    = -1;
 //---------------------------------------------------------------------
 void Job::print(std::ostream &o)
 {
-char  buf[128];
+  o << "               Job Name: "  << _jobName << std::endl;
+  o << "         Directory Path: "  << _dirPath << std::endl;
+  o << "               Renderer: "  << _renderer << std::endl;
+  o << "            Output Path: "  << _outputPath << std::endl;
+  o << "             Num Hogels: (" << _numHogels.x << ","  << _numHogels.y  << ")" << std::endl;
+  o << "             Hogel Size: (" << _hogelSize.x << ","  << _hogelSize.y  << ")" << std::endl;
+  o << "            Hogel Pitch: (" << _hogelPitch.x << "," << _hogelPitch.y << ")" << std::endl;
+  o << "                    FoV: "  << _fov << std::endl;
+  o << "         Z Near and Far: (" << _zNearFar.x << ","   << _zNearFar.y << ")" << std::endl;
+  o << "           Slice Memory: "  << _sliceMem << "g" << std::endl;
 
-  sprintf_s(buf,"%30s: %s","Job Name",_jobName.c_str());
-  o << buf << std::endl;
+	o << "  FetchImageBuffer Task: " << (_tasks[FetchImageBuffer] ? "true" : "false") << std::endl;
+	o << "  FetchDepthBuffer Task: " << (_tasks[FetchDepthBuffer] ? "true" : "false") << std::endl;
+	o << "        ProofImage Task: " << (_tasks[ProofImage] ? "true" : "false") << std::endl;
+	o << "          WriteAVI Task: " << (_tasks[WriteAVI] ? "true" : "false") << std::endl;
+	o << "          WritePNG Task: " << (_tasks[WritePNG] ? "true" : "false") << std::endl;
+	o << "         WriteDemo Task: " << (_tasks[WriteDemo] ? "true" : "false") << std::endl;
+	o << "        WriteDepth Task: " << (_tasks[WriteDepth] ? "true" : "false") << std::endl;
+	o << "        ProofDepth Task: " << (_tasks[ProofDepth] ? "true" : "false") << std::endl;
+	o << "         HogelView Task: " << (_tasks[HogelView] ? "true" : "false") << std::endl;
+	o << "DisplayDepthBuffer Task: " << (_tasks[DisplayDepthBuffer] ? "true" : "false") << std::endl;
 
-  sprintf_s(buf,"%30s: %s","Directory Path",_dirPath.c_str());
-  o << buf << std::endl;
-
-  sprintf_s(buf,"%30s: %s","Renderer",_renderer.c_str());
-  o << buf << std::endl;
-
-  sprintf_s(buf,"%30s: %s","Output Path",_outputPath.c_str());
-  o << buf << std::endl;
-
-  sprintf_s(buf,"%30s: (%d,%d)","Num Hogels",_numHogels.x,_numHogels.y);
-  o << buf << std::endl;
-
-  sprintf_s(buf,"%30s: (%d,%d)","Hogel Size",_hogelSize.x,_hogelSize.y);
-  o << buf << std::endl;
-
-  sprintf_s(buf,"%30s: (%d,%d)","Hogel Pitch",_hogelPitch.x,_hogelPitch.y);
-  o << buf << std::endl;
-
-  sprintf_s(buf,"%30s: %d gig","Slice Memory",_sliceMem);
-  o << buf << std::endl;
+	o << std::endl;
 
   {
   size_t n = _modelDefs.size();
   char buf2[32];
 
     for (size_t i = 0;i < n;i++)
-    {
-      sprintf_s(buf2,"%s[%zd]","Model Path",i);
-      sprintf_s(buf,"%30s: %s",buf2,(char *)_modelDefs[i]._mPath.c_str());
-      o << buf << std::endl;
-    }
+      o << "Model Path[" << i << "]: " << _modelDefs[i]._mPath << std::endl;
   }
 
 #if (0)
@@ -339,8 +321,8 @@ char  buf[128];
 Job::Job(void) : _filePath(),
                  _dirPath(),
                  _jobName(),
-                 _renderer("Model"),
-                 _renderType(Model),
+                 _renderer("DoubleFrustum"),
+                 _renderType(DoubleFrustum),
                  _modelDefs(),   
  //                _lightLst(),
                  _numHogels(0),
@@ -349,6 +331,7 @@ Job::Job(void) : _filePath(),
                  _mVVT(1),
                  _mScT(1),
                  _fov(90),
+                 _zNearFar(0.01f,1.0f),
                  _sliceMem(0),
                  _outputPath(),
                  _tasks()

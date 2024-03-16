@@ -32,7 +32,7 @@
 
 // 3rdPartyLibs
 
-// Lf/Core
+// LightField
 #include "Core/Template.h"
 
 using namespace Lf;

@@ -18,6 +18,7 @@ set (HEADERS
   Model.h
   VtxArrayObj.h
   VtxBufferObj.h
+  ModMan.h
   )
 
 set(SOURCE
@@ -28,6 +29,7 @@ set(SOURCE
   Model.cpp
   VtxArrayObj.cpp
   VtxBufferObj.cpp
+  ModMan.cpp
   )
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCE} )
@@ -36,7 +38,7 @@ target_link_libraries(${PROJECT_NAME} LfCore)
 target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
 target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${ASSIMP_LIBRARY})
-target_link_libraries(${PROJECT_NAME} ${OPENCV_RELEASE_DLL})
+#target_link_libraries(${PROJECT_NAME} ${OPENCV_RELEASE_DLL})
 
 
 ##########################################################################################################################################

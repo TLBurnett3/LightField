@@ -60,6 +60,7 @@ namespace Lf
 	  protected:
 	  public:
 		  typedef nlohmann::json Value;
+
 		  // Members
 	  private:
 	  public:
@@ -72,40 +73,40 @@ namespace Lf
       static void printParseError(const char *pT);
 
 		  //parse(json structure _doc, pointer, value looking for, required or not)
-		  EXPORT static int parse(Value &v, const char *pT, std::string                       &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, float                             &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, double                            &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, int32_t                           &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, int64_t                           &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, uint8_t                           &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, uint16_t                          &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, uint32_t                          &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, uint64_t                          &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, bool                              &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::vec2                         &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::vec3                         &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::vec4                         &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::dvec2                        &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::dvec3                        &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::dvec4                        &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::ivec2                        &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::ivec3                        &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::ivec4                        &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::tvec2<unsigned short>        &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::tvec2<unsigned char>         &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::tvec2<signed char>           &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::tvec2<uint32_t>              &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::quat                         &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::mat3                         &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, glm::mat4                         &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, std::vector<int>                  &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, std::vector<uint32_t>             &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, std::vector<float>                &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, std::vector<std::string>          &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, std::vector<glm::vec2>            &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, std::vector<glm::dvec2>           &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, std::list<glm::vec2>              &val, bool req = false, bool quiet = false);
-		  EXPORT static int parse(Value &v, const char *pT, std::list<glm::dvec2>             &val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, std::string													&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, float																&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, double															&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, int32_t															&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, int64_t															&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, uint8_t															&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, uint16_t														&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, uint32_t														&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, uint64_t														&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, bool																&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::vec2														&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::vec3														&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::vec4														&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::dvec2													&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::dvec3													&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::dvec4													&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::ivec2													&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::ivec3													&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::ivec4													&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::tvec2<unsigned short>					&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::tvec2<unsigned char>						&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::tvec2<signed char>							&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::tvec2<uint32_t>								&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::quat														&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::mat3														&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, glm::mat4														&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, std::vector<int>										&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, std::vector<uint32_t>								&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, std::vector<float>									&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, std::vector<std::string>						&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, std::vector<glm::vec2>							&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, std::vector<glm::dvec2>							&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, std::list<glm::vec2>								&val, bool req = false, bool quiet = false);
+		  EXPORT static int parse(Value &v, const char *pT, std::list<glm::dvec2>								&val, bool req = false, bool quiet = false);
     
 		  EXPORT static void insert(Value &v, const char* pT, const std::string                 &val);
 		  EXPORT static void insert(Value &v, const char* pT, const float                       &val);

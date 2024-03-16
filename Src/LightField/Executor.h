@@ -27,15 +27,20 @@
 
 #pragma once
 
+#include "Render/Def.h"
 
 //---------------------------------------------------------------------
 // Includes
 // System
 
 // 3rdPartyLibs
+#include <GLFW/glfw3.h>
 
 // LightField
 #include "Core/Job.h"
+
+#include "Render/Camera.h"
+#include "Render/ModMan.h"
 //---------------------------------------------------------------------
 
 
@@ -54,6 +59,9 @@ namespace Lf
     private:
     protected:
       Lf::Core::Job   _job;
+      GLFWwindow      *_pWindow;
+
+      Render::ModMan  _modMan;
 
     public:   
 
@@ -62,12 +70,20 @@ namespace Lf
     protected:
       int parseJob(const char *pCfg);
 
+      GLFWwindow *Executor::initWindow(const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
+
+      void renderHogel(Render::Camera &camera,const glm::vec3 &vP,const glm::mat4 &mT);
+
+      int renderDoubleFrustum(void);
+      int renderObliqueSliceDice(void);
+
+      void GLInfo(void);
     public:
 
-      int init(const char *pCfg);
-      
-      int exec(void);
-  
+      int   init(const char *pCfg);
+      int   exec(void);
+      void  destroy(void);
+
       Executor(void);
       ~Executor();
   };

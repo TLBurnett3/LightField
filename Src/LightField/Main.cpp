@@ -56,6 +56,8 @@ char            *p = "Cfg/Default.json";
   if (rc == 0)
     rc = e.exec();
 
+  e.destroy();
+
   std::cout << "LightField Exit: RC " << rc << std::endl;
 
   return rc;

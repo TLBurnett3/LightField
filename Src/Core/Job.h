@@ -106,9 +106,8 @@ namespace Lf
         enum RenderTypes
         {
           Unknown   = -1,
-          Model = 0,
-          Hogel,
-          Oblique,
+          DoubleFrustum,
+          ObliqueSliceDice,
           Slice,
           MVP,
         };
@@ -134,6 +133,7 @@ namespace Lf
         glm::mat4               _mScT;
 
         float                   _fov;     
+        glm::vec2               _zNearFar;
         uint32_t                _sliceMem;
 
         std::string							_outputPath;
@@ -183,6 +183,12 @@ namespace Lf
         const glm::ivec2 &numHogels(void)
         { return _numHogels; }
 
+        const float &zNear(void)
+        { return _zNearFar.x; }
+
+        const float &zFar(void)
+        { return _zNearFar.y; }
+
         const uint16_t sliceMem(void)
         { return _sliceMem; }
 
@@ -198,12 +204,12 @@ namespace Lf
         const bool isTask(TaskDefs t)
         { return _tasks[t]; }
 
-        void print(std::ostream &o);
+        EXPORT void print(std::ostream &o);
 
-        int parse(const std::filesystem::path &fPath);
+        EXPORT int parse(const std::filesystem::path &fPath);
   
-        Job(void);
-        virtual ~Job();
+        EXPORT Job(void);
+        EXPORT virtual ~Job();
     };
   };
 };

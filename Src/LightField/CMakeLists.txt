@@ -21,6 +21,17 @@ set(SOURCE
 add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCE})
 
 target_link_libraries(${PROJECT_NAME} LfCore)
+target_link_libraries(${PROJECT_NAME} LfRender)
 target_link_libraries(${PROJECT_NAME} ${GLFW3_DEBUG_LIBRARY} ${GLFW3_RELEASE_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_gl_LIBRARY} ${OPENGL_glu_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${ASSIMP_LIBRARY})
+#target_link_libraries(${PROJECT_NAME} ${OPENCV_RELEASE_DLL})
+
+
+if (WIN32)
+  target_link_libraries(${PROJECT_NAME} ${GLEW_LIBRARIES})
+endif (WIN32)
 
 install (TARGETS ${PROJECT_NAME})

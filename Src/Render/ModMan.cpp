@@ -78,7 +78,7 @@ size_t n  = _modelLst.size();
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void ModMan::render(const Camera &camera,const glm::mat4 &mT, const int frustum)
+void ModMan::render(const Camera &camera,const glm::mat4 &mT)
 {
 size_t n  = _modelLst.size();
 
