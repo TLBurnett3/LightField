@@ -42,7 +42,7 @@
 //#include "Common/Light.h"
 #include "Render/Camera.h"
 //#include "Render/Control.h"
-//#include "Render/Shader.h"
+#include "Render/Shader.h"
 //---------------------------------------------------------------------
 
 
@@ -115,7 +115,7 @@ namespace Lf
  //       void addLight(const Common::Light &light);
 
         EXPORT void print(std::ostream &s);
-        EXPORT void render(const Camera &camera,const glm::mat4 &mT);
+        EXPORT void render(const Camera *pCamera,const Shader *pShader,const glm::mat4 *pMT);
 
         EXPORT int  init(const std::filesystem::path &cPath);
         EXPORT int  load(const std::filesystem::path &mPath,const glm::mat4 &mT);

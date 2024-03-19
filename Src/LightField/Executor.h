@@ -32,6 +32,7 @@
 //---------------------------------------------------------------------
 // Includes
 // System
+#include <filesystem>
 
 // 3rdPartyLibs
 #include <GLFW/glfw3.h>
@@ -40,6 +41,7 @@
 #include "Core/Job.h"
 
 #include "Render/Camera.h"
+#include "Render/Shader.h"
 #include "Render/ModMan.h"
 //---------------------------------------------------------------------
 
@@ -62,6 +64,7 @@ namespace Lf
       GLFWwindow      *_pWindow;
 
       Render::ModMan  _modMan;
+      Render::Shader  _shader;
 
     public:   
 
@@ -78,6 +81,10 @@ namespace Lf
       int renderObliqueSliceDice(void);
 
       void GLInfo(void);
+
+      int  loadModels (std::filesystem::path &cPath);
+      int  loadShaders(std::filesystem::path &cPath);
+
     public:
 
       int   init(const char *pCfg);

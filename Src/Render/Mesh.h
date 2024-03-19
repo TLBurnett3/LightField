@@ -43,6 +43,7 @@
 #include "Render/Texture.h"
 #include "Render/Object.h"
 #include "Render/Camera.h"
+#include "Render/Shader.h"
 //---------------------------------------------------------------------
 
 
@@ -105,7 +106,7 @@ namespace Lf
 
         void print(std::ostream &s,std::string idt,bool detail = false);
 
-        void render(const Camera &camera,const glm::mat4 &mT);
+        void render(const Camera *pCamera,const Shader *pShader,const glm::mat4 *pMT);
 
         Mesh(void);
         ~Mesh();

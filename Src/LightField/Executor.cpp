@@ -200,56 +200,6 @@ char        *pS = 0;
 
 
 //---------------------------------------------------------------------
-// init
-//---------------------------------------------------------------------
-int Executor::init(const char *pCfg) 
-{
-int rc  = parseJob(pCfg);
-
-  if (rc == 0)
-  {
-    glfwSetErrorCallback(ErrorCallback);
-
-    if (glfwInit())    
-    {
-    glm::ivec2 wS = _job.hogelSize();
-
-      _pWindow = initWindow(wS,"Lightfield",0,0,true);
-
-      if (_pWindow)
-      {
-      std::filesystem::path cPath = std::filesystem::current_path();
-
-        glfwSetKeyCallback      (_pWindow,Keyboard_Callback);
-
-#ifdef _WIN32
-        glewExperimental = GL_TRUE;
-        glewInit();
-#endif   
-
-        GLInfo();
-
-        rc |= _modMan.init(cPath);
-
-        for (size_t i = 0;i < _job.numModels();i++)
-        {
-          if (_modMan.load(_job.modelPath(i),_job.modelTransform(i)) == 0)
-            std::cout << "Succesful Load: " << _job.modelPath(i) << std::endl;
-          else
-          {
-            std::cout << "Unsuccesful Load: " << _job.modelPath(i) << std::endl;
-            rc |= -1;
-          }
-        }       
-      }
-    }
-  }
-
-  return rc;
-}
-
-
-//---------------------------------------------------------------------
 // renderHogel
 //---------------------------------------------------------------------
 void Executor::renderHogel(Render::Camera &camera,const glm::vec3 &vP,const glm::mat4 &mT)
@@ -270,7 +220,7 @@ glm::vec3   vD    = glm::normalize(mT[1]); /// we render along the y axis
 
     camera.backFrustum(vE,-vD,vU);
 
-    _modMan.render(camera,_job.sceneTransform());
+    _modMan.render(&camera,&_shader,&_job.sceneTransform());
 
     glFlush();
   }
@@ -286,7 +236,7 @@ glm::vec3   vD    = glm::normalize(mT[1]); /// we render along the y axis
 
     camera.frontFrustum(vE,vD,-vU);
 
-    _modMan.render(camera,_job.sceneTransform());
+    _modMan.render(&camera,&_shader,&_job.sceneTransform());
   }   
 
   glFinish();
@@ -423,6 +373,88 @@ Core::Timer tH;
     std::cout << "Completed Oblique Slice & Dice Rendering " << std::endl;
     std::cout << "Render Time: " << t << " seconds" << std::endl;
     std::cout << "FPS: " << (double)n / t << std::endl;
+  }
+
+  return rc;
+}
+
+
+
+//---------------------------------------------------------------------
+// loadModels
+//---------------------------------------------------------------------
+int Executor::loadModels(std::filesystem::path &cPath)
+{
+int rc = _modMan.init(cPath);
+
+  for (size_t i = 0;i < _job.numModels();i++)
+  {
+    if (_modMan.load(_job.modelPath(i),_job.modelTransform(i)) == 0)
+      std::cout << "Succesful Load: " << _job.modelPath(i) << std::endl;
+    else
+    {
+      std::cout << "Unsuccesful Load: " << _job.modelPath(i) << std::endl;
+      rc |= -1;
+    }
+  }   
+
+  return rc;
+}
+
+
+//---------------------------------------------------------------------
+// loadShaders
+//---------------------------------------------------------------------
+int Executor::loadShaders(std::filesystem::path &cPath)
+{
+std::filesystem::path  vShader(cPath);
+std::filesystem::path  fShader(cPath);
+int                    rc = 0;
+
+  vShader /= "Shaders/Default3D.vtx";
+  fShader /= "Shaders/Default3D.frg";
+ 
+  rc |= _shader.addVertexShader(vShader);
+  rc |= _shader.addFragmentShader(vShader);
+
+  return rc;
+}
+
+
+//---------------------------------------------------------------------
+// init
+//---------------------------------------------------------------------
+int Executor::init(const char *pCfg) 
+{
+int rc  = parseJob(pCfg);
+
+  if (rc == 0)
+  {
+    glfwSetErrorCallback(ErrorCallback);
+
+    if (glfwInit())    
+    {
+    glm::ivec2 wS = _job.hogelSize();
+
+      _pWindow = initWindow(wS,"Lightfield",0,0,true);
+
+      if (_pWindow)
+      {
+      std::filesystem::path cPath = std::filesystem::current_path();
+
+        glfwSetKeyCallback      (_pWindow,Keyboard_Callback);
+
+#ifdef _WIN32
+        glewExperimental = GL_TRUE;
+        glewInit();
+#endif   
+
+        GLInfo();
+
+        rc |= loadModels(cPath);
+        rc |= loadShaders(cPath);
+      }
+    }
   }
 
   return rc;
