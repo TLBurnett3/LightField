@@ -76,10 +76,6 @@ namespace Lf
           glBindVertexArray(0); 
         }
 
-  #ifdef tLibPCL
-        void  upload(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &cloud,const int mode);
-  #endif
-
         void  upload(const VtxVLst   &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
         void  upload(const VtxVTLst  &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
         void  upload(const VtxVNTLst &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);

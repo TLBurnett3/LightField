@@ -108,8 +108,8 @@ GLFWwindow *Executor::initWindow(const glm::ivec2 wD,const char *pStr,GLFWwindow
 GLFWwindow *pW = 0;
 
   glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_COMPAT_PROFILE);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,3);	
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,1);	
   glfwWindowHint(GLFW_DEPTH_BITS,32);
 
   if (visible)
@@ -209,6 +209,8 @@ glm::vec3   vD    = glm::normalize(mT[1]); /// we render along the y axis
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  _shader.use();
+
   // back frustum, away from viewer into the display
   if (1)
   {
@@ -241,6 +243,52 @@ glm::vec3   vD    = glm::normalize(mT[1]); /// we render along the y axis
 
   glFinish();
 }
+
+
+//---------------------------------------------------------------------
+// renderView
+//---------------------------------------------------------------------
+void Executor::renderView(Render::Camera &camera,const glm::vec3 &vP,const glm::mat4 &mT)
+{
+glm::vec3   vU    = glm::normalize(mT[2]);  
+glm::vec3   vD    = glm::normalize(mT[1]); /// we render along the y axis
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  camera.lookAt(vP + glm::vec3(0.0,0.5,0.0),glm::vec3(0,-1,0),glm::vec3(0,0,1));
+
+  glFrontFace(GL_CCW);
+  glCullFace(GL_BACK);
+  glEnable(GL_TEXTURE);
+  glActiveTexture(GL_TEXTURE0);
+  glDepthRange(0.0f,1.0f);
+
+  _shader.use();
+  _shader.setTextureSampler(0);
+  _modMan.render(&camera,&_shader,&_job.sceneTransform());
+
+  glFlush();
+  glFinish();
+
+  if (1)
+  {
+  glUseProgram(0);
+ // camera.lookAt(vP + glm::vec3(0.0,0.5,0.0),glm::vec3(0,-1,0),glm::vec3(0,0,1));
+//  glMatrixMode(GL_PROJECTION);      // Select the Projection matrix for operation
+//  glLoadMatrixf(glm::value_ptr(camera.projection()));      
+ // glMatrixMode(GL_MODELVIEW);      // Select the Projection matrix for operation
+ // glLoadMatrixf(glm::value_ptr(camera.view()));       
+   /*
+     glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
+        glColor3f(1.0f, 0.0f, 0.0f); // Red
+        glVertex2f(-0.5f, -0.5f);    // x, y
+        glVertex2f( 0.5f, -0.5f);
+        glVertex2f( 0.5f,  0.5f);
+        glVertex2f(-0.5f,  0.5f);
+     glEnd();*/
+  }
+}
+
 
 //---------------------------------------------------------------------
 // renderDoubleFrustum
@@ -289,7 +337,8 @@ Render::Camera  camera;
       vP *- glm::vec3(1.0f,0.0f,-1.0f);
       vP = mT * glm::vec4(vP,1);
 
-      renderHogel(camera,vP,mT);
+     // renderHogel(camera,vP,mT);
+      renderView(camera,vP,mT);
 
       glfwSwapBuffers(_pWindow);
       glfwPollEvents();
@@ -379,7 +428,6 @@ Core::Timer tH;
 }
 
 
-
 //---------------------------------------------------------------------
 // loadModels
 //---------------------------------------------------------------------
@@ -415,7 +463,10 @@ int                    rc = 0;
   fShader /= "Shaders/Default3D.frg";
  
   rc |= _shader.addVertexShader(vShader);
-  rc |= _shader.addFragmentShader(vShader);
+  rc |= _shader.addFragmentShader(fShader);
+
+  if (rc == 0)
+    rc |= _shader.compile();
 
   return rc;
 }

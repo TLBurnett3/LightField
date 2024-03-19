@@ -335,7 +335,7 @@ int rc = -1;
         std::cout << "Failed to locate MVPMatrix\n";
         rc = -1;
       }
-
+/*
       _locMatMV     = glGetUniformLocation(_programShaderId,"mMV");     
       if (_locMatMV < 0)
       {
@@ -356,13 +356,20 @@ int rc = -1;
         std::cout << "Failed to locate Material Properties Matrix\n";
         rc = -1;
       }  
-
+*/
       //_locMatLightProp     = glGetUniformLocation(_programShaderId,"mL");     
       //if (_locMatLightProp < 0)
       //{
       //  std::cout << "Failed to locate Light Properties Matrix\n";
       //  rc = -1;
       //}  
+
+      _locTexSampler     = glGetUniformLocation(_programShaderId,"texSampler");     
+      if (_locTexSampler < 0)
+      {
+        std::cout << "Failed to locate Tex Sampler\n";
+        rc = -1;
+      } 
     }
 
     if (rc == 0)
@@ -383,18 +390,21 @@ int rc = -1;
 //---------------------------------------------------------------------
 // Shader
 //---------------------------------------------------------------------
-Shader::Shader(void) : _vertexShaderLst(),
+Shader::Shader(void) : _sName("Unknown"),
+                       _vertexShaderLst(),
+                       _geometryShaderLst(),
                        _fragmentShaderLst(),
                        _programShaderId(0),
                        _vertexShaderId(0),                                             
                        _geometryShaderId(0),
                        _fragmentShaderId(0),
-                       _sName("Unknown"),
                        _locMatMVP(0),
                        _locMatMV(0),
                        _locMatN(0),
+                       _locTexSampler(0),
                        _locMatMatProp(0),
-                       _locMatLightProp(0)
+                       _locMatLightProp(0),
+                       _locMatLightSwitch(0)
 
 {
 

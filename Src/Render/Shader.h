@@ -72,6 +72,7 @@ namespace Lf
         GLint             _locMatMVP;
         GLint             _locMatMV;
         GLint             _locMatN;
+        GLint             _locTexSampler;
 
         GLint             _locMatMatProp;
         GLint             _locMatLightProp;
@@ -111,6 +112,12 @@ namespace Lf
         { 
           if (_locMatMVP != -1)
             glUniformMatrix4fv(_locMatMVP,1,false,glm::value_ptr(mT)); 
+        }
+
+        EXPORT void setTextureSampler(const int t) const
+        { 
+          if (_locTexSampler != -1)
+            glUniform1i(_locTexSampler,t);
         }
 
         EXPORT void bindMV(const glm::mat4 &mT) const

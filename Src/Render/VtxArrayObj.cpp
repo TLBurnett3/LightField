@@ -43,8 +43,6 @@ using namespace Render;
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 24, 2014
 //---------------------------------------------------------------------
 void  VtxArrayObj::upload(const VtxVLst &vLst,const IdxLst &iLst,const GLuint mode)
 {
@@ -85,8 +83,6 @@ void  VtxArrayObj::upload(const VtxVLst &vLst,const IdxLst &iLst,const GLuint mo
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 24, 2014
 //---------------------------------------------------------------------
 void  VtxArrayObj::upload(const VtxVTLst &vLst,const IdxLst &iLst,const GLuint mode)
 {
@@ -130,8 +126,6 @@ void  VtxArrayObj::upload(const VtxVTLst &vLst,const IdxLst &iLst,const GLuint m
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 24, 2014
 //---------------------------------------------------------------------
 void  VtxArrayObj::upload(const VtxVNLst &vLst,const IdxLst &iLst,const GLuint mode)
 {
@@ -177,8 +171,6 @@ void  VtxArrayObj::upload(const VtxVNLst &vLst,const IdxLst &iLst,const GLuint m
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 24, 2014
 //---------------------------------------------------------------------
 void  VtxArrayObj::upload(const VtxVNTLst &vLst,const IdxLst &iLst,const GLuint mode)
 {
@@ -226,8 +218,6 @@ void  VtxArrayObj::upload(const VtxVNTLst &vLst,const IdxLst &iLst,const GLuint 
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 25, 2014
 //---------------------------------------------------------------------
 void  VtxArrayObj::upload(const VtxVTLst &vLst,const GLuint mode)
 {
@@ -265,8 +255,6 @@ void  VtxArrayObj::upload(const VtxVTLst &vLst,const GLuint mode)
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 25, 2014
 //---------------------------------------------------------------------
 void  VtxArrayObj::upload(const VtxVNLst &vLst,const GLuint mode)
 {
@@ -304,8 +292,6 @@ void  VtxArrayObj::upload(const VtxVNLst &vLst,const GLuint mode)
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 25, 2014
 //---------------------------------------------------------------------
 void  VtxArrayObj::upload(const VtxVLst &vLst,const GLuint mode)
 {
@@ -339,8 +325,6 @@ void  VtxArrayObj::upload(const VtxVLst &vLst,const GLuint mode)
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 25, 2014
 //---------------------------------------------------------------------
 void  VtxArrayObj::upload(const VtxVNTLst &vLst,const GLuint mode)
 {
@@ -381,8 +365,6 @@ void  VtxArrayObj::upload(const VtxVNTLst &vLst,const GLuint mode)
 
 //---------------------------------------------------------------------
 // ~VtxArrayObj 
-// Thomas Burnett
-// March 25, 2014
 //---------------------------------------------------------------------
 VtxArrayObj::~VtxArrayObj() 
 {
