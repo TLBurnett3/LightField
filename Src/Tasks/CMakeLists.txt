@@ -8,15 +8,18 @@ include_directories(${LIGHTFIELD_SRC_DIR})
 
 set (HEADERS
   Base.h
+  ProofImage.h
 )
 
 set(SOURCE
   Base.cpp
+  ProofImage.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCE} )
 
 target_link_libraries(${PROJECT_NAME} LfCore)
+target_link_libraries(${PROJECT_NAME} ${OPENCV_DEBUG_LIB} ${OPENCV_RELEASE_LIB})
 
 ##########################################################################################################################################
 # Installation

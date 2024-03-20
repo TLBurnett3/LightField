@@ -41,6 +41,7 @@
 #include "LightField/Executor.h"
 #include "Core/Timer.h"
 #include "Render/Camera.h"
+#include "Tasks/ProofImage.h"
 
 using namespace Lf;
 //---------------------------------------------------------------------
@@ -206,22 +207,42 @@ void Executor::fetchHogelAndQueue(glm::ivec2 idx)
 {
 glm::ivec2  hS      = _job.hogelSize();
 
-  if (1)
+  if (_imgTaskLst.size())
   {
-  std::shared_ptr<cv::Mat>  spMat = std::make_shared<cv::Mat>(hS.y,hS.x,CV_8UC3);
+  TaskList::iterator        ii    = _imgTaskLst.begin();
+  TaskList::iterator        iEnd  = _imgTaskLst.end();
+  Task::Base::SpImg         spImg = std::make_shared<std::pair<cv::Mat,glm::ivec2>>();
+
+    spImg->first.create(hS.y,hS.x,CV_8UC3);
+    spImg->second = idx;
 
     glReadBuffer(GL_BACK);
-    glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_BGR,GL_UNSIGNED_BYTE,spMat->data); 
+    glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_BGR,GL_UNSIGNED_BYTE,spImg->first.data); 
+    
+    while (ii != iEnd)
+    {
+      (*ii)->queue(spImg);
+      ii++;
+    }
   }
 
-  if (0)
+  if (_dthTaskLst.size())
   {
-  std::shared_ptr<cv::Mat>  spMat;
+  TaskList::iterator        ii    = _dthTaskLst.begin();
+  TaskList::iterator        iEnd  = _dthTaskLst.end();
+  Task::Base::SpImg         spImg = std::make_shared<std::pair<cv::Mat,glm::ivec2>>();
 
-    spMat->create(hS.y,hS.x,CV_32FC1);
+    spImg->first.create(hS.y,hS.x,CV_32FC1);
+    spImg->second = idx;
 
     glReadBuffer(GL_BACK);
-    glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_DEPTH_COMPONENT,GL_FLOAT,spMat->data);
+    glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_DEPTH_COMPONENT,GL_FLOAT,spImg->first.data);
+
+    while (ii != iEnd)
+    {
+      (*ii)->queue(spImg);
+      ii++;
+    }
   }
 }
 
@@ -459,6 +480,28 @@ int                    rc = 0;
 
 
 //---------------------------------------------------------------------
+// createTasks
+//---------------------------------------------------------------------
+int Executor::createTasks(void)
+{
+int rc = 0;
+
+  if (_job.isTask(Core::Job::ProofImage))
+  {
+  Task::ProofImage  *pT = new Task::ProofImage("ImageProof");
+
+    pT->create(_job.numHogels(),_job.hogelSize(),3);
+    pT->setPath(_job.outputPath());
+    pT->start();
+
+    _imgTaskLst.push_back(pT);
+  }
+
+  return rc;
+}
+
+
+//---------------------------------------------------------------------
 // init
 //---------------------------------------------------------------------
 int Executor::init(const char *pCfg) 
@@ -490,6 +533,7 @@ int rc  = parseJob(pCfg);
 
         rc |= loadModels(cPath);
         rc |= loadShaders(cPath);
+        rc |= createTasks();
       }
     }
   }
@@ -519,10 +563,44 @@ int rc      = 0;
 //---------------------------------------------------------------------
 void Executor::destroy(void) 
 {
+  {
+  TaskList::iterator        ii    = _imgTaskLst.begin();
+  TaskList::iterator        iEnd  = _imgTaskLst.end();
+    
+    while (ii != iEnd)
+    {
+      (*ii)->stop();
+      ii++;
+    }
+  }
+
+  {
+  TaskList::iterator        ii    = _dthTaskLst.begin();
+  TaskList::iterator        iEnd  = _dthTaskLst.end();
+
+    while (ii != iEnd)
+    {
+      (*ii)->stop();
+      ii++;
+    }
+  }
+
   if (_pWindow)
     glfwDestroyWindow(_pWindow);
 
   glfwTerminate();
+
+  while (!_imgTaskLst.empty())
+  {
+    delete _imgTaskLst.back();
+    _imgTaskLst.pop_back();
+  }
+
+  while (!_dthTaskLst.empty())
+  {
+    delete _dthTaskLst.back();
+    _dthTaskLst.pop_back();
+  }
 }
 
 
@@ -531,7 +609,10 @@ void Executor::destroy(void)
 //---------------------------------------------------------------------
 Executor::Executor(void) : _job(),
                            _pWindow(0),
-                           _modMan()
+                           _modMan(),
+                           _shader(),
+                           _imgTaskLst(),
+                           _dthTaskLst()
 {
 }
 

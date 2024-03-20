@@ -33,13 +33,14 @@
 // Includes
 // System
 #include <filesystem>
+#include <vector>
 
 // 3rdPartyLibs
 #include <GLFW/glfw3.h>
 
 // LightField
 #include "Core/Job.h"
-
+#include "Tasks/Base.h"
 #include "Render/Camera.h"
 #include "Render/Shader.h"
 #include "Render/ModMan.h"
@@ -55,6 +56,7 @@ namespace Lf
     // Defines
     private:
     protected:
+      typedef std::vector<Task::Base *> TaskList;
     public:
 
     // Members
@@ -65,6 +67,9 @@ namespace Lf
 
       Render::ModMan  _modMan;
       Render::Shader  _shader;
+
+      TaskList        _imgTaskLst;
+      TaskList        _dthTaskLst;
 
     public:   
 
@@ -86,6 +91,7 @@ namespace Lf
 
       int  loadModels (std::filesystem::path &cPath);
       int  loadShaders(std::filesystem::path &cPath);
+      int  createTasks(void);
 
     public:
 

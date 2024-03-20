@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Base.h
+// Thread.h
 // Thomas Burnett
 
 #pragma once
@@ -31,17 +31,13 @@
 //---------------------------------------------------------------------
 // Includes
 // System
-#include <memory>
-#include <queue>
+#include <atomic>
+#include <thread>
+#include <assert.h>
 
 // 3rdPartyLibs
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <glm/glm.hpp>
 
 // LightField
-#include <Core/Export.h>
-#include <Core/Thread.h>
 //---------------------------------------------------------------------
 
 
@@ -49,52 +45,67 @@
 // Classes
 namespace Lf
 {
-  namespace Task
+  namespace Core
   {
-    class Base : public Core::Thread
+    class	Thread
     {
       // Defines
       private:
       protected:
       public:
-        typedef std::shared_ptr<std::pair<cv::Mat,glm::ivec2>>    SpImg;
-        typedef std::queue<SpImg>                                 ImgQ;
 
       // Members
       private:
       protected:
-        std::string               _tName;
-        ImgQ                      _imgQ;
-        std::mutex                _access;
-        std::condition_variable   _workCondition;
-
-
-      public:   
+        std::thread       _thread;
+        std::atomic<bool> _run; 
+      public:
 
       // Methods
       private:
       protected:
-      public:
-
-        EXPORT void  queue(SpImg &spImg)
-        { 
+        void  sleep(const double seconds)
+        {
+          if (_run)
           {
-          std::unique_lock<std::mutex> lock(_access);
+          long long t = (long long)(seconds * 1000.0);
 
-            _imgQ.push(spImg); 
+            std::this_thread::sleep_for(std::chrono::milliseconds(t));
           }
-
-          _workCondition.notify_one();
         }
 
-        EXPORT virtual void process(cv::Mat &img,glm::ivec2 &idx) = 0;
+      public:
+        EXPORT bool  isRunning(void)
+        { return _run; }
 
-        EXPORT virtual void exec(void);
-  
-        EXPORT Base(const char *pN);
-        EXPORT ~Base();
+        EXPORT virtual void exec(void) = 0;
+
+        EXPORT virtual void start(void)
+        {
+          assert(!_run); // thread is already started.
+          _run    = true;
+          _thread = std::thread(&Thread::exec,this);
+        }
+
+        // do not call this from within in this thread.
+        // it should only be called by the parent thread
+        EXPORT virtual void  stop(void)
+        { 
+          if (_run)
+          {
+            _run = false; 
+            _thread.join();
+          }
+        }
+   
+        EXPORT Thread(void) : _thread(),
+                              _run(false)
+        {}
+    
+		    EXPORT virtual ~Thread()
+        {}
     };
   };
 };
-//---------------------------------------------------------------------
 
+//---------------------------------------------------------------------

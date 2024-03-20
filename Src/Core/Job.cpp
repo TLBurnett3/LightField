@@ -170,9 +170,6 @@ JSon::Value &v = doc["Tasks"];
 		JSon::parse(v, "HogelView",          _tasks[HogelView], false);
 		JSon::parse(v, "DisplayDepthBuffer", _tasks[DisplayDepthBuffer], false);
 
-    _tasks[FetchImageBuffer] = _tasks[ProofImage] | _tasks[WriteAVI] |_tasks[WritePNG] | _tasks[WriteDemo];
-    _tasks[FetchDepthBuffer] = _tasks[WriteDepth] | _tasks[ProofDepth];
-
 		rc = 0;
   }
 
@@ -264,8 +261,6 @@ void Job::print(std::ostream &o)
   o << "         Z Near and Far: (" << _zNearFar.x << ","   << _zNearFar.y << ")" << std::endl;
   o << "           Slice Memory: "  << _sliceMem << "g" << std::endl;
 
-	o << "  FetchImageBuffer Task: " << (_tasks[FetchImageBuffer] ? "true" : "false") << std::endl;
-	o << "  FetchDepthBuffer Task: " << (_tasks[FetchDepthBuffer] ? "true" : "false") << std::endl;
 	o << "        ProofImage Task: " << (_tasks[ProofImage] ? "true" : "false") << std::endl;
 	o << "          WriteAVI Task: " << (_tasks[WriteAVI] ? "true" : "false") << std::endl;
 	o << "          WritePNG Task: " << (_tasks[WritePNG] ? "true" : "false") << std::endl;
@@ -338,6 +333,8 @@ Job::Job(void) : _filePath(),
 {
   for (int i = 0;i < TaskDefsNum;i++)
     _tasks[i] = false;
+
+  _tasks[ProofImage] = true;
 }
 
 

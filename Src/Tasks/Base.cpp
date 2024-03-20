@@ -41,9 +41,36 @@ using namespace Task;
 
 
 //---------------------------------------------------------------------
+// exec
+//---------------------------------------------------------------------
+void Base::exec(void)
+{
+  while (_run || !_imgQ.empty())
+  {
+   SpImg spImg(0);
+
+    {
+    std::unique_lock<std::mutex> lock(_access);
+
+      _workCondition.wait(lock,[this]{return ((_run == false) | !_imgQ.empty()); });  
+
+       spImg = _imgQ.front();
+      _imgQ.pop();
+    }
+
+    if (spImg)
+      process(spImg->first,spImg->second);
+  }
+}
+
+
+//---------------------------------------------------------------------
 // Base
 //---------------------------------------------------------------------
-Base::Base(void) : _matQ()
+Base::Base(const char *pN) :_tName(pN),
+                            _imgQ(),
+                            _access(),
+                            _workCondition()
 {
 }
 

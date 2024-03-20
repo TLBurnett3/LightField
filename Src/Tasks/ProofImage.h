@@ -22,26 +22,19 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Base.h
+// ProofImage.h
 // Thomas Burnett
+
 
 #pragma once
 
-
 //---------------------------------------------------------------------
-// Includes
-// System
-#include <memory>
-#include <queue>
-
-// 3rdPartyLibs
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+// Include
+#include <filesystem>
 #include <glm/glm.hpp>
 
-// LightField
-#include <Core/Export.h>
-#include <Core/Thread.h>
+// Hogel Tasks
+#include "Tasks/Base.h"
 //---------------------------------------------------------------------
 
 
@@ -51,50 +44,63 @@ namespace Lf
 {
   namespace Task
   {
-    class Base : public Core::Thread
+    class	ProofImage : public Task::Base
     {
       // Defines
       private:
       protected:
       public:
-        typedef std::shared_ptr<std::pair<cv::Mat,glm::ivec2>>    SpImg;
-        typedef std::queue<SpImg>                                 ImgQ;
+        enum { 
+          HogelScatter,
+          ObliqueScatter
+        };
 
       // Members
       private:
       protected:
-        std::string               _tName;
-        ImgQ                      _imgQ;
-        std::mutex                _access;
-        std::condition_variable   _workCondition;
+        std::filesystem::path   _dPath;
 
+        cv::Mat                 _proof;
 
-      public:   
+        glm::ivec2              _hS;
+        glm::ivec2              _nH;
+        glm::ivec2              _iSize;
+        glm::ivec2              _idx;
+
+        uint16_t                _scatterType;
+      public:
 
       // Methods
       private:
       protected:
+        void write   (void);
+
+        void scatterHogel3(cv::Mat &img,glm::ivec2 &idx);
+        void scatterHogel1(cv::Mat &img,glm::ivec2 &idx);
+
+        void scatterOblique(cv::Mat &img,glm::ivec2 &idx);
+
       public:
+        EXPORT void create  (const glm::ivec2 &nH,const glm::ivec2 &hS,const uint16_t bpp);
 
-        EXPORT void  queue(SpImg &spImg)
-        { 
-          {
-          std::unique_lock<std::mutex> lock(_access);
+        EXPORT void setPath(const std::filesystem::path &dPath)
+        { _dPath = dPath; }
 
-            _imgQ.push(spImg); 
-          }
+        EXPORT virtual void process(cv::Mat &img,glm::ivec2 &idx);
 
-          _workCondition.notify_one();
-        }
-
-        EXPORT virtual void process(cv::Mat &img,glm::ivec2 &idx) = 0;
-
-        EXPORT virtual void exec(void);
-  
-        EXPORT Base(const char *pN);
-        EXPORT ~Base();
+        EXPORT ProofImage(const char *pN) : Task::Base(pN),
+                                            _proof(),
+                                            _hS(),
+                                            _nH(),
+                                            _iSize(),
+                                            _scatterType(HogelScatter)
+        {}
+    
+		    EXPORT virtual ~ProofImage()
+        {}
     };
   };
 };
 //---------------------------------------------------------------------
+
 

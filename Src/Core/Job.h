@@ -90,9 +90,7 @@ namespace Lf
       public:
         enum  TaskDefs
         {
-          FetchImageBuffer = 0,        
-          FetchDepthBuffer,      
-          ProofImage,
+          ProofImage = 0,
           WriteAVI,
           WritePNG,
           WriteDemo,
