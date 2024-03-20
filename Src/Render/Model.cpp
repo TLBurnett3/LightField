@@ -76,37 +76,37 @@ aiColor4D   c;
   {
     if (tName.length)
     {
-//    std::filesystem::path tPath = _mPath;
- //   cv::Mat               img;
+    std::filesystem::path tPath = _mPath;
+    cv::Mat               img;
 
-//      tPath /= tName.data;
+      tPath /= tName.data;
 
-//      img = cv::imread(tPath.string());
+      img = cv::imread(tPath.string());
 
- //     cv::flip(img,img,0);
+      cv::flip(img,img,0);
 
- //     if (img.data)
-//        pTexture->upload(img);
-//      else
-//       std::cout << "File not found: " << tPath << std::endl;
+      if (img.data)
+        pTexture->upload(img);
+      else
+       std::cout << "File not found: " << tPath << std::endl;
     }
   }
   else
   {
-//  cv::Mat     img(cv::Size(16,16),CV_8UC4);
- // cv::Scalar  clr;
+  cv::Mat     img(cv::Size(16,16),CV_8UC4);
+  cv::Scalar  clr;
         
- //   clr[0] = (unsigned char)(mProp[1][2] * 255.0f);
-//    clr[1] = (unsigned char)(mProp[1][1] * 255.0f);
-//    clr[2] = (unsigned char)(mProp[1][0] * 255.0f);
- //   clr[3] = (unsigned char)(mProp[1][3] * 255.0f);
+    clr[0] = (unsigned char)(mProp[1][2] * 255.0f);
+    clr[1] = (unsigned char)(mProp[1][1] * 255.0f);
+    clr[2] = (unsigned char)(mProp[1][0] * 255.0f);
+    clr[3] = (unsigned char)(mProp[1][3] * 255.0f);
 
- //   img.setTo(clr);
+    img.setTo(clr);
 
- //   pTexture->upload(img);
+    pTexture->upload(img);
   } 
 
-//  pTexture->setProperties(mProp);
+  pTexture->setProperties(mProp);
 
   return pTexture;
 }
@@ -409,9 +409,9 @@ Assimp::Importer  importer;
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void Model::render(const Camera *pCamera,const Shader *pShader,const glm::mat4 *pMT)
+void Model::render(const Camera &camera,const Shader &shader,const glm::mat4 &mT)
 {
-  _pRoot->render(pCamera,pShader,pMT);
+  _pRoot->render(camera,shader,mT);
 }
 
 

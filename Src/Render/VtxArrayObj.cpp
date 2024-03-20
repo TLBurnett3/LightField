@@ -166,9 +166,6 @@ void  VtxArrayObj::upload(const VtxVNLst &vLst,const IdxLst &iLst,const GLuint m
 }
 
 
-
-
-
 //---------------------------------------------------------------------
 // upload 
 //---------------------------------------------------------------------
@@ -212,8 +209,6 @@ void  VtxArrayObj::upload(const VtxVNTLst &vLst,const IdxLst &iLst,const GLuint 
     _mode = mode;
   }
 }
-
-
 
 
 //---------------------------------------------------------------------

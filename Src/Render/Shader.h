@@ -110,8 +110,8 @@ namespace Lf
 
         EXPORT void bindMVP(const glm::mat4 &mT) const
         { 
-          if (_locMatMVP != -1)
-            glUniformMatrix4fv(_locMatMVP,1,false,glm::value_ptr(mT)); 
+          assert(_locMatMVP >= 0);
+          glUniformMatrix4fv(_locMatMVP,1,false,glm::value_ptr(mT)); 
         }
 
         EXPORT void setTextureSampler(const int t) const

@@ -181,8 +181,6 @@ void VtxBufferObj::renderIVN(void)
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 24, 2014
 //---------------------------------------------------------------------
 void  VtxBufferObj::upload(const VtxVNLst &vLst,const IdxLst &iLst,const GLuint mode)
 {
@@ -244,8 +242,6 @@ void VtxBufferObj::renderIVNT(void)
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 24, 2014
 //---------------------------------------------------------------------
 void  VtxBufferObj::upload(const VtxVNTLst &vLst,const IdxLst &iLst,const GLuint mode)
 {
@@ -301,8 +297,6 @@ void VtxBufferObj::renderVT(void)
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 25, 2014
 //---------------------------------------------------------------------
 void  VtxBufferObj::upload(const VtxVTLst &vLst,const GLuint mode)
 {
@@ -350,8 +344,6 @@ void VtxBufferObj::renderVD(void)
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 25, 2014
 //---------------------------------------------------------------------
 void  VtxBufferObj::upload(const VtxVNLst &vLst,const GLuint mode)
 {
@@ -396,8 +388,6 @@ void VtxBufferObj::renderV(void)
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 25, 2014
 //---------------------------------------------------------------------
 void  VtxBufferObj::upload(const VtxVLst &vLst,const GLuint mode)
 {
@@ -450,8 +440,6 @@ void VtxBufferObj::renderVNT(void)
 
 //---------------------------------------------------------------------
 // upload 
-// Thomas Burnett
-// March 25, 2014
 //---------------------------------------------------------------------
 void  VtxBufferObj::upload(const VtxVNTLst &vLst,const GLuint mode)
 {
@@ -477,8 +465,6 @@ void  VtxBufferObj::upload(const VtxVNTLst &vLst,const GLuint mode)
 
 //---------------------------------------------------------------------
 // ~VtxBufferObj 
-// Thomas Burnett
-// March 25, 2014
 //---------------------------------------------------------------------
 VtxBufferObj::~VtxBufferObj() 
 {

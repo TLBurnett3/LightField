@@ -78,7 +78,7 @@ size_t n  = _modelLst.size();
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void ModMan::render(const Camera *pCamera,const Shader *pShader,const glm::mat4 *pMT)
+void ModMan::render(const Camera &camera,const Shader &shader,const glm::mat4 &mT)
 {
 size_t n  = _modelLst.size();
 
@@ -88,7 +88,7 @@ size_t n  = _modelLst.size();
  // }
 
   for (size_t i = 0;i < n;i++)
-    _modelLst[i]->render(pCamera,pShader,pMT);
+    _modelLst[i]->render(camera,shader,mT);
 }
 
 /*

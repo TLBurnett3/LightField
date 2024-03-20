@@ -75,8 +75,7 @@ namespace Lf
 
       GLFWwindow *Executor::initWindow(const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
 
-      void renderView (Render::Camera &camera,const glm::vec3 &vP,const glm::mat4 &mT);
-      void renderHogel(Render::Camera &camera,const glm::vec3 &vP,const glm::mat4 &mT);
+      void renderHogel(Render::Camera &camera,const glm::vec3 &vI);
 
       int renderDoubleFrustum   (void);
       int renderObliqueSliceDice(void);

@@ -368,7 +368,7 @@ int rc = -1;
       if (_locTexSampler < 0)
       {
         std::cout << "Failed to locate Tex Sampler\n";
-        rc = -1;
+     //   rc = -1;
       } 
     }
 
@@ -398,13 +398,13 @@ Shader::Shader(void) : _sName("Unknown"),
                        _vertexShaderId(0),                                             
                        _geometryShaderId(0),
                        _fragmentShaderId(0),
-                       _locMatMVP(0),
-                       _locMatMV(0),
-                       _locMatN(0),
-                       _locTexSampler(0),
-                       _locMatMatProp(0),
-                       _locMatLightProp(0),
-                       _locMatLightSwitch(0)
+                       _locMatMVP(-1),
+                       _locMatMV(-1),
+                       _locMatN(-1),
+                       _locTexSampler(-1),
+                       _locMatMatProp(-1),
+                       _locMatLightProp(-1),
+                       _locMatLightSwitch(-1)
 
 {
 

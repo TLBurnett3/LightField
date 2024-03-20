@@ -78,7 +78,7 @@ void Node::print(std::ostream &s,std::string idt)
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void Node::render(const Camera *pCamera,const Shader *pShader,const glm::mat4 *pMT)
+void Node::render(const Camera &camera,const Shader &shader,const glm::mat4 &mT)
 {
 bool      visible(true);
 
@@ -93,7 +93,7 @@ bool      visible(true);
 
   if (visible)
   {
-  glm::mat4 m = (*pMT) * _mT;
+  glm::mat4 m = mT * _mT;
 
     // Meshes
     {
@@ -102,7 +102,7 @@ bool      visible(true);
 
       while (ii < iEnd)
       {
-        (*ii)->render(pCamera,pShader,&m);
+        (*ii)->render(camera,shader,mT);
 
         ii++;
       }
@@ -115,7 +115,7 @@ bool      visible(true);
 
       while (ii < iEnd)
       {
-        (*ii)->render(pCamera,pShader,&m);
+        (*ii)->render(camera,shader,mT);
 
         ii++;
       }

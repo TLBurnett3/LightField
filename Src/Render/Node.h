@@ -99,7 +99,7 @@ namespace Lf
 
         void  print(std::ostream &s,std::string idt);
 
-        void  render(const Camera *pCamera,const Shader *pShader,const glm::mat4 *pMT);
+        void  render(const Camera &camera,const Shader &shader,const glm::mat4 &mT);
 
         Node(void);
         ~Node();

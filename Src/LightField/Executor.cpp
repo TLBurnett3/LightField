@@ -202,19 +202,22 @@ char        *pS = 0;
 //---------------------------------------------------------------------
 // renderHogel
 //---------------------------------------------------------------------
-void Executor::renderHogel(Render::Camera &camera,const glm::vec3 &vP,const glm::mat4 &mT)
+void Executor::renderHogel(Render::Camera &camera,const glm::vec3 &vI)
 {
-glm::vec3   vU    = glm::normalize(mT[2]);  
-glm::vec3   vD    = glm::normalize(mT[1]); /// we render along the y axis
+glm::mat4   mT = _job.viewVolumeTransform();
+glm::vec3   vP = mT * glm::vec4(vI,1);
+glm::vec3   vU = glm::normalize(mT[2]);  
+glm::vec3   vD = glm::normalize(mT[1]); // we render along the y axis of the VVT
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   _shader.use();
+  _shader.setTextureSampler(0);
 
   // back frustum, away from viewer into the display
   if (1)
   {
-    glm::vec3 vE(vP + (vD * camera.zNear()));
+  glm::vec3 vE(vP + (vD * camera.zNear()));
 
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
@@ -222,7 +225,7 @@ glm::vec3   vD    = glm::normalize(mT[1]); /// we render along the y axis
 
     camera.backFrustum(vE,-vD,vU);
 
-    _modMan.render(&camera,&_shader,&_job.sceneTransform());
+    _modMan.render(camera,_shader,_job.sceneTransform());
 
     glFlush();
   }
@@ -230,7 +233,7 @@ glm::vec3   vD    = glm::normalize(mT[1]); /// we render along the y axis
   // front frustum, toward the viewer out of the display
   if (1)
   {
-    glm::vec3 vE(vP + (vD * -camera.zNear()));
+  glm::vec3 vE(vP + (vD * -camera.zNear()));
 
     glFrontFace(GL_CW);
     glCullFace(GL_FRONT);
@@ -238,56 +241,12 @@ glm::vec3   vD    = glm::normalize(mT[1]); /// we render along the y axis
 
     camera.frontFrustum(vE,vD,-vU);
 
-    _modMan.render(&camera,&_shader,&_job.sceneTransform());
+    _modMan.render(camera,_shader,_job.sceneTransform());
   }   
 
   glFinish();
 }
 
-
-//---------------------------------------------------------------------
-// renderView
-//---------------------------------------------------------------------
-void Executor::renderView(Render::Camera &camera,const glm::vec3 &vP,const glm::mat4 &mT)
-{
-glm::vec3   vU    = glm::normalize(mT[2]);  
-glm::vec3   vD    = glm::normalize(mT[1]); /// we render along the y axis
-
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  camera.lookAt(vP + glm::vec3(0.0,0.5,0.0),glm::vec3(0,-1,0),glm::vec3(0,0,1));
-
-  glFrontFace(GL_CCW);
-  glCullFace(GL_BACK);
-  glEnable(GL_TEXTURE);
-  glActiveTexture(GL_TEXTURE0);
-  glDepthRange(0.0f,1.0f);
-
-  _shader.use();
-  _shader.setTextureSampler(0);
-  _modMan.render(&camera,&_shader,&_job.sceneTransform());
-
-  glFlush();
-  glFinish();
-
-  if (1)
-  {
-  glUseProgram(0);
- // camera.lookAt(vP + glm::vec3(0.0,0.5,0.0),glm::vec3(0,-1,0),glm::vec3(0,0,1));
-//  glMatrixMode(GL_PROJECTION);      // Select the Projection matrix for operation
-//  glLoadMatrixf(glm::value_ptr(camera.projection()));      
- // glMatrixMode(GL_MODELVIEW);      // Select the Projection matrix for operation
- // glLoadMatrixf(glm::value_ptr(camera.view()));       
-   /*
-     glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
-        glColor3f(1.0f, 0.0f, 0.0f); // Red
-        glVertex2f(-0.5f, -0.5f);    // x, y
-        glVertex2f( 0.5f, -0.5f);
-        glVertex2f( 0.5f,  0.5f);
-        glVertex2f(-0.5f,  0.5f);
-     glEnd();*/
-  }
-}
 
 
 //---------------------------------------------------------------------
@@ -298,7 +257,6 @@ int Executor::renderDoubleFrustum(void)
 int             rc      = 0;
 glm::ivec2      nH      = _job.numHogels();
 glm::ivec2      hS      = _job.hogelSize();
-glm::mat4       mT      = _job.viewVolumeTransform();
 float           s       = glm::max(nH.x,nH.y);
 glm::ivec2      idx(0);
 uint32_t        n(0);
@@ -331,14 +289,13 @@ Render::Camera  camera;
 
     for (idx.x = 0;(idx.x < nH.x) && !glfwWindowShouldClose(_pWindow);idx.x++)
     {
-    glm::vec3 vP = glm::vec3(idx.x,0,idx.y) / s; 
+    glm::vec3 vI = glm::vec3(idx.x,0,idx.y);
 
-      vP -= glm::vec3(0.5f,0.0f,0.5f);
-      vP *- glm::vec3(1.0f,0.0f,-1.0f);
-      vP = mT * glm::vec4(vP,1);
+      vI /= s;
+      vI -= glm::vec3(0.5f,0.0f,0.5f);
+      vI *= glm::vec3(1.0f,0.0f,-1.0f);
 
-     // renderHogel(camera,vP,mT);
-      renderView(camera,vP,mT);
+      renderHogel(camera,vI);
 
       glfwSwapBuffers(_pWindow);
       glfwPollEvents();

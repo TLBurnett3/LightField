@@ -53,7 +53,7 @@ using namespace Render;
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void Mesh::render(const Camera *pCamera,const Shader *pShader,const glm::mat4 *pMT)
+void Mesh::render(const Camera &camera,const Shader &shader,const glm::mat4 &mT)
 {
 bool      visible(true);
   
@@ -66,14 +66,14 @@ bool      visible(true);
 
   if (visible)
   {
-  glm::mat4   mMV   = pCamera->view() * (*pMT);
-  glm::mat4   mMVP  = pCamera->projection() * mMV;
+  glm::mat4   mMV   = camera.view() * mT;
+  glm::mat4   mMVP  = camera.projection() * mMV;
   glm::mat3   mN    = glm::inverseTranspose(glm::mat3(mMV));
 
-    pShader->bindMVP(mMVP);
-    pShader->bindMV(mMV);
-    pShader->bindN(mN);
-    pShader->bindMaterial(_pTexture->properties());
+    shader.bindMVP(mMVP);
+    shader.bindMV(mMV);
+    shader.bindN(mN);
+    shader.bindMaterial(_pTexture->properties());
 
     _pTexture->bind();
     _pObject->render();
