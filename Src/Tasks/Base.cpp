@@ -22,80 +22,37 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Executor.h
+// Base.cpp 
 // Thomas Burnett
 
-#pragma once
-
-#include "Render/Def.h"
 
 //---------------------------------------------------------------------
 // Includes
 // System
-#include <filesystem>
 
 // 3rdPartyLibs
-#include <GLFW/glfw3.h>
 
 // LightField
-#include "Core/Job.h"
+#include "Tasks/Base.h"
 
-#include "Render/Camera.h"
-#include "Render/Shader.h"
-#include "Render/ModMan.h"
+using namespace Lf;
+using namespace Task;
 //---------------------------------------------------------------------
 
 
 //---------------------------------------------------------------------
-// Classes
-namespace Lf
+// Base
+//---------------------------------------------------------------------
+Base::Base(void) : _matQ()
 {
-  class Executor
-  {
-    // Defines
-    private:
-    protected:
-    public:
+}
 
-    // Members
-    private:
-    protected:
-      Lf::Core::Job   _job;
-      GLFWwindow      *_pWindow;
 
-      Render::ModMan  _modMan;
-      Render::Shader  _shader;
-
-    public:   
-
-    // Methods
-    private:
-    protected:
-      int parseJob(const char *pCfg);
-
-      GLFWwindow *Executor::initWindow(const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
-
-      void renderHogel(Render::Camera &camera,const glm::vec3 &vI);
-
-      int renderDoubleFrustum   (void);
-      int renderObliqueSliceDice(void);
-
-      void fetchHogelAndQueue(glm::ivec2 idx);
-
-      void GLInfo(void);
-
-      int  loadModels (std::filesystem::path &cPath);
-      int  loadShaders(std::filesystem::path &cPath);
-
-    public:
-
-      int   init(const char *pCfg);
-      int   exec(void);
-      void  destroy(void);
-
-      Executor(void);
-      ~Executor();
-  };
-};
 //---------------------------------------------------------------------
+// ~Base
+//---------------------------------------------------------------------
+Base::~Base()
+{
+
+}
 

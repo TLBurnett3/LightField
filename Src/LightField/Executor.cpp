@@ -200,6 +200,34 @@ char        *pS = 0;
 
 
 //---------------------------------------------------------------------
+// fetchHogelAndQueue
+//---------------------------------------------------------------------
+void Executor::fetchHogelAndQueue(glm::ivec2 idx)
+{
+glm::ivec2  hS      = _job.hogelSize();
+
+  if (1)
+  {
+  std::shared_ptr<cv::Mat>  spMat = std::make_shared<cv::Mat>(hS.y,hS.x,CV_8UC3);
+
+    glReadBuffer(GL_BACK);
+    glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_BGR,GL_UNSIGNED_BYTE,spMat->data); 
+  }
+
+  if (0)
+  {
+  std::shared_ptr<cv::Mat>  spMat;
+
+    spMat->create(hS.y,hS.x,CV_32FC1);
+
+    glReadBuffer(GL_BACK);
+    glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_DEPTH_COMPONENT,GL_FLOAT,spMat->data);
+  }
+}
+
+
+
+//---------------------------------------------------------------------
 // renderHogel
 //---------------------------------------------------------------------
 void Executor::renderHogel(Render::Camera &camera,const glm::vec3 &vI)
@@ -296,6 +324,7 @@ Render::Camera  camera;
       vI *= glm::vec3(1.0f,0.0f,-1.0f);
 
       renderHogel(camera,vI);
+      fetchHogelAndQueue(idx);
 
       glfwSwapBuffers(_pWindow);
       glfwPollEvents();

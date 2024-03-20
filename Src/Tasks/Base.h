@@ -22,27 +22,24 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Executor.h
+// Base.h
 // Thomas Burnett
 
 #pragma once
 
-#include "Render/Def.h"
 
 //---------------------------------------------------------------------
 // Includes
 // System
-#include <filesystem>
+#include <memory>
+#include <queue>
 
 // 3rdPartyLibs
-#include <GLFW/glfw3.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 // LightField
-#include "Core/Job.h"
-
-#include "Render/Camera.h"
-#include "Render/Shader.h"
-#include "Render/ModMan.h"
+#include <Core/Export.h>
 //---------------------------------------------------------------------
 
 
@@ -50,51 +47,34 @@
 // Classes
 namespace Lf
 {
-  class Executor
+  namespace Task
   {
-    // Defines
-    private:
-    protected:
-    public:
+    class Base
+    {
+      // Defines
+      private:
+      protected:
+        typedef std::shared_ptr<cv::Mat>    SpMat;
+        typedef std::queue<SpMat>           MatQ;
+      public:
 
-    // Members
-    private:
-    protected:
-      Lf::Core::Job   _job;
-      GLFWwindow      *_pWindow;
+      // Members
+      private:
+      protected:
+        MatQ    _matQ;
+      public:   
 
-      Render::ModMan  _modMan;
-      Render::Shader  _shader;
+      // Methods
+      private:
+      protected:
+      public:
 
-    public:   
-
-    // Methods
-    private:
-    protected:
-      int parseJob(const char *pCfg);
-
-      GLFWwindow *Executor::initWindow(const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
-
-      void renderHogel(Render::Camera &camera,const glm::vec3 &vI);
-
-      int renderDoubleFrustum   (void);
-      int renderObliqueSliceDice(void);
-
-      void fetchHogelAndQueue(glm::ivec2 idx);
-
-      void GLInfo(void);
-
-      int  loadModels (std::filesystem::path &cPath);
-      int  loadShaders(std::filesystem::path &cPath);
-
-    public:
-
-      int   init(const char *pCfg);
-      int   exec(void);
-      void  destroy(void);
-
-      Executor(void);
-      ~Executor();
+        EXPORT void  queue(std::shared_ptr<cv::Mat> &img)
+        { _matQ.push(img); }
+  
+        EXPORT Base(void);
+        EXPORT ~Base();
+    };
   };
 };
 //---------------------------------------------------------------------
