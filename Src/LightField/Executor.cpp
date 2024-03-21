@@ -219,6 +219,8 @@ glm::ivec2  hS      = _job.hogelSize();
     glReadBuffer(GL_BACK);
     glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_BGR,GL_UNSIGNED_BYTE,spImg->first.data); 
     
+    cv::flip(spImg->first,spImg->first,0);
+
     while (ii != iEnd)
     {
       (*ii)->queue(spImg);
@@ -237,6 +239,8 @@ glm::ivec2  hS      = _job.hogelSize();
 
     glReadBuffer(GL_BACK);
     glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_DEPTH_COMPONENT,GL_FLOAT,spImg->first.data);
+
+    cv::flip(spImg->first,spImg->first,0);
 
     while (ii != iEnd)
     {
@@ -488,7 +492,7 @@ int rc = 0;
 
   if (_job.isTask(Core::Job::ProofImage))
   {
-  Task::ProofImage  *pT = new Task::ProofImage("ImageProof");
+  Task::ProofImage  *pT = new Task::ProofImage("RGBProof");
 
     pT->create(_job.numHogels(),_job.hogelSize(),3);
     pT->setPath(_job.outputPath());
