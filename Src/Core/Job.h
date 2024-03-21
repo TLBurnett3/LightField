@@ -91,12 +91,12 @@ namespace Lf
         enum  TaskDefs
         {
           ProofImage = 0,
-          WriteAVI,
-          WritePNG,
+          WriteAvi,
+          WriteImg,
           WriteDemo,
           HogelView,
           DisplayDepthBuffer,
-          WriteDepth,
+          WriteDepthAvi,
           ProofDepth,
           TaskDefsNum,
         };

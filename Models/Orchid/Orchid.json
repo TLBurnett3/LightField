@@ -7,8 +7,8 @@
   "NumHogels": [ 1000, 1000 ],
   "SliceMem": 8,
   "Tasks": {
-    "WriteAVI": false,
-    "WritePNG": false,
+    "WriteAvi": true,
+    "WriteImg": true,
     "WriteDemo": false
   },
   "ViewVolume": {

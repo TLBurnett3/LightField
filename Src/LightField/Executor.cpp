@@ -42,6 +42,8 @@
 #include "Core/Timer.h"
 #include "Render/Camera.h"
 #include "Tasks/ProofImage.h"
+#include "Tasks/WriteAvi.h"
+#include "Tasks/WriteImg.h"
 
 using namespace Lf;
 //---------------------------------------------------------------------
@@ -78,7 +80,6 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
     }
   }
 }
-
 
 
 //---------------------------------------------------------------------
@@ -251,7 +252,6 @@ glm::ivec2  hS      = _job.hogelSize();
 }
 
 
-
 //---------------------------------------------------------------------
 // renderHogel
 //---------------------------------------------------------------------
@@ -300,6 +300,65 @@ glm::vec3   vD = glm::normalize(mT[1]); // we render along the y axis of the VVT
   glFinish();
 }
 
+//---------------------------------------------------------------------
+// taskWait
+//---------------------------------------------------------------------
+void Executor::taskWait(Task::Base *pT) 
+{
+  if (!pT->finished())
+  {
+  uint32_t i = 0;
+
+    std::cout << "Waiting on Task: " << pT->name();
+
+    do 
+    {        
+      i++;
+
+      if (i >= 10)
+      {
+        std::cout << ".";
+        i = 0;
+      }
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    while (!pT->finished());
+
+    std::cout << std::endl;
+  }
+}
+
+
+//---------------------------------------------------------------------
+// taskSync
+//---------------------------------------------------------------------
+void Executor::taskSync(void) 
+{
+  {
+  TaskList::iterator        ii    = _imgTaskLst.begin();
+  TaskList::iterator        iEnd  = _imgTaskLst.end();
+    
+    while (ii != iEnd)
+    {
+      taskWait(*ii);
+
+      ii++;
+    }
+  }
+
+  {
+  TaskList::iterator        ii    = _dthTaskLst.begin();
+  TaskList::iterator        iEnd  = _dthTaskLst.end();
+
+    while (ii != iEnd)
+    {
+      taskWait(*ii);
+
+      ii++;
+    }
+  }
+}
 
 
 //---------------------------------------------------------------------
@@ -365,6 +424,8 @@ Render::Camera  camera;
       std::cout << "    FPS: " << (double)idx.x / t;
       std::cout << "    Complete: " << c << '%' << std::endl;
     }
+
+    taskSync();
   }
 
   {
@@ -495,10 +556,60 @@ int rc = 0;
   Task::ProofImage  *pT = new Task::ProofImage("RGBProof");
 
     pT->create(_job.numHogels(),_job.hogelSize(),3);
-    pT->setPath(_job.outputPath());
+    pT->setPathFile(_job.outputPath(),"RGBProof");
     pT->start();
 
     _imgTaskLst.push_back(pT);
+  }
+
+  if (_job.isTask(Core::Job::WriteAvi))
+  {
+  Task::WriteAvi        *pT = new Task::WriteAvi("RGBAvi");
+  std::filesystem::path dPath(_job.outputPath());
+
+    dPath /= "HogelAvi";
+
+    pT->setPathFile(dPath,"HogelRow_");
+    pT->start();
+
+    _imgTaskLst.push_back(pT);
+  }
+
+  if (_job.isTask(Core::Job::WriteImg))
+  {
+  Task::WriteImg        *pT = new Task::WriteImg("RGBImg");
+  std::filesystem::path dPath(_job.outputPath());
+
+    dPath /= "HogelImg";
+
+    pT->setPathFile(dPath,"HogelImg_%06dx%06d","png");
+    pT->start();
+
+    _imgTaskLst.push_back(pT);
+  }
+
+  if (_job.isTask(Core::Job::ProofDepth))
+  {
+  Task::ProofImage  *pT = new Task::ProofImage("DthProof");
+
+    pT->create(_job.numHogels(),_job.hogelSize(),1);
+    pT->setPathFile(_job.outputPath(),"DthProof");
+    pT->start();
+
+    _dthTaskLst.push_back(pT);
+  }
+
+  if (_job.isTask(Core::Job::WriteDepthAvi))
+  {
+  Task::WriteAvi        *pT = new Task::WriteAvi("DthAvi");
+  std::filesystem::path dPath(_job.outputPath());
+
+    dPath /= "HogelDths";
+
+    pT->setPathFile(dPath,"Row");
+    pT->start();
+
+    _dthTaskLst.push_back(pT);
   }
 
   return rc;

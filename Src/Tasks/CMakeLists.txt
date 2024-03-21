@@ -9,11 +9,15 @@ include_directories(${LIGHTFIELD_SRC_DIR})
 set (HEADERS
   Base.h
   ProofImage.h
+  WriteAvi.h
+  WriteImg.h
 )
 
 set(SOURCE
   Base.cpp
   ProofImage.cpp
+  WriteAvi.cpp
+  WriteImg.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCE} )

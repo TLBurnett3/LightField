@@ -22,27 +22,25 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Base.h
+
+// WriteAvi.h
 // Thomas Burnett
 
 #pragma once
 
 
 //---------------------------------------------------------------------
-// Includes
-// System
-#include <memory>
-#include <queue>
+// Include
 #include <filesystem>
+#include <iostream>
 
-// 3rdPartyLibs
+// 3rd Party Libs
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <glm/glm.hpp>
 
-// LightField
-#include <Core/Export.h>
-#include <Core/Thread.h>
+// Hogel Tasks
+#include "Tasks/Base.h"
 //---------------------------------------------------------------------
 
 
@@ -52,71 +50,61 @@ namespace Lf
 {
   namespace Task
   {
-    class Base : public Core::Thread
+    class	WriteAvi : public Task::Base
     {
       // Defines
       private:
       protected:
       public:
-        typedef std::shared_ptr<std::pair<cv::Mat,glm::ivec2>>    SpImg;
-        typedef std::queue<SpImg>                                 ImgQ;
 
       // Members
       private:
       protected:
-        std::string               _tName;
-        ImgQ                      _imgQ;
-        std::mutex                _access;
-        std::condition_variable   _workCondition;
+        cv::VideoWriter         _videoWriter;
 
+        std::filesystem::path   _dPath;
+        std::filesystem::path   _fName;
 
-      public:   
+      public:
 
       // Methods
       private:
       protected:
-        EXPORT void makeDir(const std::filesystem::path &dPath)
+        bool  isOpen(void)
+        { return _videoWriter.isOpened(); } 
+      
+        void close(void)
         {
-          if (!dPath.empty() && !std::filesystem::exists(dPath))
-            std::filesystem::create_directory(dPath);
-        }      
+          if (_videoWriter.isOpened())
+            _videoWriter.release();
+        }
+
+        int open(cv::Mat &img,const glm::ivec2 &idx);
 
       public:
-        EXPORT std::string name(void)
-        { return _tName; }
+        EXPORT void setPathFile(const std::filesystem::path &dPath,const char *pN)
+        {   
+          makeDir(dPath);
 
-        EXPORT bool finished(void)
+          _dPath = dPath;
+          _fName = pN; 
+        }
+
+        EXPORT virtual void process(cv::Mat &img,glm::ivec2 &idx);
+
+        EXPORT WriteAvi(const char *pN) : Task::Base(pN),
+                                          _videoWriter(),                                                                
+                                          _dPath(),
+                                          _fName()                                                   
+        {}
+
+		    EXPORT virtual ~WriteAvi()
         {
-        bool  f = false;
-    
-          {
-          std::unique_lock<std::mutex> lock(_access);
-            
-            f = _imgQ.empty();
-          }
-          
-          return f;
+          close();
         }
-
-        EXPORT void  queue(SpImg &spImg)
-        { 
-          {
-          std::unique_lock<std::mutex> lock(_access);
-
-            _imgQ.push(spImg); 
-          }
-
-          _workCondition.notify_one();
-        }
-
-        EXPORT virtual void process(cv::Mat &img,glm::ivec2 &idx) = 0;
-
-        EXPORT virtual void exec(void);
-  
-        EXPORT Base(const char *pN);
-        EXPORT ~Base();
     };
   };
 };
 //---------------------------------------------------------------------
+
 

@@ -31,9 +31,11 @@
 //---------------------------------------------------------------------
 // Include
 #include <filesystem>
+
+// 3rdPartyLibs
 #include <glm/glm.hpp>
 
-// Hogel Tasks
+// LightField
 #include "Tasks/Base.h"
 //---------------------------------------------------------------------
 
@@ -59,13 +61,13 @@ namespace Lf
       private:
       protected:
         std::filesystem::path   _dPath;
+        std::filesystem::path   _fName;
 
         cv::Mat                 _proof;
 
         glm::ivec2              _hS;
         glm::ivec2              _nH;
         glm::ivec2              _iSize;
-        glm::ivec2              _idx;
 
         uint16_t                _scatterType;
       public:
@@ -83,12 +85,19 @@ namespace Lf
       public:
         EXPORT void create  (const glm::ivec2 &nH,const glm::ivec2 &hS,const uint16_t bpp);
 
-        EXPORT void setPath(const std::filesystem::path &dPath)
-        { _dPath = dPath; }
+        EXPORT void setPathFile(const std::filesystem::path &dPath,const char *pN)
+        {   
+          makeDir(dPath);
+
+          _dPath = dPath;
+          _fName = pN; 
+        }
 
         EXPORT virtual void process(cv::Mat &img,glm::ivec2 &idx);
 
         EXPORT ProofImage(const char *pN) : Task::Base(pN),
+                                            _dPath(),
+                                            _fName(),
                                             _proof(),
                                             _hS(),
                                             _nH(),

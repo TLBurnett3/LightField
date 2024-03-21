@@ -22,90 +22,45 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Executor.h
+// WriteImg.cpp 
 // Thomas Burnett
 
-#pragma once
-
-#include "Render/Def.h"
 
 //---------------------------------------------------------------------
 // Includes
 // System
 #include <filesystem>
-#include <vector>
 
 // 3rdPartyLibs
-#include <GLFW/glfw3.h>
 
-// LightField
-#include "Core/Job.h"
-#include "Tasks/Base.h"
-#include "Render/Camera.h"
-#include "Render/Shader.h"
-#include "Render/ModMan.h"
+// Hogel Tasks
+#include "Tasks/WriteImg.h"
+
+using namespace Lf;
+using namespace Task;
 //---------------------------------------------------------------------
 
 
 //---------------------------------------------------------------------
-// Classes
-namespace Lf
+// Globals
+//---------------------------------------------------------------------
+
+
+//---------------------------------------------------------------------
+// process
+//---------------------------------------------------------------------
+void WriteImg::process(cv::Mat &img,glm::ivec2 &idx)
 {
-  class Executor
-  {
-    // Defines
-    private:
-    protected:
-      typedef std::vector<Task::Base *> TaskList;
-    public:
+std::filesystem::path   fPath = _dPath;
+cv::Mat                 iImg;
+char                    buf[256];
 
-    // Members
-    private:
-    protected:
-      Lf::Core::Job   _job;
-      GLFWwindow      *_pWindow;
+  sprintf_s(buf,_fName.c_str(),idx.y,idx.x);
 
-      Render::ModMan  _modMan;
-      Render::Shader  _shader;
-
-      TaskList        _imgTaskLst;
-      TaskList        _dthTaskLst;
-
-    public:   
-
-    // Methods
-    private:
-    protected:
-      int parseJob(const char *pCfg);
-
-      GLFWwindow *Executor::initWindow(const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
-
-      void renderHogel(Render::Camera &camera,const glm::vec3 &vI);
-
-      int renderDoubleFrustum   (void);
-      int renderObliqueSliceDice(void);
-
-      void fetchHogelAndQueue(glm::ivec2 idx);
-
-      void GLInfo(void);
-
-      int  loadModels (std::filesystem::path &cPath);
-      int  loadShaders(std::filesystem::path &cPath);
-      int  createTasks(void);
-
-      void taskWait(Task::Base *pT);
-      void taskSync(void);
-
-
-    public:
-
-      int   init(const char *pCfg);
-      int   exec(void);
-      void  destroy(void);
-
-      Executor(void);
-      ~Executor();
-  };
-};
-//---------------------------------------------------------------------
-
+  fPath /= buf;
+  fPath += ".";
+  fPath += _ext;
+      
+  if (!img.empty())
+    cv::imwrite(fPath.string(),img);
+}

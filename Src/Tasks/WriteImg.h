@@ -22,27 +22,22 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Base.h
+// WriteImg.h
 // Thomas Burnett
 
 #pragma once
 
-
 //---------------------------------------------------------------------
-// Includes
-// System
-#include <memory>
-#include <queue>
-#include <filesystem>
+// Include
 
-// 3rdPartyLibs
+// 3rd Party Libs
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <filesystem>
 #include <glm/glm.hpp>
 
 // LightField
-#include <Core/Export.h>
-#include <Core/Thread.h>
+#include "Tasks/Base.h"
 //---------------------------------------------------------------------
 
 
@@ -52,71 +47,45 @@ namespace Lf
 {
   namespace Task
   {
-    class Base : public Core::Thread
+    class	WriteImg : public Task::Base
     {
       // Defines
       private:
       protected:
       public:
-        typedef std::shared_ptr<std::pair<cv::Mat,glm::ivec2>>    SpImg;
-        typedef std::queue<SpImg>                                 ImgQ;
 
       // Members
       private:
       protected:
-        std::string               _tName;
-        ImgQ                      _imgQ;
-        std::mutex                _access;
-        std::condition_variable   _workCondition;
+        std::filesystem::path _dPath;
+        std::string           _fName;
+        std::string           _ext;
 
-
-      public:   
+      public:
 
       // Methods
       private:
       protected:
-        EXPORT void makeDir(const std::filesystem::path &dPath)
-        {
-          if (!dPath.empty() && !std::filesystem::exists(dPath))
-            std::filesystem::create_directory(dPath);
-        }      
-
       public:
-        EXPORT std::string name(void)
-        { return _tName; }
+        EXPORT virtual void process(cv::Mat &img,glm::ivec2 &idx);
 
-        EXPORT bool finished(void)
+        void setPathFile(const std::filesystem::path &dPath,const char *pName,const char *pExt)
         {
-        bool  f = false;
+          makeDir(dPath);
+
+          _dPath = dPath,
+          _fName = pName;
+          _ext   = pExt;
+        }
+
+        WriteImg(const char *pN) :  Task::Base(pN)
+        {}
     
-          {
-          std::unique_lock<std::mutex> lock(_access);
-            
-            f = _imgQ.empty();
-          }
-          
-          return f;
-        }
-
-        EXPORT void  queue(SpImg &spImg)
-        { 
-          {
-          std::unique_lock<std::mutex> lock(_access);
-
-            _imgQ.push(spImg); 
-          }
-
-          _workCondition.notify_one();
-        }
-
-        EXPORT virtual void process(cv::Mat &img,glm::ivec2 &idx) = 0;
-
-        EXPORT virtual void exec(void);
-  
-        EXPORT Base(const char *pN);
-        EXPORT ~Base();
+		    virtual ~WriteImg()
+        {}
     };
   };
 };
 //---------------------------------------------------------------------
+
 

@@ -83,7 +83,7 @@ std::filesystem::path fName = _dPath;
   if (!_dPath.empty() && !std::filesystem::exists(_dPath))
     std::filesystem::create_directory(_dPath);
 
-  fName /= _tName;
+  fName /= _fName;
   fName += ".png";
 
   cv::imwrite(fName.string(),_proof);
