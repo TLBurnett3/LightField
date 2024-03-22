@@ -54,8 +54,11 @@ void Base::exec(void)
 
       _workCondition.wait(lock,[this]{return ((_run == false) | !_imgQ.empty()); });  
 
-       spImg = _imgQ.front();
-      _imgQ.pop();
+      if (!_imgQ.empty())
+      {
+         spImg = _imgQ.front();
+        _imgQ.pop();
+      }
     }
 
     if (spImg)

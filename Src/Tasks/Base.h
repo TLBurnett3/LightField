@@ -98,6 +98,12 @@ namespace Lf
           return f;
         }
 
+        EXPORT virtual void  stop(void)
+        { 
+          Core::Thread::stop();
+          _workCondition.notify_one();       
+        }
+
         EXPORT void  queue(SpImg &spImg)
         { 
           {

@@ -94,10 +94,8 @@ namespace Lf
           WriteAvi,
           WriteImg,
           WriteDemo,
-          HogelView,
-          DisplayDepthBuffer,
-          WriteDepthAvi,
-          ProofDepth,
+          ProofDepth,      
+          WriteDepthImg,
           TaskDefsNum,
         };
 

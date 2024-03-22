@@ -87,15 +87,16 @@ namespace Lf
           _thread = std::thread(&Thread::exec,this);
         }
 
-        // do not call this from within in this thread.
-        // it should only be called by the parent thread
         EXPORT virtual void  stop(void)
         { 
-          if (_run)
-          {
-            _run = false; 
-            _thread.join();
-          }
+          _run = false; 
+        }
+
+        // do not call this from within in this thread.
+        // it should only be called by the parent thread
+        EXPORT virtual void  join(void)
+        { 
+          _thread.join();
         }
    
         EXPORT Thread(void) : _thread(),

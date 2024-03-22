@@ -8,8 +8,9 @@
   "SliceMem": 8,
   "Tasks": {
     "WriteAvi": true,
-    "WriteImg": true,
-    "WriteDemo": false
+    "WriteImg": false,
+    "ProofDepth": true,
+    "WriteDepthImg": false
   },
   "ViewVolume": {
     "Translate": [ 0.0, 0.0, 0.0 ],

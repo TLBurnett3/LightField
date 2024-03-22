@@ -234,12 +234,35 @@ glm::ivec2  hS      = _job.hogelSize();
   TaskList::iterator        ii    = _dthTaskLst.begin();
   TaskList::iterator        iEnd  = _dthTaskLst.end();
   Task::Base::SpImg         spImg = std::make_shared<std::pair<cv::Mat,glm::ivec2>>();
+  cv::Mat                   img(hS.y,hS.x,CV_32FC1);
 
-    spImg->first.create(hS.y,hS.x,CV_32FC1);
+    spImg->first.create(hS.y,hS.x,CV_16UC1);
     spImg->second = idx;
 
     glReadBuffer(GL_BACK);
-    glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_DEPTH_COMPONENT,GL_FLOAT,spImg->first.data);
+    glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_DEPTH_COMPONENT,GL_FLOAT,img.data);
+
+    // convert depth image to 16bits
+    {
+    float         *p    = (float *)img.data;
+    uint16_t      *d    = (uint16_t *)spImg->first.data;
+    float         *pEnd = p + ((uint16_t)img.rows * (uint16_t)img.cols);                             
+    float         zN    = _job.zNear();                               
+    float         zF    = _job.zFar();  
+
+      while (p < pEnd)
+      {
+      float z = (*p * 2.0f) - 1.0f;
+      float c = (2.0f * zN * zF) / (zF + zN - z * (zF - zN));
+
+        c = glm::clamp(1.0f - (c / zF),0.0f,1.0f);
+      
+        *d = (uint16_t)(c * (float)0xffff);
+
+        d++;
+        p++;
+      }    
+    }
 
     cv::flip(spImg->first,spImg->first,0);
 
@@ -599,14 +622,14 @@ int rc = 0;
     _dthTaskLst.push_back(pT);
   }
 
-  if (_job.isTask(Core::Job::WriteDepthAvi))
+  if (_job.isTask(Core::Job::WriteDepthImg))
   {
-  Task::WriteAvi        *pT = new Task::WriteAvi("DthAvi");
+  Task::WriteImg        *pT = new Task::WriteImg("DthImg");
   std::filesystem::path dPath(_job.outputPath());
 
-    dPath /= "HogelDths";
+    dPath /= "HogelDth";
 
-    pT->setPathFile(dPath,"Row");
+    pT->setPathFile(dPath,"HogelDthImg_%06dx%06d","png");
     pT->start();
 
     _dthTaskLst.push_back(pT);
@@ -685,6 +708,7 @@ void Executor::destroy(void)
     while (ii != iEnd)
     {
       (*ii)->stop();
+      (*ii)->join();
       ii++;
     }
   }
@@ -696,6 +720,7 @@ void Executor::destroy(void)
     while (ii != iEnd)
     {
       (*ii)->stop();
+      (*ii)->join();
       ii++;
     }
   }

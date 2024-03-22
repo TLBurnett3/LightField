@@ -165,10 +165,8 @@ JSon::Value &v = doc["Tasks"];
 		JSon::parse(v, "WriteAvi",           _tasks[WriteAvi],            false);
 		JSon::parse(v, "WriteImg",           _tasks[WriteImg],            false);
 		JSon::parse(v, "WriteDemo",          _tasks[WriteDemo],           false);
-		JSon::parse(v, "WriteDepthAvi",      _tasks[WriteDepthAvi],       false);
+		JSon::parse(v, "WriteDepthImg",      _tasks[WriteDepthImg],       false);
 		JSon::parse(v, "ProofDepth",         _tasks[ProofDepth],          false);
-		JSon::parse(v, "HogelView",          _tasks[HogelView],           false);
-		JSon::parse(v, "DisplayDepthBuffer", _tasks[DisplayDepthBuffer],  false);
 
 		rc = 0;
   }
@@ -261,14 +259,12 @@ void Job::print(std::ostream &o)
   o << "         Z Near and Far: (" << _zNearFar.x << ","   << _zNearFar.y << ")" << std::endl;
   o << "           Slice Memory: "  << _sliceMem << "g" << std::endl;
 
-	o << "        ProofImage Task: " << (_tasks[ProofImage] ? "true" : "false") << std::endl;
-	o << "          WriteAvi Task: " << (_tasks[WriteAvi] ? "true" : "false") << std::endl;
-	o << "          WriteImg Task: " << (_tasks[WriteImg] ? "true" : "false") << std::endl;
-	o << "         WriteDemo Task: " << (_tasks[WriteDemo] ? "true" : "false") << std::endl;
-	o << "     WriteDepthAvi Task: " << (_tasks[WriteDepthAvi] ? "true" : "false") << std::endl;
-	o << "        ProofDepth Task: " << (_tasks[ProofDepth] ? "true" : "false") << std::endl;
-	o << "         HogelView Task: " << (_tasks[HogelView] ? "true" : "false") << std::endl;
-	o << "DisplayDepthBuffer Task: " << (_tasks[DisplayDepthBuffer] ? "true" : "false") << std::endl;
+	o << "        ProofImage Task: " << (_tasks[ProofImage]         ? "true" : "false") << std::endl;
+	o << "          WriteAvi Task: " << (_tasks[WriteAvi]           ? "true" : "false") << std::endl;
+	o << "          WriteImg Task: " << (_tasks[WriteImg]           ? "true" : "false") << std::endl;
+	o << "         WriteDemo Task: " << (_tasks[WriteDemo]          ? "true" : "false") << std::endl;
+	o << "        ProofDepth Task: " << (_tasks[ProofDepth]         ? "true" : "false") << std::endl;
+	o << "     WriteDepthImg Task: " << (_tasks[WriteDepthImg]      ? "true" : "false") << std::endl;
 
 	o << std::endl;
 
