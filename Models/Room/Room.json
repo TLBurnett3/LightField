@@ -1,0 +1,35 @@
+{
+  "JobName": "Room",
+  "Renderer": "DF",
+  "OutputPath": "\\Tmp\\Room",
+  "FieldOfView": 90.0,
+  "HogelSize": [ 1024, 1024 ],
+  "NumHogels": [ 128, 128 ],
+  "Tasks": {
+    "WriteAvi": true,
+    "WriteImg": false,
+    "ProofDepth": true,
+    "WriteDepthImg": false
+  },
+  "Lights": {
+    "Light_0": {
+      "Ambient": [ 0.2, 0.2, 0.2, 0.0 ],
+      "Diffuse": [ 1.0, 1.0, 1.0, 0.0 ],
+      "Specular": [ 1.0, 1.0, 1.0, 0.0 ],
+      "Position": [ 0.0, 10.0, 0.0, 1.0 ]
+    }
+  },
+  "Scene": {
+    "Translate": [ 0, -6.8, 1.5 ],
+    "Rotate": [ -90, 0, 0 ]
+  },
+  "ViewVolume": {
+    "Scale": [ 3, 3, 3 ],
+    "Translate": [ 0, 0, -1.5 ]
+  },
+  "Models": [
+    {
+      "File": "VanGoghRoom.obj"
+    }
+  ]
+}
