@@ -533,6 +533,10 @@ glm::ivec2      idx(0);
 uint32_t        n(0);
 
   glViewport(0,0,nH.x,nH.y);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
+  glClearColor(0,0,0,0);
+  glPixelStorei(GL_PACK_ALIGNMENT,1);
 
   camera.setOrthographic(-hD.x,hD.x,-hD.y,hD.y,-zF,zF);
 
@@ -805,7 +809,7 @@ int rc = 0;
 
     dPath /= "ObliqueAvi";
 
-    pT->setPathFile(dPath,"ObliqueRow_");
+    pT->setPathFile(dPath,"ObliqueRow");
     pT->start();
 
     _imgTaskLst.push_back(pT);
@@ -831,7 +835,7 @@ int rc = 0;
 
     dPath /= "HogelAvi";
 
-    pT->setPathFile(dPath,"HogelRow_");
+    pT->setPathFile(dPath,"HogelRow");
     pT->init(_job.numHogels(),_job.hogelSize(),_job.sliceMem());
     pT->start();
 
