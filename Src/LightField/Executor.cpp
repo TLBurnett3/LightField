@@ -791,7 +791,7 @@ int Executor::createObliqueTasks(void)
 {
 int rc = 0;
 
-  if (_job.isTask(Core::Job::ProofImage))
+  if (_job.isTask(Core::Job::ProofImage) && !_job.isTask(Core::Job::SliceOblique))
   {
   Task::ProofImage  *pT = new Task::ProofImage("ObliqueProof");
 
@@ -802,7 +802,7 @@ int rc = 0;
     _imgTaskLst.push_back(pT);
   }
 
-  if (_job.isTask(Core::Job::WriteAvi))
+  if (_job.isTask(Core::Job::WriteAvi) && !_job.isTask(Core::Job::SliceOblique))
   {
   Task::WriteAvi        *pT = new Task::WriteAvi("ObliqueAvi");
   std::filesystem::path dPath(_job.outputPath());
@@ -815,7 +815,7 @@ int rc = 0;
     _imgTaskLst.push_back(pT);
   }
 
-  if (_job.isTask(Core::Job::WriteImg))
+  if (_job.isTask(Core::Job::WriteImg) && !_job.isTask(Core::Job::SliceOblique))
   {
   Task::WriteImg        *pT = new Task::WriteImg("ObliqueImg");
   std::filesystem::path dPath(_job.outputPath());
@@ -842,7 +842,7 @@ int rc = 0;
     _imgTaskLst.push_back(pT);
   }
 
-  if (_job.isTask(Core::Job::ProofDepth))
+  if (_job.isTask(Core::Job::ProofDepth) && !_job.isTask(Core::Job::SliceOblique))
   {
   Task::ProofImage  *pT = new Task::ProofImage("ObliqueDthProof");
 
@@ -855,7 +855,7 @@ int rc = 0;
     _dthTaskLst.push_back(pT);
   }
 
-  if (_job.isTask(Core::Job::WriteDepthImg))
+  if (_job.isTask(Core::Job::WriteDepthImg) && !_job.isTask(Core::Job::SliceOblique))
   {
   Task::WriteImg        *pT = new Task::WriteImg("ObliqueDthImg");
   std::filesystem::path dPath(_job.outputPath());
