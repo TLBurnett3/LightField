@@ -390,7 +390,7 @@ Assimp::Importer  importer;
     {
       _mPath = mFile.parent_path();
 
-      std::cout << "Creating scene graph" << std::endl;
+      std::cout << "Creating scene" << std::endl;
 
       walkScene(pAIScene,mT,flags);
         
