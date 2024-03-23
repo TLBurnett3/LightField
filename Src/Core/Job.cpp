@@ -189,10 +189,8 @@ int rc = 0;
 	JSon::parse(doc, "Renderer",   _renderer);
 	JSon::parse(doc, "OutputPath", _outputPath);
 
-  if (_renderer == "DF")
+  if ((_renderer == "DF") || (_renderer == "DoubleFrustum"))
     _renderType = DoubleFrustum;
-//  else if (_renderer == "Model")
-//    _renderType = Model;
   else if (_renderer == "Oblique")
     _renderType = Oblique;
   else

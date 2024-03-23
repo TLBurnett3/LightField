@@ -251,6 +251,57 @@ glm::ivec2  hS      = _job.hogelSize();
   }
 }
 
+
+//---------------------------------------------------------------------
+// fetchObliqueAndQueue
+//---------------------------------------------------------------------
+void Executor::fetchObliqueAndQueue(glm::ivec2 idx)
+{
+glm::ivec2  nH      = _job.numHogels();
+
+  if (_imgTaskLst.size())
+  {
+  TaskList::iterator        ii    = _imgTaskLst.begin();
+  TaskList::iterator        iEnd  = _imgTaskLst.end();
+  Task::Base::SpImg         spImg = std::make_shared<std::pair<cv::Mat,glm::ivec2>>();
+
+    spImg->first.create(nH.y,nH.x,CV_8UC3);
+    spImg->second = idx;
+
+    glReadBuffer(GL_BACK);
+    glReadPixels(0,0,(GLsizei)nH.x,(GLsizei)nH.y,GL_BGR,GL_UNSIGNED_BYTE,spImg->first.data); 
+    
+    cv::flip(spImg->first,spImg->first,0);
+
+    while (ii != iEnd)
+    {
+      (*ii)->queue(spImg);
+      ii++;
+    }
+  }
+
+  if (_dthTaskLst.size())
+  {
+  TaskList::iterator        ii    = _dthTaskLst.begin();
+  TaskList::iterator        iEnd  = _dthTaskLst.end();
+  Task::Base::SpImg         spImg = std::make_shared<std::pair<cv::Mat,glm::ivec2>>();
+
+    spImg->first.create(nH.y,nH.x,CV_32FC1);
+    spImg->second = idx;
+
+    glReadBuffer(GL_BACK);
+    glReadPixels(0,0,(GLsizei)nH.x,(GLsizei)nH.y,GL_DEPTH_COMPONENT,GL_FLOAT,spImg->first.data);
+
+    cv::flip(spImg->first,spImg->first,0);
+
+    while (ii != iEnd)
+    {
+      (*ii)->queue(spImg);
+      ii++;
+    }
+  }
+}
+
 //---------------------------------------------------------------------
 // taskWait
 //---------------------------------------------------------------------
@@ -449,15 +500,12 @@ void Executor::renderOblique(Render::Camera &camera,const glm::vec2 &rA)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
-
   if (1)
   {
   glm::vec2 r  = glm::radians(rA);
   glm::mat4 mT = glm::shearY3D(_job.sceneTransform(),-r[0],r[1]);
  
-    _modMan.render(camera,_shader,_job.sceneTransform());
+    _modMan.render(camera,_shader,mT);
   }    
     
   glFinish();
@@ -469,16 +517,31 @@ void Executor::renderOblique(Render::Camera &camera,const glm::vec2 &rA)
 //---------------------------------------------------------------------
 int Executor::renderObliquePlane(void) 
 {
-int         rc      = 0;
-glm::ivec2  nH      = _job.numHogels();
-glm::ivec2  hS      = _job.hogelSize();
-glm::ivec2  idx(0);
-uint32_t    n(0);
-Core::Timer tH;
+int             rc      = 0;
+glm::ivec2      nH      = _job.numHogels();
+glm::ivec2      hS      = _job.hogelSize();
+glm::mat4       mVVT    = _job.viewVolumeTransform();
+glm::vec3       vC      = glm::vec3(mVVT[3]);
+glm::vec3       vT      = glm::vec3(mVVT[1]);
+glm::vec3       vP      = vC;
+glm::vec3       vD      = vC - vT;
+glm::vec3       vU      = vC - glm::vec3(mVVT[2]);
+glm::vec2       rT      = glm::vec2(_job.fov()) / 2.0f;
+glm::vec2       rS      = glm::vec2(_job.fov()) / glm::vec2(hS);
+glm::vec2       rA      = -rT;
+glm::vec2       hD      = glm::vec2(mVVT[0].x,mVVT[2].z) * 0.5f;
+float           zF      = _job.zFar();
+Render::Camera  camera;
+glm::ivec2      idx(0);
+uint32_t        n(0);
+Core::Timer     tH;
 
   glfwMakeContextCurrent(_pWindow);
   glfwSetWindowSize     (_pWindow,nH.x,nH.y);
   glfwSetWindowTitle    (_pWindow,"Lightfield - Obliques");
+
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
 
   tH.start();
 
@@ -486,20 +549,29 @@ Core::Timer tH;
 
   glViewport(0,0,nH.x,nH.y);
 
+  camera.setOrthographic(-hD.x,hD.x,-hD.y,hD.y,-zF,zF);
+
   for (;(idx.y < hS.y) && !glfwWindowShouldClose(_pWindow);idx.y++)
   {
   Core::Timer tR;
 
     tR.start();
 
+    rA.x  = -rT.x;
+
     std::cout << "Rendering Oblique Row: " << idx.y << std::endl;
 
     for (idx.x = 0;(idx.x < hS.x) && !glfwWindowShouldClose(_pWindow);idx.x++)
     {
+      camera.lookAt(vP,vD,vU);
+
+      renderOblique(camera,rA);
+      fetchObliqueAndQueue(idx);
+
       glfwSwapBuffers(_pWindow);
       glfwPollEvents();
 
-      n++;
+      rA.x  += rS.x; 
     }
 
     {
@@ -510,6 +582,10 @@ Core::Timer tH;
       std::cout << "    FPS: " << (double)idx.x / t;
       std::cout << "    Complete: " << c << '%' << std::endl;
     }
+
+    rA.y  += rS.y;
+
+    taskSync();
   }
 
   {
@@ -682,9 +758,9 @@ int                    rc = 0;
 
 
 //---------------------------------------------------------------------
-// createTasks
+// createDoubleFrustumTasks
 //---------------------------------------------------------------------
-int Executor::createTasks(void)
+int Executor::createDoubleFrustumTasks(void)
 {
 int rc = 0;
 
@@ -758,6 +834,82 @@ int rc = 0;
 
 
 //---------------------------------------------------------------------
+// createObliqueTasks
+//---------------------------------------------------------------------
+int Executor::createObliqueTasks(void)
+{
+int rc = 0;
+
+  if (_job.isTask(Core::Job::ProofImage))
+  {
+  Task::ProofImage  *pT = new Task::ProofImage("ObliqueProof");
+
+    pT->create(_job.hogelSize(),_job.numHogels(),3);
+    pT->setPathFile(_job.outputPath(),"ObliqueProof");
+    pT->start();
+
+    _imgTaskLst.push_back(pT);
+  }
+
+  if (_job.isTask(Core::Job::WriteAvi))
+  {
+  Task::WriteAvi        *pT = new Task::WriteAvi("ObliqueAvi");
+  std::filesystem::path dPath(_job.outputPath());
+
+    dPath /= "ObliqueAvi";
+
+    pT->setPathFile(dPath,"ObliqueRow_");
+    pT->start();
+
+    _imgTaskLst.push_back(pT);
+  }
+
+  if (_job.isTask(Core::Job::WriteImg))
+  {
+  Task::WriteImg        *pT = new Task::WriteImg("ObliqueImg");
+  std::filesystem::path dPath(_job.outputPath());
+
+    dPath /= "ObliqueImg";
+
+    pT->setPathFile(dPath,"ObliqueImg_%06dx%06d","png");
+    pT->start();
+
+    _imgTaskLst.push_back(pT);
+  }
+
+  if (_job.isTask(Core::Job::ProofDepth))
+  {
+  Task::ProofImage  *pT = new Task::ProofImage("ObliqueDthProof");
+
+    pT->setZNear(_job.zNear());
+    pT->setZFar(_job.zFar());
+    pT->create(_job.hogelSize(),_job.numHogels(),1);
+    pT->setPathFile(_job.outputPath(),"ObliqueDthProof");
+    pT->start();
+
+    _dthTaskLst.push_back(pT);
+  }
+
+  if (_job.isTask(Core::Job::WriteDepthImg))
+  {
+  Task::WriteImg        *pT = new Task::WriteImg("ObliqueDthImg");
+  std::filesystem::path dPath(_job.outputPath());
+
+    dPath /= "ObliqueDth";
+
+    pT->setZNear(_job.zNear());
+    pT->setZFar(_job.zFar());
+    pT->setPathFile(dPath,"ObliqueDthImg_%06dx%06d","png");
+    pT->start();
+
+    _dthTaskLst.push_back(pT);
+  }
+
+  return rc;
+}
+
+
+//---------------------------------------------------------------------
 // init
 //---------------------------------------------------------------------
 int Executor::init(const char *pCfg) 
@@ -789,7 +941,13 @@ int rc  = parseJob(pCfg);
 
         rc |= loadModels(cPath);
         rc |= loadShaders(cPath);
-        rc |= createTasks();
+
+        if (_job.renderType() == Core::Job::DoubleFrustum)
+          rc |= createDoubleFrustumTasks();
+        else if (_job.renderType() == Core::Job::Oblique)
+          rc |= createObliqueTasks();
+        else
+          assert(0);
       }
     }
   }

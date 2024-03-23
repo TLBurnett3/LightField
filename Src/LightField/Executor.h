@@ -89,12 +89,15 @@ namespace Lf
 
 
       void fetchHogelAndQueue(glm::ivec2 idx);
+      void fetchObliqueAndQueue(glm::ivec2 idx);
 
       void GLInfo(void);
 
       int  loadModels (std::filesystem::path &cPath);
       int  loadShaders(std::filesystem::path &cPath);
-      int  createTasks(void);
+
+      int  createDoubleFrustumTasks(void);
+      int  createObliqueTasks(void);
 
       void taskWait(Task::Base *pT);
       void taskSync(void);
