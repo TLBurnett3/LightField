@@ -169,7 +169,7 @@ JSon::Value &v = doc["Tasks"];
 		JSon::parse(v, "ProofDepth",         _tasks[ProofDepth],          false);
 
     if (_renderType == Oblique)
-		  JSon::parse(v, "SliceOblique",       _tasks[SliceOblique],        false);
+		  JSon::parse(v, "SliceNDice",       _tasks[SliceOblique],        false);
 
 		rc = 0;
   }
@@ -321,7 +321,7 @@ Job::Job(void) : _filePath(),
                  _mScT(1),
                  _fov(90),
                  _zNearFar(0.01f,1.0f),
-                 _sliceMem(0),
+                 _sliceMem(8),
                  _outputPath(),
                  _tasks()
 {

@@ -44,6 +44,7 @@
 #include "Tasks/ProofImage.h"
 #include "Tasks/WriteAvi.h"
 #include "Tasks/WriteImg.h"
+#include "Tasks/SliceNDice.h"
 
 using namespace Lf;
 //---------------------------------------------------------------------
@@ -417,9 +418,8 @@ glm::vec3   vD = glm::normalize(mT[1]); // we render along the y axis of the VVT
 //---------------------------------------------------------------------
 // renderDoubleFrustumPlane
 //---------------------------------------------------------------------
-int Executor::renderDoubleFrustumPlane(void) 
+void Executor::renderDoubleFrustumPlane(void) 
 {
-int             rc      = 0;
 glm::ivec2      nH      = _job.numHogels();
 glm::ivec2      hS      = _job.hogelSize();
 float           s       = glm::max(nH.x,nH.y);
@@ -488,8 +488,6 @@ Render::Camera  camera;
     std::cout << "Render Time: " << t << " seconds" << std::endl;
     std::cout << "FPS: " << (double)n / t << std::endl;
   }
-
-  return rc;
 }
 
 
@@ -513,11 +511,10 @@ void Executor::renderOblique(Render::Camera &camera,const glm::vec2 &rA)
 
 
 //---------------------------------------------------------------------
-// renderObliquePlane
+// renderObliqueSet
 //---------------------------------------------------------------------
-int Executor::renderObliquePlane(void) 
+uint32_t Executor::renderObliqueSet(void) 
 {
-int             rc      = 0;
 glm::ivec2      nH      = _job.numHogels();
 glm::ivec2      hS      = _job.hogelSize();
 glm::mat4       mVVT    = _job.viewVolumeTransform();
@@ -534,18 +531,6 @@ float           zF      = _job.zFar();
 Render::Camera  camera;
 glm::ivec2      idx(0);
 uint32_t        n(0);
-Core::Timer     tH;
-
-  glfwMakeContextCurrent(_pWindow);
-  glfwSetWindowSize     (_pWindow,nH.x,nH.y);
-  glfwSetWindowTitle    (_pWindow,"Lightfield - Obliques");
-
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
-
-  tH.start();
-
-  std::cout << "Starting Oblique Rendering " << std::endl;
 
   glViewport(0,0,nH.x,nH.y);
 
@@ -572,6 +557,8 @@ Core::Timer     tH;
       glfwPollEvents();
 
       rA.x  += rS.x; 
+
+      n++;
     }
 
     {
@@ -588,15 +575,40 @@ Core::Timer     tH;
     taskSync();
   }
 
+  return n;
+}
+
+
+//---------------------------------------------------------------------
+// renderObliquePlane
+//---------------------------------------------------------------------
+void Executor::renderObliquePlane(void) 
+{
+glm::ivec2      nH      = _job.numHogels();
+uint32_t        n       = 0;
+Core::Timer     tH;
+
+
+  glfwMakeContextCurrent(_pWindow);
+  glfwSetWindowSize     (_pWindow,nH.x,nH.y);
+  glfwSetWindowTitle    (_pWindow,"Lightfield - Obliques");
+
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
+
+  tH.start();
+
+  std::cout << "Starting Oblique Rendering " << std::endl;
+
+  n = renderObliqueSet();
+
   {
   double t = tH.seconds();
 
-    std::cout << "Completed Oblique Slice & Dice Rendering " << std::endl;
+    std::cout << "Completed Oblique Plane Rendering " << std::endl;
     std::cout << "Render Time: " << t << " seconds" << std::endl;
     std::cout << "FPS: " << (double)n / t << std::endl;
   }
-
-  return rc;
 }
 
 
@@ -606,110 +618,45 @@ Core::Timer     tH;
 //---------------------------------------------------------------------
 void Executor::renderObliqueAndSlice(void)
 { 
-double            FPS       = 0;
-glm::ivec2        nH        = _job.numHogels();
-glm::ivec2        hS        = _job.hogelSize();
-glm::mat4         mVVT      = _job.viewVolumeTransform();
-glm::vec3         vC        = glm::vec3(mVVT[3]);
-glm::vec3         vT        = glm::vec3(mVVT[1]);
-glm::vec3         vP        = vC;
-glm::vec3         vD        = vC - vT;
-glm::vec3         vU        = vC - glm::vec3(mVVT[2]);
-glm::vec2         hD        = glm::vec2(mVVT[0].x,mVVT[2].z) * 0.5f;
-float             zF        = _job.zFar();
-/*
-size_t            nR        = imageExecutor.numSliceRows(); 
-glm::ivec2        idx(0);
-Render::Camera    camera;
-Core::Timer	      tR;
+Task::SliceNDice    *pSnDT  = (Task::SliceNDice *)findTask("SliceOblique",_imgTaskLst);
 
-  if (nR == 0)
-    nR = nH.y;
-
-  glfwMakeContextCurrent(pWindow);
-  glfwSetWindowSize(pWindow,nH.x,nH.y);
-  glfwSetWindowTitle(pWindow,"Oblique Render View");
-
-  glViewport(0,0,job.numHogels().x,job.numHogels().y);
-
-  glClearColor(0,0,0,0);
-  glPixelStorei(GL_PACK_ALIGNMENT,1);
-
-  imageExecutor.setZNear(-zF);
-  imageExecutor.setZFar(zF);
-
-  camera.setOrthographic(-hD.x,hD.x,-hD.y,hD.y,-zF,zF);
-
-  for (size_t i = 0;(i < (size_t)nH.y) && !glfwWindowShouldClose(pWindow);i += nR)
+  if (pSnDT)
   {
-  glm::vec2 rT  = glm::vec2(job.fov()) / 2.0f;
-  glm::vec2 rS  = glm::vec2(job.fov()) / glm::vec2(hS);
-  glm::vec2 rA  = -rT;
+  size_t            nR        = pSnDT->numSliceRows(); 
+  double            FPS       = 0;
+  glm::ivec2        nH        = _job.numHogels();
+  uint32_t          n         = 0;
+  Core::Timer	      tH;
 
-    if ((i + nR) >= (size_t)nH.y)
-      nR = (size_t)nH.y - i;
+    if (nR == 0)
+      nR = nH.y;
 
-    std::cout << "Slicing Rows: " << i << " to " << i + nR << std::endl;
+    glfwMakeContextCurrent(_pWindow);
+    glfwSetWindowSize(_pWindow,nH.x,nH.y);
+    glfwSetWindowTitle    (_pWindow,"Lightfield - Obliques & Slice n Dice");
 
-    imageExecutor.setSliceRange(i,nR);
-
-    for (idx.y = 0;(idx.y < hS.y) && !glfwWindowShouldClose(pWindow);idx.y++)
+    for (size_t i = 0;(i < (size_t)nH.y) && !glfwWindowShouldClose(_pWindow);i += nR)
     {
-    Common::Timer  tS;
+      if ((i + nR) >= (size_t)nH.y)
+        nR = (size_t)nH.y - i;
 
-      rA.x  = -rT.x;
+      std::cout << "Slicing Rows: " << i << " to " << i + nR << std::endl;
 
-      for (idx.x = 0;(idx.x < hS.x) && !glfwWindowShouldClose(pWindow);idx.x++)
-      {
-        camera.lookAt(vP,vD,vU);
+      pSnDT->setSliceRange(i,nR);
 
-        renderObliqueView(camera,rA);
+      n += renderObliqueSet();
 
-        fetchAndQueue(idx);
+      pSnDT->writeAVIs();
+    }
 
-        glfwSwapBuffers(pWindow);
-        glfwPollEvents();
+    {
+    double t = tH.seconds();
 
-        rA.x  += rS.x; 
-      }
-
-      {
-      double  fps     = 0;
-      char    buf[128];
-
-        if (tS.seconds() > 0)
-          fps = (double)hS.x / tS.seconds();
-
-        FPS += fps;
-
-        sprintf(buf,"Line: %-6d   FPS: %6.3f",idx.y,fps);
-        std::cout << buf << std::endl;
-      }
-
-      rA.y  += rS.y;
-
-      if (idx.y == (hS.y - 1))
-        imageExecutor.writeSliceAVIs();
-
-      imageExecutor.hostSync();
+      std::cout << "Completed Oblique Slice and Dice Rendering " << std::endl;
+      std::cout << "Render & Slice n Dice Time: " << t << " seconds" << std::endl;
+      std::cout << "FPS: " << (double)n / t << std::endl;
     }
   }
-
-  if (FPS > 0)
-    FPS /= (double)hS.y;
-
-  double s = tR.seconds();
-  std::cout << "Total runtime is " << s << " seconds (" << s / 3600 << " hours)." << std::endl;
-  std::cout << "Final FPS: " << FPS << std::endl;
-
-  {
-  FILE *fp = fopen("Performance.txt","a");
-
-    fprintf(fp,"(%d,%d) x (%d,%d) FPS: %f; Runtime %f seconds (%f hours)\n",job.hogelSize().x,job.hogelSize().y,
-                                           job.numHogels().x,job.numHogels().y,
-                                           FPS,s,s/3600.0f);
-    fclose(fp);
-  }*/
 }
 
 
@@ -766,10 +713,10 @@ int rc = 0;
 
   if (_job.isTask(Core::Job::ProofImage))
   {
-  Task::ProofImage  *pT = new Task::ProofImage("RGBProof");
+  Task::ProofImage  *pT = new Task::ProofImage("HogelProof");
 
     pT->create(_job.numHogels(),_job.hogelSize(),3);
-    pT->setPathFile(_job.outputPath(),"RGBProof");
+    pT->setPathFile(_job.outputPath(),"HogelProof");
     pT->start();
 
     _imgTaskLst.push_back(pT);
@@ -777,7 +724,7 @@ int rc = 0;
 
   if (_job.isTask(Core::Job::WriteAvi))
   {
-  Task::WriteAvi        *pT = new Task::WriteAvi("RGBAvi");
+  Task::WriteAvi        *pT = new Task::WriteAvi("HogelAvi");
   std::filesystem::path dPath(_job.outputPath());
 
     dPath /= "HogelAvi";
@@ -790,7 +737,7 @@ int rc = 0;
 
   if (_job.isTask(Core::Job::WriteImg))
   {
-  Task::WriteImg        *pT = new Task::WriteImg("RGBImg");
+  Task::WriteImg        *pT = new Task::WriteImg("HogelImg");
   std::filesystem::path dPath(_job.outputPath());
 
     dPath /= "HogelImg";
@@ -872,6 +819,20 @@ int rc = 0;
     dPath /= "ObliqueImg";
 
     pT->setPathFile(dPath,"ObliqueImg_%06dx%06d","png");
+    pT->start();
+
+    _imgTaskLst.push_back(pT);
+  }
+
+  if (_job.isTask(Core::Job::SliceOblique))
+  {
+  Task::SliceNDice      *pT = new Task::SliceNDice("SliceOblique");
+  std::filesystem::path dPath(_job.outputPath());
+
+    dPath /= "HogelAvi";
+
+    pT->setPathFile(dPath,"HogelRow_");
+    pT->init(_job.numHogels(),_job.hogelSize(),_job.sliceMem());
     pT->start();
 
     _imgTaskLst.push_back(pT);
@@ -964,9 +925,14 @@ int Executor::exec(void)
 int rc      = 0;
 
   if (_job.renderType() == Core::Job::RenderTypes::DoubleFrustum)
-    rc = renderDoubleFrustumPlane();
+    renderDoubleFrustumPlane();
   else if (_job.renderType() == Core::Job::RenderTypes::Oblique)
-    rc = renderObliquePlane();
+  {
+    if (_job.isTask(Core::Job::SliceOblique))
+      renderObliqueAndSlice();
+    else
+      renderObliquePlane();
+  }
 
   return rc;
 }

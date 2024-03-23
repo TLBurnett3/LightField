@@ -41,28 +41,17 @@ using namespace Task;
 
 
 //---------------------------------------------------------------------
-// operator()
+// process
 //---------------------------------------------------------------------
-void SliceNDice::operator()()
+void SliceNDice::process(cv::Mat &img,glm::ivec2 &idx)
 { 
-cv::Mat  iImg;
-
-  //_pImageCache->fetch(_srcImg,iImg);
-
-  if (!iImg.empty())
+  for (size_t y = 0;y < _yN;y++)
   {
-  glm::ivec2 vIdx;
-
-   // _pImageCache->fetch(vIdx);
-
-    for (size_t y = 0;y < _yN;y++)
+    for (size_t x = 0;x < img.cols;x++)
     {
-      for (size_t x = 0;x < iImg.cols;x++)
-      {
-      cv::Vec3b c = iImg.at<cv::Vec3b>(_yS + y,x);
+    cv::Vec3b c = img.at<cv::Vec3b>(_yS + y,x);
 
-        _imgArray[y][x].at<cv::Vec3b>(vIdx.y,vIdx.x) = c;
-      }
+      _imgArray[y][x].at<cv::Vec3b>(idx.y,idx.x) = c;
     }
   }
 }
@@ -121,6 +110,7 @@ int                     fourcc = cv::VideoWriter::fourcc('M','P','4','3');
     std::cout << "Done." << std::endl;
   }
 }
+
 
 //---------------------------------------------------------------------
 // init

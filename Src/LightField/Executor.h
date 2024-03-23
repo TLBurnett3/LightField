@@ -76,6 +76,23 @@ namespace Lf
     // Methods
     private:
     protected:
+      Task::Base    *findTask(const char *tName,TaskList &tLst)
+      {
+      std::string         n     = tName;
+      TaskList::iterator  ii    = tLst.begin();
+      TaskList::iterator  iEnd  = tLst.end();
+
+        while (ii != iEnd)
+        {
+          if (n == (*ii)->name())
+            return (*ii);
+
+          ii++;
+        }
+
+        return 0;       
+      }
+
       int parseJob(const char *pCfg);
 
       GLFWwindow *Executor::initWindow(const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
@@ -83,10 +100,10 @@ namespace Lf
       void renderHogel  (Render::Camera &camera,const glm::vec3 &vI);
       void renderOblique(Render::Camera &camera,const glm::vec2 &rA);
 
-      int renderDoubleFrustumPlane     (void);
-      int renderObliquePlane           (void);
-      void renderObliqueAndSlice       (void);
-
+      void renderDoubleFrustumPlane     (void);
+      void renderObliquePlane           (void);
+      uint32_t renderObliqueSet         (void);
+      void renderObliqueAndSlice        (void);
 
       void fetchHogelAndQueue(glm::ivec2 idx);
       void fetchObliqueAndQueue(glm::ivec2 idx);
@@ -101,7 +118,6 @@ namespace Lf
 
       void taskWait(Task::Base *pT);
       void taskSync(void);
-
 
     public:
 

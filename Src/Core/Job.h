@@ -104,7 +104,7 @@ namespace Lf
         {
           Unknown   = -1,
           DoubleFrustum,
-          Oblique,
+          Oblique
         };
 
       // Members

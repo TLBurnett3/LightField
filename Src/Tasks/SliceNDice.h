@@ -37,7 +37,6 @@
 
 // LightField
 #include "Tasks/Base.h"
-//#include "Tasks/LightField.h"
 //---------------------------------------------------------------------
 
 
@@ -60,8 +59,6 @@ namespace Lf
       // Members
       private:
       protected:
-        std::string    _srcImg;
-
         CvMatLstArray _imgArray;
 
         cv::Mat       _proofImg;
@@ -73,38 +70,43 @@ namespace Lf
         std::filesystem::path   _fName;
 
       public:
-        size_t numSliceRows(void)
-        { return _imgArray.size(); }
 
-        void   setSliceRange(size_t yS,size_t yN)
-        { _yS = yS; _yN = yN; }
 
       // Methods
       private:
       protected:
       public:
-        void setSourceImage(const char *pSrcImg)
-        { _srcImg   = pSrcImg; }
+        EXPORT size_t numSliceRows(void)
+        { return _imgArray.size(); }
 
-        void setPathFile(const std::filesystem::path &dPath,const char *pN)
+        EXPORT void   setSliceRange(size_t yS,size_t yN)
+        { 
+          _yS = yS; 
+          _yN = yN; 
+        }
+
+        EXPORT void setPathFile(const std::filesystem::path &dPath,const char *pN)
         {   
           _dPath = dPath;
           _fName = pN; 
         }
 
-        virtual void operator()();
+        EXPORT virtual void process(cv::Mat &img,glm::ivec2 &idx);
 
-        void writeAVIs(void);
+        EXPORT void writeAVIs(void);
 
-        void init(const glm::ivec2 &nH,const glm::ivec2 &hS,const uint16_t mS);
+        EXPORT void init(const glm::ivec2 &nH,const glm::ivec2 &hS,const uint16_t mS);
 
       
-        SliceNDice(const char *pN) :  Task::Base(pN),
-                                       _imgArray()
+        EXPORT SliceNDice(const char *pN) :  Task::Base(pN),
+                                            _imgArray(),
+                                            _proofImg(),
+                                            _yS(0),
+                                            _yN(0)
         {
         }
 
-		    virtual ~SliceNDice()
+		    EXPORT virtual ~SliceNDice()
         {
         }
     };
