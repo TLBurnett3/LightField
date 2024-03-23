@@ -7,7 +7,7 @@
   "NumHogels": [ 1000, 1000 ],
   "SliceMem": 8,
   "Tasks": {
-    "WriteAvi": true,
+    "WriteAvi": false,
     "WriteImg": false,
     "ProofDepth": true,
     "WriteDepthImg": false

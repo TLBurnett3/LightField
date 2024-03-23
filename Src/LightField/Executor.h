@@ -80,10 +80,13 @@ namespace Lf
 
       GLFWwindow *Executor::initWindow(const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
 
-      void renderHogel(Render::Camera &camera,const glm::vec3 &vI);
+      void renderHogel  (Render::Camera &camera,const glm::vec3 &vI);
+      void renderOblique(Render::Camera &camera,const glm::vec2 &rA);
 
-      int renderDoubleFrustum   (void);
-      int renderObliqueSliceDice(void);
+      int renderDoubleFrustumPlane     (void);
+      int renderObliquePlane           (void);
+      void renderObliqueAndSlice       (void);
+
 
       void fetchHogelAndQueue(glm::ivec2 idx);
 

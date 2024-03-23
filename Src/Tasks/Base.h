@@ -69,7 +69,6 @@ namespace Lf
         std::mutex                _access;
         std::condition_variable   _workCondition;
 
-
       public:   
 
       // Methods

@@ -168,6 +168,9 @@ JSon::Value &v = doc["Tasks"];
 		JSon::parse(v, "WriteDepthImg",      _tasks[WriteDepthImg],       false);
 		JSon::parse(v, "ProofDepth",         _tasks[ProofDepth],          false);
 
+    if (_renderType == Oblique)
+		  JSon::parse(v, "SliceOblique",       _tasks[SliceOblique],        false);
+
 		rc = 0;
   }
 
@@ -191,11 +194,7 @@ int rc = 0;
 //  else if (_renderer == "Model")
 //    _renderType = Model;
   else if (_renderer == "Oblique")
-    _renderType = ObliqueSliceDice;
-  else if (_renderer == "Slice")
-    _renderType = Slice;
-  else if (_renderer == "MVP")
-    _renderType = MVP;
+    _renderType = Oblique;
   else
     assert(0);
 
@@ -265,6 +264,7 @@ void Job::print(std::ostream &o)
 	o << "         WriteDemo Task: " << (_tasks[WriteDemo]          ? "true" : "false") << std::endl;
 	o << "        ProofDepth Task: " << (_tasks[ProofDepth]         ? "true" : "false") << std::endl;
 	o << "     WriteDepthImg Task: " << (_tasks[WriteDepthImg]      ? "true" : "false") << std::endl;
+	o << "      SliceOblique Task: " << (_tasks[SliceOblique]       ? "true" : "false") << std::endl;
 
 	o << std::endl;
 

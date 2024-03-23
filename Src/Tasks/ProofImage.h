@@ -70,11 +70,25 @@ namespace Lf
         glm::ivec2              _iSize;
 
         uint16_t                _scatterType;
+
+        float                 _zNear;
+        float                 _zFar;
+
       public:
 
       // Methods
       private:
       protected:
+        uint16_t toUShort(float v)
+        {
+        float z = (v * 2.0f) - 1.0f;
+        float c = (2.0f * _zNear * _zFar) / (_zFar + _zNear - z * (_zFar - _zNear));
+
+          c = glm::clamp(1.0f - (c / _zFar),0.0f,1.0f);
+      
+          return (uint16_t)(c * (float)0xffff);
+        }
+
         void write   (void);
 
         void scatterHogel3(cv::Mat &img,glm::ivec2 &idx);
@@ -83,6 +97,12 @@ namespace Lf
         void scatterOblique(cv::Mat &img,glm::ivec2 &idx);
 
       public:
+        EXPORT void setZNear(const float zN)
+        { _zNear = zN; }
+
+        EXPORT void setZFar(const float zF)
+        { _zFar  = zF; }
+
         EXPORT void create  (const glm::ivec2 &nH,const glm::ivec2 &hS,const uint16_t bpp);
 
         EXPORT void setPathFile(const std::filesystem::path &dPath,const char *pN)
@@ -102,7 +122,9 @@ namespace Lf
                                             _hS(),
                                             _nH(),
                                             _iSize(),
-                                            _scatterType(HogelScatter)
+                                            _scatterType(HogelScatter),
+                                            _zNear(0.1f),
+                                            _zFar(1.0f)
         {}
     
 		    EXPORT virtual ~ProofImage()

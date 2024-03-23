@@ -21,23 +21,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //---------------------------------------------------------------------
-
-// WriteImg.h
+// 
+// SliceNDice.h
 // Thomas Burnett
 
 #pragma once
 
+
 //---------------------------------------------------------------------
 // Include
-
-// 3rd Party Libs
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 #include <filesystem>
+
+// 3rdPartyLibs
 #include <glm/glm.hpp>
 
 // LightField
 #include "Tasks/Base.h"
+//#include "Tasks/LightField.h"
 //---------------------------------------------------------------------
 
 
@@ -47,66 +47,66 @@ namespace Lf
 {
   namespace Task
   {
-    class	WriteImg : public Task::Base
+    class	SliceNDice : public Task::Base
     {
       // Defines
       private:
       protected:
+        typedef std::vector<cv::Mat>           CvMatLst;
+        typedef std::vector<CvMatLst>          CvMatLstArray;
+
       public:
 
       // Members
       private:
       protected:
-        std::filesystem::path _dPath;
-        std::string           _fName;
-        std::string           _ext;
+        std::string    _srcImg;
 
-        float                 _zNear;
-        float                 _zFar;
+        CvMatLstArray _imgArray;
+
+        cv::Mat       _proofImg;
+
+        size_t        _yS;
+        size_t        _yN;
+
+        std::filesystem::path   _dPath;
+        std::filesystem::path   _fName;
 
       public:
+        size_t numSliceRows(void)
+        { return _imgArray.size(); }
+
+        void   setSliceRange(size_t yS,size_t yN)
+        { _yS = yS; _yN = yN; }
 
       // Methods
       private:
       protected:
-        uint16_t toUShort(float v)
-        {
-        float z = (v * 2.0f) - 1.0f;
-        float c = (2.0f * _zNear * _zFar) / (_zFar + _zNear - z * (_zFar - _zNear));
+      public:
+        void setSourceImage(const char *pSrcImg)
+        { _srcImg   = pSrcImg; }
 
-          c = glm::clamp(1.0f - (c / _zFar),0.0f,1.0f);
+        void setPathFile(const std::filesystem::path &dPath,const char *pN)
+        {   
+          _dPath = dPath;
+          _fName = pN; 
+        }
+
+        virtual void operator()();
+
+        void writeAVIs(void);
+
+        void init(const glm::ivec2 &nH,const glm::ivec2 &hS,const uint16_t mS);
+
       
-          return (uint16_t)(c * (float)0xffff);
-        }
-
-      public:     
-        EXPORT void setZNear(const float zN)
-        { _zNear = zN; }
-
-        EXPORT void setZFar(const float zF)
-        { _zFar  = zF; }
-
-
-        EXPORT virtual void process(cv::Mat &img,glm::ivec2 &idx);
-
-        void setPathFile(const std::filesystem::path &dPath,const char *pName,const char *pExt)
+        SliceNDice(const char *pN) :  Task::Base(pN),
+                                       _imgArray()
         {
-          makeDir(dPath);
-
-          _dPath = dPath,
-          _fName = pName;
-          _ext   = pExt;
         }
 
-        WriteImg(const char *pN) :  Task::Base(pN),
-                                    _fName(),
-                                    _ext("png"),
-                                    _zNear(0.1f),
-                                    _zFar(1.0f)
-        {}
-    
-		    virtual ~WriteImg()
-        {}
+		    virtual ~SliceNDice()
+        {
+        }
     };
   };
 };

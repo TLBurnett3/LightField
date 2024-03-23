@@ -234,35 +234,12 @@ glm::ivec2  hS      = _job.hogelSize();
   TaskList::iterator        ii    = _dthTaskLst.begin();
   TaskList::iterator        iEnd  = _dthTaskLst.end();
   Task::Base::SpImg         spImg = std::make_shared<std::pair<cv::Mat,glm::ivec2>>();
-  cv::Mat                   img(hS.y,hS.x,CV_32FC1);
 
-    spImg->first.create(hS.y,hS.x,CV_16UC1);
+    spImg->first.create(hS.y,hS.x,CV_32FC1);
     spImg->second = idx;
 
     glReadBuffer(GL_BACK);
-    glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_DEPTH_COMPONENT,GL_FLOAT,img.data);
-
-    // convert depth image to 16bits
-    {
-    float         *p    = (float *)img.data;
-    uint16_t      *d    = (uint16_t *)spImg->first.data;
-    float         *pEnd = p + ((uint16_t)img.rows * (uint16_t)img.cols);                             
-    float         zN    = _job.zNear();                               
-    float         zF    = _job.zFar();  
-
-      while (p < pEnd)
-      {
-      float z = (*p * 2.0f) - 1.0f;
-      float c = (2.0f * zN * zF) / (zF + zN - z * (zF - zN));
-
-        c = glm::clamp(1.0f - (c / zF),0.0f,1.0f);
-      
-        *d = (uint16_t)(c * (float)0xffff);
-
-        d++;
-        p++;
-      }    
-    }
+    glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_DEPTH_COMPONENT,GL_FLOAT,spImg->first.data);
 
     cv::flip(spImg->first,spImg->first,0);
 
@@ -272,55 +249,6 @@ glm::ivec2  hS      = _job.hogelSize();
       ii++;
     }
   }
-}
-
-
-//---------------------------------------------------------------------
-// renderHogel
-//---------------------------------------------------------------------
-void Executor::renderHogel(Render::Camera &camera,const glm::vec3 &vI)
-{
-glm::mat4   mT = _job.viewVolumeTransform();
-glm::vec3   vP = mT * glm::vec4(vI,1);
-glm::vec3   vU = glm::normalize(mT[2]);  
-glm::vec3   vD = glm::normalize(mT[1]); // we render along the y axis of the VVT
-
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  _shader.use();
-  _shader.setTextureSampler(0);
-
-  // back frustum, away from viewer into the display
-  if (1)
-  {
-  glm::vec3 vE(vP + (vD * camera.zNear()));
-
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
-    glDepthRange(0.5f,1.0f);
-
-    camera.backFrustum(vE,-vD,vU);
-
-    _modMan.render(camera,_shader,_job.sceneTransform());
-
-    glFlush();
-  }
-
-  // front frustum, toward the viewer out of the display
-  if (1)
-  {
-  glm::vec3 vE(vP + (vD * -camera.zNear()));
-
-    glFrontFace(GL_CW);
-    glCullFace(GL_FRONT);
-    glDepthRange(0.5f,0.0f);
-
-    camera.frontFrustum(vE,vD,-vU);
-
-    _modMan.render(camera,_shader,_job.sceneTransform());
-  }   
-
-  glFinish();
 }
 
 //---------------------------------------------------------------------
@@ -384,10 +312,61 @@ void Executor::taskSync(void)
 }
 
 
+
 //---------------------------------------------------------------------
-// renderDoubleFrustum
+// renderHogel
 //---------------------------------------------------------------------
-int Executor::renderDoubleFrustum(void) 
+void Executor::renderHogel(Render::Camera &camera,const glm::vec3 &vI)
+{
+glm::mat4   mT = _job.viewVolumeTransform();
+glm::vec3   vP = mT * glm::vec4(vI,1);
+glm::vec3   vU = glm::normalize(mT[2]);  
+glm::vec3   vD = glm::normalize(mT[1]); // we render along the y axis of the VVT
+
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  _shader.use();
+  _shader.setTextureSampler(0);
+
+  // back frustum, away from viewer into the display
+  if (1)
+  {
+  glm::vec3 vE(vP + (vD * camera.zNear()));
+
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
+    glDepthRange(0.5f,1.0f);
+
+    camera.backFrustum(vE,-vD,vU);
+
+    _modMan.render(camera,_shader,_job.sceneTransform());
+
+    glFlush();
+  }
+
+  // front frustum, toward the viewer out of the display
+  if (1)
+  {
+  glm::vec3 vE(vP + (vD * -camera.zNear()));
+
+    glFrontFace(GL_CW);
+    glCullFace(GL_FRONT);
+    glDepthRange(0.5f,0.0f);
+
+    camera.frontFrustum(vE,vD,-vU);
+
+    _modMan.render(camera,_shader,_job.sceneTransform());
+  }   
+
+  glFinish();
+}
+
+
+
+//---------------------------------------------------------------------
+// renderDoubleFrustumPlane
+//---------------------------------------------------------------------
+int Executor::renderDoubleFrustumPlane(void) 
 {
 int             rc      = 0;
 glm::ivec2      nH      = _job.numHogels();
@@ -464,9 +443,31 @@ Render::Camera  camera;
 
 
 //---------------------------------------------------------------------
-// renderObliqueSliceDice
+// renderOblique
 //---------------------------------------------------------------------
-int Executor::renderObliqueSliceDice(void) 
+void Executor::renderOblique(Render::Camera &camera,const glm::vec2 &rA)
+{
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
+
+  if (1)
+  {
+  glm::vec2 r  = glm::radians(rA);
+  glm::mat4 mT = glm::shearY3D(_job.sceneTransform(),-r[0],r[1]);
+ 
+    _modMan.render(camera,_shader,_job.sceneTransform());
+  }    
+    
+  glFinish();
+}
+
+
+//---------------------------------------------------------------------
+// renderObliquePlane
+//---------------------------------------------------------------------
+int Executor::renderObliquePlane(void) 
 {
 int         rc      = 0;
 glm::ivec2  nH      = _job.numHogels();
@@ -477,11 +478,11 @@ Core::Timer tH;
 
   glfwMakeContextCurrent(_pWindow);
   glfwSetWindowSize     (_pWindow,nH.x,nH.y);
-  glfwSetWindowTitle    (_pWindow,"Lightfield - Oblique Slice Dice");
+  glfwSetWindowTitle    (_pWindow,"Lightfield - Obliques");
 
   tH.start();
 
-  std::cout << "Starting Oblique Slice & Dice Rendering " << std::endl;
+  std::cout << "Starting Oblique Rendering " << std::endl;
 
   glViewport(0,0,nH.x,nH.y);
 
@@ -520,6 +521,119 @@ Core::Timer tH;
   }
 
   return rc;
+}
+
+
+
+//---------------------------------------------------------------------
+// renderObliqueAndSlice
+//---------------------------------------------------------------------
+void Executor::renderObliqueAndSlice(void)
+{ 
+double            FPS       = 0;
+glm::ivec2        nH        = _job.numHogels();
+glm::ivec2        hS        = _job.hogelSize();
+glm::mat4         mVVT      = _job.viewVolumeTransform();
+glm::vec3         vC        = glm::vec3(mVVT[3]);
+glm::vec3         vT        = glm::vec3(mVVT[1]);
+glm::vec3         vP        = vC;
+glm::vec3         vD        = vC - vT;
+glm::vec3         vU        = vC - glm::vec3(mVVT[2]);
+glm::vec2         hD        = glm::vec2(mVVT[0].x,mVVT[2].z) * 0.5f;
+float             zF        = _job.zFar();
+/*
+size_t            nR        = imageExecutor.numSliceRows(); 
+glm::ivec2        idx(0);
+Render::Camera    camera;
+Core::Timer	      tR;
+
+  if (nR == 0)
+    nR = nH.y;
+
+  glfwMakeContextCurrent(pWindow);
+  glfwSetWindowSize(pWindow,nH.x,nH.y);
+  glfwSetWindowTitle(pWindow,"Oblique Render View");
+
+  glViewport(0,0,job.numHogels().x,job.numHogels().y);
+
+  glClearColor(0,0,0,0);
+  glPixelStorei(GL_PACK_ALIGNMENT,1);
+
+  imageExecutor.setZNear(-zF);
+  imageExecutor.setZFar(zF);
+
+  camera.setOrthographic(-hD.x,hD.x,-hD.y,hD.y,-zF,zF);
+
+  for (size_t i = 0;(i < (size_t)nH.y) && !glfwWindowShouldClose(pWindow);i += nR)
+  {
+  glm::vec2 rT  = glm::vec2(job.fov()) / 2.0f;
+  glm::vec2 rS  = glm::vec2(job.fov()) / glm::vec2(hS);
+  glm::vec2 rA  = -rT;
+
+    if ((i + nR) >= (size_t)nH.y)
+      nR = (size_t)nH.y - i;
+
+    std::cout << "Slicing Rows: " << i << " to " << i + nR << std::endl;
+
+    imageExecutor.setSliceRange(i,nR);
+
+    for (idx.y = 0;(idx.y < hS.y) && !glfwWindowShouldClose(pWindow);idx.y++)
+    {
+    Common::Timer  tS;
+
+      rA.x  = -rT.x;
+
+      for (idx.x = 0;(idx.x < hS.x) && !glfwWindowShouldClose(pWindow);idx.x++)
+      {
+        camera.lookAt(vP,vD,vU);
+
+        renderObliqueView(camera,rA);
+
+        fetchAndQueue(idx);
+
+        glfwSwapBuffers(pWindow);
+        glfwPollEvents();
+
+        rA.x  += rS.x; 
+      }
+
+      {
+      double  fps     = 0;
+      char    buf[128];
+
+        if (tS.seconds() > 0)
+          fps = (double)hS.x / tS.seconds();
+
+        FPS += fps;
+
+        sprintf(buf,"Line: %-6d   FPS: %6.3f",idx.y,fps);
+        std::cout << buf << std::endl;
+      }
+
+      rA.y  += rS.y;
+
+      if (idx.y == (hS.y - 1))
+        imageExecutor.writeSliceAVIs();
+
+      imageExecutor.hostSync();
+    }
+  }
+
+  if (FPS > 0)
+    FPS /= (double)hS.y;
+
+  double s = tR.seconds();
+  std::cout << "Total runtime is " << s << " seconds (" << s / 3600 << " hours)." << std::endl;
+  std::cout << "Final FPS: " << FPS << std::endl;
+
+  {
+  FILE *fp = fopen("Performance.txt","a");
+
+    fprintf(fp,"(%d,%d) x (%d,%d) FPS: %f; Runtime %f seconds (%f hours)\n",job.hogelSize().x,job.hogelSize().y,
+                                           job.numHogels().x,job.numHogels().y,
+                                           FPS,s,s/3600.0f);
+    fclose(fp);
+  }*/
 }
 
 
@@ -615,6 +729,8 @@ int rc = 0;
   {
   Task::ProofImage  *pT = new Task::ProofImage("DthProof");
 
+    pT->setZNear(_job.zNear());
+    pT->setZFar(_job.zFar());
     pT->create(_job.numHogels(),_job.hogelSize(),1);
     pT->setPathFile(_job.outputPath(),"DthProof");
     pT->start();
@@ -629,6 +745,8 @@ int rc = 0;
 
     dPath /= "HogelDth";
 
+    pT->setZNear(_job.zNear());
+    pT->setZFar(_job.zFar());
     pT->setPathFile(dPath,"HogelDthImg_%06dx%06d","png");
     pT->start();
 
@@ -688,9 +806,9 @@ int Executor::exec(void)
 int rc      = 0;
 
   if (_job.renderType() == Core::Job::RenderTypes::DoubleFrustum)
-    rc = renderDoubleFrustum();
-  else if (_job.renderType() == Core::Job::RenderTypes::ObliqueSliceDice)
-    rc = renderObliqueSliceDice();
+    rc = renderDoubleFrustumPlane();
+  else if (_job.renderType() == Core::Job::RenderTypes::Oblique)
+    rc = renderObliquePlane();
 
   return rc;
 }

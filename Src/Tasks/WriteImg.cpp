@@ -61,6 +61,23 @@ char                    buf[256];
   fPath += ".";
   fPath += _ext;
       
-  if (!img.empty())
+  if (img.channels() == 3)
     cv::imwrite(fPath.string(),img);
+  else
+  {
+  cv::Mat       dImg(img.rows,img.cols,CV_16UC1);
+  float         *p    = (float *)img.data;
+  uint16_t      *d    = (uint16_t *)dImg.data;
+  float         *pEnd = p + ((uint16_t)img.rows * (uint16_t)img.cols);                             
+
+    while (p < pEnd)
+    {
+      *d = toUShort(*p);
+
+      d++;
+      p++;
+    }  
+
+    cv::imwrite(fPath.string(),dImg); 
+  }
 }

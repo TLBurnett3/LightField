@@ -11,6 +11,7 @@ set (HEADERS
   ProofImage.h
   WriteAvi.h
   WriteImg.h
+  SliceNDice.h
 )
 
 set(SOURCE
@@ -18,6 +19,7 @@ set(SOURCE
   ProofImage.cpp
   WriteAvi.cpp
   WriteImg.cpp
+  SliceNDice.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCE} )

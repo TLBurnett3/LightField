@@ -96,6 +96,7 @@ namespace Lf
           WriteDemo,
           ProofDepth,      
           WriteDepthImg,
+          SliceOblique,
           TaskDefsNum,
         };
 
@@ -103,9 +104,7 @@ namespace Lf
         {
           Unknown   = -1,
           DoubleFrustum,
-          ObliqueSliceDice,
-          Slice,
-          MVP,
+          Oblique,
         };
 
       // Members
