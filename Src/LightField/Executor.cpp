@@ -791,7 +791,7 @@ int Executor::createObliqueTasks(void)
 {
 int rc = 0;
 
-  if (_job.isTask(Core::Job::ProofImage) && !_job.isTask(Core::Job::SliceOblique))
+  if (_job.isTask(Core::Job::ProofImage))
   {
   Task::ProofImage  *pT = new Task::ProofImage("ObliqueProof");
 
