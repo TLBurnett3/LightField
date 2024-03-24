@@ -503,6 +503,7 @@ void Executor::renderOblique(Render::Camera &camera,const glm::vec2 &rA)
   glm::vec2 r  = glm::radians(rA);
   glm::mat4 mT = glm::shearY3D(_job.sceneTransform(),-r[0],r[1]);
  
+    _shader.bindCameraPosition(glm::vec3(camera.view()[3]));
     _modMan.render(camera,_shader,mT);
   }    
     
