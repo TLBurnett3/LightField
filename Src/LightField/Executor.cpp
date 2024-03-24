@@ -385,7 +385,6 @@ glm::vec3   vD = glm::normalize(mT[1]); // we render along the y axis of the VVT
   {
   glm::vec3 vE(vP + (vD * camera.zNear()));
 
-    glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
     glDepthRange(0.5f,1.0f);
 
@@ -401,7 +400,6 @@ glm::vec3   vD = glm::normalize(mT[1]); // we render along the y axis of the VVT
   {
   glm::vec3 vE(vP + (vD * -camera.zNear()));
 
-    glFrontFace(GL_CW);
     glCullFace(GL_FRONT);
     glDepthRange(0.5f,0.0f);
 

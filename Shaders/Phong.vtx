@@ -1,0 +1,24 @@
+#version 440  
+
+uniform mat4  mMVP; 
+uniform mat4  mMV;
+uniform mat3  mN; 
+
+layout(location = 0)in vec3 vVertex; 
+layout(location = 1)in vec2 vTexCoord; 
+layout(location = 2)in vec3 vNormal; 
+
+out vec3 vV;
+out vec2 vTC;
+out vec3 vN;
+out vec3 vFPos;
+
+void main()
+{     
+  vV   = vec3(mMV * vec4(vVertex,1));
+  vN   = normalize(mN * vNormal); 
+  vTC  = vTexCoord;
+
+  vFPos       = vec3(mMV  * vec4(vVertex,1));
+  gl_Position = mMVP * vec4(vVertex,1); 
+} 
