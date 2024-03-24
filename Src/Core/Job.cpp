@@ -150,6 +150,30 @@ JSon::Value &v = doc["Models"];
 
 
 //---------------------------------------------------------------------
+// parseLight
+//---------------------------------------------------------------------
+int Job::parseLight(JSon::Value &doc)
+{
+int              rc = 0;
+JSon::Value &v = doc["Light"];
+
+  if (!v.is_null())
+  {
+		std::cout << std::endl;
+
+		JSon::parse(v, "Ambient",        _lightDef._ambient,          false);
+		JSon::parse(v, "Diffuse",        _lightDef._diffuse,          false);
+		JSon::parse(v, "Specular",       _lightDef._specular,         false);
+		JSon::parse(v, "Position",       _lightDef._position,         false);
+
+		rc = 0;
+  }
+
+  return rc;
+}
+
+
+//---------------------------------------------------------------------
 // parseTasks
 //---------------------------------------------------------------------
 int Job::parseTasks(JSon::Value &doc)
@@ -209,7 +233,7 @@ int rc = 0;
   rc |= JSon::parse(doc,"Scene",_mScT);
 
   rc |= parseModels(doc);
-//  rc |= parseLights(doc);
+  rc |= parseLight(doc);
   rc |= parseTasks(doc);
  
   return rc;
@@ -270,37 +294,26 @@ void Job::print(std::ostream &o)
   size_t n = _modelDefs.size();
   char buf2[32];
 
-    for (size_t i = 0;i < n;i++)
-      o << "Model Path[" << i << "]: " << _modelDefs[i]._mPath << std::endl;
-  }
-
-#if (0)
-  {
-  size_t n = _lightLst.size();
-  char buf2[128];
+   o << "Model Definition" << std::endl;
 
     for (size_t i = 0;i < n;i++)
-    {
-      sprintf_s(buf2,"Light %zd",i+1);
-      o << buf2 << std::endl;
-
-      sprintf_s(buf2,"  %15s: (%f,%f,%f)","Position",_lightLst[i].position().x,_lightLst[i].position().y,_lightLst[i].position().z);
-      o << buf2 << std::endl;
-
-      sprintf_s(buf2,"  %15s: (%f,%f,%f,%f)","Ambient",
-            _lightLst[i].ambient().r,_lightLst[i].ambient().g,_lightLst[i].ambient().b,_lightLst[i].ambient().w);
-      o << buf2 << std::endl;
-
-      sprintf_s(buf2,"  %15s: (%f,%f,%f,%f)","Diffuse",
-            _lightLst[i].diffuse().r,_lightLst[i].diffuse().g,_lightLst[i].diffuse().b,_lightLst[i].diffuse().w);
-      o << buf2 << std::endl;
-
-      sprintf_s(buf2,"  %15s: (%f,%f,%f,%f)","Specular",
-           _lightLst[i].specular().r,_lightLst[i].specular().g,_lightLst[i].specular().b,_lightLst[i].specular().w);
-      o << buf2 << std::endl;
-    }
+      o << "  Model Path[" << i << "]: " << _modelDefs[i]._mPath << std::endl;
   }
-#endif
+
+  o << "Light Definition" << std::endl;
+
+  o << "  Position: " << _lightDef._position.x << "  " 
+                      << _lightDef._position.y << "  " 
+                      << _lightDef._position.z << std::endl;
+  o << "  Ambient: "  << _lightDef._ambient.x << "  " 
+                      << _lightDef._ambient.y << "  " 
+                      << _lightDef._ambient.z << std::endl;
+  o << "  Diffuse: "  << _lightDef._diffuse.x << "  " 
+                      << _lightDef._diffuse.y << "  " 
+                      << _lightDef._diffuse.z << std::endl;
+  o << "  Specular: " << _lightDef._specular.x << "  " 
+                      << _lightDef._specular.y << "  " 
+                      << _lightDef._specular.z << std::endl;
 }
 
 
@@ -313,7 +326,7 @@ Job::Job(void) : _filePath(),
                  _renderer("DoubleFrustum"),
                  _renderType(DoubleFrustum),
                  _modelDefs(),   
- //                _lightLst(),
+                 _lightDef(),
                  _numHogels(0),
                  _hogelSize(0),
                  _hogelPitch(_hogelSize),

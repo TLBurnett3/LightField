@@ -39,9 +39,7 @@
 #include "Render/Def.h"
 #include "Core/Export.h"
 #include "Render/Model.h"
-//#include "Common/Light.h"
 #include "Render/Camera.h"
-//#include "Render/Control.h"
 #include "Render/Shader.h"
 //---------------------------------------------------------------------
 
@@ -77,8 +75,6 @@ namespace Lf
       private:
       protected:
         ModelLst             _modelLst;
-   //     Common::LightLst     _lightLst;
-        float                _maxLights;
         Model               *_imagePlaneModel;
 
         glm::vec3 _max;
@@ -110,9 +106,6 @@ namespace Lf
 
           return _modelLst[i];
         }
-
- //       void setLightList(const Common::LightLst &lst);
- //       void addLight(const Common::Light &light);
 
         EXPORT void print(std::ostream &s);
         EXPORT void render(const Camera &camera,const Shader &shader,const glm::mat4 &mT);

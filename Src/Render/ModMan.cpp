@@ -194,7 +194,6 @@ return rc;
 // ModMan
 //---------------------------------------------------------------------
 ModMan::ModMan(void) : _modelLst(),
-                       _maxLights(8),
                        _max(-FLT_MAX),
                        _min(FLT_MIN),
                        _cen(0),

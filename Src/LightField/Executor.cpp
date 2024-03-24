@@ -592,7 +592,6 @@ glm::ivec2      nH      = _job.numHogels();
 uint32_t        n       = 0;
 Core::Timer     tH;
 
-
   glfwMakeContextCurrent(_pWindow);
   glfwSetWindowSize     (_pWindow,nH.x,nH.y);
   glfwSetWindowTitle    (_pWindow,"Lightfield - Obliques");
@@ -695,8 +694,8 @@ std::filesystem::path  vShader(cPath);
 std::filesystem::path  fShader(cPath);
 int                    rc = 0;
 
-  vShader /= "Shaders/Default3D.vtx";
-  fShader /= "Shaders/Default3D.frg";
+  vShader /= "Shaders/Phong.vtx";
+  fShader /= "Shaders/Phong.frg";
  
   rc |= _shader.addVertexShader(vShader);
   rc |= _shader.addFragmentShader(fShader);
@@ -927,6 +926,11 @@ int rc  = parseJob(pCfg);
 int Executor::exec(void) 
 {
 int rc      = 0;
+
+  _shader.bindLightPosition(_job.lightPosition());
+  _shader.bindLightAmbient (_job.lightAmbient());
+  _shader.bindLightDiffuse (_job.lightDiffuse());
+  _shader.bindLightSpecular(_job.lightSpecular());
 
   if (_job.renderType() == Core::Job::RenderTypes::DoubleFrustum)
     renderDoubleFrustumPlane();

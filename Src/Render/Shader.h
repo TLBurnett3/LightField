@@ -74,9 +74,10 @@ namespace Lf
         GLint             _locMatN;
         GLint             _locTexSampler;
 
-        GLint             _locMatMatProp;
-        GLint             _locMatLightProp;
-        GLint             _locMatLightSwitch;
+        GLint             _locLightPosition;
+        GLint             _locLightAmbient;
+        GLint             _locLightDiffuse;
+        GLint             _locLightSpecular;
 
       public:
 
@@ -99,7 +100,7 @@ namespace Lf
         void setName(const char *pName)
         { _sName = pName; }
 
-        EXPORT int   addVertexShader(const std::filesystem::path &fName)
+        EXPORT int addVertexShader(const std::filesystem::path &fName)
         { return addSourceFile(fName,_vertexShaderLst); }
 
         EXPORT int addGeometryShader(const std::filesystem::path &fName)
@@ -110,50 +111,44 @@ namespace Lf
 
         EXPORT void bindMVP(const glm::mat4 &mT) const
         { 
-          assert(_locMatMVP >= 0);
           glUniformMatrix4fv(_locMatMVP,1,false,glm::value_ptr(mT)); 
         }
 
         EXPORT void setTextureSampler(const int t) const
         { 
-          if (_locTexSampler != -1)
-            glUniform1i(_locTexSampler,t);
+          glUniform1i(_locTexSampler,t);
         }
 
         EXPORT void bindMV(const glm::mat4 &mT) const
         { 
-          if (_locMatMV != -1)
-            glUniformMatrix4fv(_locMatMV,1,false,glm::value_ptr(mT)); 
+          glUniformMatrix4fv(_locMatMV,1,false,glm::value_ptr(mT)); 
         }
 
         EXPORT void bindN(const glm::mat3 &mT) const
         { 
-          if (_locMatN != -1)
-            glUniformMatrix3fv(_locMatN,1,false,glm::value_ptr(mT)); 
+          glUniformMatrix3fv(_locMatN,1,false,glm::value_ptr(mT)); 
+        }
+
+        EXPORT void bindLightAmbient(const glm::vec4 &cA) const
+        { 
+          glUniform4fv(_locLightAmbient,1,glm::value_ptr(cA)); 
+        }
+
+        EXPORT void bindLightDiffuse(const glm::vec4 &cD) const
+        { 
+          glUniform4fv(_locLightDiffuse,1,glm::value_ptr(cD)); 
+        }
+
+        EXPORT void bindLightSpecular(const glm::vec4 &cS) const
+        { 
+          glUniform4fv(_locLightSpecular,1,glm::value_ptr(cS)); 
+        }
+
+        EXPORT void bindLightPosition(const glm::vec3 &vP) const
+        { 
+          glUniform3fv(_locLightPosition,1,glm::value_ptr(vP)); 
         }
   
-        EXPORT void bindMaterial(const glm::mat4 &mM) const
-        { 
-          if (_locMatMatProp != -1)
-            glUniformMatrix4fv(_locMatMatProp,1,false,glm::value_ptr(mM)); 
-        }
-
-        EXPORT void bindLight(const glm::mat4 &mL,int id,int frustum) const
-        {
-        std::string switchName = std::string("L[") + std::to_string(id) + "]._switch";
-        std::string propName = std::string("L[") + std::to_string(id) + "]._mL";
-        std::string frustName = std::string("frustum");
-
-          //first enable switch for this light in the shader
-          glUniform1i(glGetUniformLocation(_programShaderId, switchName.c_str()), true);
-
-          //second bind the light properties matrix for the shader
-          glUniformMatrix4fv(glGetUniformLocation(_programShaderId, propName.c_str()), 1, false, glm::value_ptr(mL));
-
-          //lastly set whether rendering front or back frustums
-          glUniform1i(glGetUniformLocation(_programShaderId, frustName.c_str()), frustum);
-        }
-
         EXPORT virtual int compile(void);
  
         EXPORT Shader(void);

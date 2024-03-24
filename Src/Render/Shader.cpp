@@ -335,40 +335,54 @@ int rc = -1;
         std::cout << "Failed to locate MVPMatrix\n";
         rc = -1;
       }
-/*
+
       _locMatMV     = glGetUniformLocation(_programShaderId,"mMV");     
       if (_locMatMV < 0)
       {
        std::cout << "Failed to locate ModelView Matrix\n";
-        rc = -1;
+ //       rc = -1;
       }
 
       _locMatN     = glGetUniformLocation(_programShaderId,"mN");     
       if (_locMatN < 0)
       {
         std::cout << "Failed to locate Normal Matrix\n";
-        rc = -1;
+ //       rc = -1;
       }  
-
-      _locMatMatProp     = glGetUniformLocation(_programShaderId,"mM");     
-      if (_locMatMatProp < 0)
-      {
-        std::cout << "Failed to locate Material Properties Matrix\n";
-        rc = -1;
-      }  
-*/
-      //_locMatLightProp     = glGetUniformLocation(_programShaderId,"mL");     
-      //if (_locMatLightProp < 0)
-      //{
-      //  std::cout << "Failed to locate Light Properties Matrix\n";
-      //  rc = -1;
-      //}  
 
       _locTexSampler     = glGetUniformLocation(_programShaderId,"texSampler");     
       if (_locTexSampler < 0)
       {
         std::cout << "Failed to locate Tex Sampler\n";
-     //   rc = -1;
+        rc = -1;
+      } 
+
+      _locLightPosition     = glGetUniformLocation(_programShaderId,"lightPosition");     
+      if (_locLightPosition < 0)
+      {
+        std::cout << "Failed to locate Light Position\n";
+        rc = -1;
+      } 
+
+      _locLightAmbient     = glGetUniformLocation(_programShaderId,"lightAmbient");     
+      if (_locLightAmbient < 0)
+      {
+        std::cout << "Failed to locate Ambient Light\n";
+        rc = -1;
+      } 
+
+      _locLightDiffuse     = glGetUniformLocation(_programShaderId,"lightDiffuse");     
+      if (_locLightDiffuse < 0)
+      {
+        std::cout << "Failed to locate Diffuse Light\n";
+        rc = -1;
+      } 
+
+      _locLightSpecular     = glGetUniformLocation(_programShaderId,"lightSpecular");     
+      if (_locLightSpecular < 0)
+      {
+        std::cout << "Failed to locate Specular Light\n";
+        rc = -1;
       } 
     }
 
@@ -382,8 +396,6 @@ int rc = -1;
 
   return rc;
 }
-
-
 
 
 
@@ -402,13 +414,13 @@ Shader::Shader(void) : _sName("Unknown"),
                        _locMatMV(-1),
                        _locMatN(-1),
                        _locTexSampler(-1),
-                       _locMatMatProp(-1),
-                       _locMatLightProp(-1),
-                       _locMatLightSwitch(-1)
-
+                       _locLightPosition(-1),
+                       _locLightAmbient(-1),
+                       _locLightDiffuse(-1),
+                       _locLightSpecular(-1)
 {
-
 }
+
 
 //---------------------------------------------------------------------
 // ~Shader

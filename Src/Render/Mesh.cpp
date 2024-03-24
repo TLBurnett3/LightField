@@ -73,7 +73,7 @@ bool      visible(true);
     shader.bindMVP(mMVP);
     shader.bindMV(mMV);
     shader.bindN(mN);
-    shader.bindMaterial(_pTexture->properties());
+  //  shader.bindMaterial(_pTexture->properties());
 
     _pTexture->bind();
     _pObject->render();

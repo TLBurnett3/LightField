@@ -75,6 +75,21 @@ namespace Lf
         {}
     };
 
+    class LightDef
+    {
+      public:
+        glm::vec4   _ambient;
+        glm::vec4   _diffuse;
+        glm::vec4   _specular;
+        glm::vec3   _position;
+
+        LightDef(void): _ambient(1.0f),
+                        _diffuse(0.0f),
+                        _specular(0.0),
+                        _position(1.0f)
+        {}
+    };
+
     class Job
     {
       // Defines
@@ -118,7 +133,7 @@ namespace Lf
         int                     _renderType;
 
         ModelDefs               _modelDefs;
-  //      LightLst                _lightLst;
+        LightDef                _lightDef;
 
         glm::ivec2              _numHogels;
         glm::ivec2              _hogelSize;             
@@ -141,7 +156,7 @@ namespace Lf
       private:
       protected:
 
- //       int  parseLights    (JSon::Value &doc);
+        int  parseLight     (JSon::Value &doc);
         int  parseModels    (JSon::Value &doc);
         int  parseTasks     (JSon::Value &doc);
         int  parseDocument  (JSon::Value &doc);
@@ -198,6 +213,18 @@ namespace Lf
 
         const bool isTask(TaskDefs t)
         { return _tasks[t]; }
+
+        const glm::vec4 lightAmbient(void)
+        { return _lightDef._ambient; }
+
+        const glm::vec4 lightDiffuse(void)
+        { return _lightDef._diffuse; }
+
+        const glm::vec4 lightSpecular(void)
+        { return _lightDef._specular; }
+
+        const glm::vec3 lightPosition(void)
+        { return _lightDef._position; }
 
         EXPORT void print(std::ostream &o);
 
