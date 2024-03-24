@@ -384,6 +384,13 @@ int rc = -1;
         std::cout << "Failed to locate Specular Light\n";
         rc = -1;
       } 
+
+      _locCameraPosition     = glGetUniformLocation(_programShaderId,"cameraPosition");     
+      if (_locCameraPosition < 0)
+      {
+        std::cout << "Failed to locate Camera Position\n";
+        rc = -1;
+      } 
     }
 
     if (rc == 0)
@@ -417,7 +424,8 @@ Shader::Shader(void) : _sName("Unknown"),
                        _locLightPosition(-1),
                        _locLightAmbient(-1),
                        _locLightDiffuse(-1),
-                       _locLightSpecular(-1)
+                       _locLightSpecular(-1),
+                       _locCameraPosition(-1)
 {
 }
 

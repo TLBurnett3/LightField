@@ -79,6 +79,8 @@ namespace Lf
         GLint             _locLightDiffuse;
         GLint             _locLightSpecular;
 
+        GLint             _locCameraPosition;
+
       public:
 
       // Methods
@@ -148,7 +150,11 @@ namespace Lf
         { 
           glUniform3fv(_locLightPosition,1,glm::value_ptr(vP)); 
         }
-  
+
+        EXPORT void bindCameraPosition(const glm::vec3 &vP) const
+        { 
+          glUniform3fv(_locCameraPosition,1,glm::value_ptr(vP)); 
+        }
         EXPORT virtual int compile(void);
  
         EXPORT Shader(void);

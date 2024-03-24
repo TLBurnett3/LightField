@@ -1,15 +1,15 @@
 {
   "JobName": "Orchid",
   "Renderer": "DF",
-  "OutputPath": "\\Tmp\\Orchid",
+  "OutputPath": "/Tmp/Orchid",
   "FieldOfView": 90.0,
   "HogelSize": [ 512, 512 ],
-  "NumHogels": [ 1000, 1000 ],
+  "NumHogels": [ 512, 512 ],
   "SliceMem": 8,
   "Tasks": {
     "WriteAvi": false,
     "WriteImg": false,
-    "ProofDepth": true,
+    "ProofDepth": false,
     "WriteDepthImg": false
   },
   "ViewVolume": {
@@ -24,7 +24,7 @@
   },
   "Light": {
     "Ambient": [ 0.2, 0.2, 0.2, 0.0 ],
-    "Diffuse": [ 0.8, 0.8, 0.8, 0.0 ],
+    "Diffuse": [ 1.0, 1.0, 1.0, 0.0 ],
     "Specular": [ 0.0, 0.0, 0.0, 0.0 ],
     "Position": [ 10.0, 10.0, 10.0, 1.0 ]
   },

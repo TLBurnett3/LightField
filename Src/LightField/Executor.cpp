@@ -390,6 +390,7 @@ glm::vec3   vD = glm::normalize(mT[1]); // we render along the y axis of the VVT
 
     camera.backFrustum(vE,-vD,vU);
 
+    _shader.bindCameraPosition(vE);
     _modMan.render(camera,_shader,_job.sceneTransform());
 
     glFlush();
@@ -405,6 +406,7 @@ glm::vec3   vD = glm::normalize(mT[1]); // we render along the y axis of the VVT
 
     camera.frontFrustum(vE,vD,-vU);
 
+    _shader.bindCameraPosition(vE);
     _modMan.render(camera,_shader,_job.sceneTransform());
   }   
 
