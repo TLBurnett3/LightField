@@ -4,13 +4,13 @@
   "OutputPath": "\\Tmp\\Orchid",
   "FieldOfView": 90.0,
   "HogelSize": [ 512, 512 ],
-  "NumHogels": [ 1000, 1000 ],
-  "SliceMem": 8,
+  "NumHogels": [ 600, 600],
+  "SliceMem": 24,
   "Tasks": {
     "WriteAvi": false,
     "WriteImg": false,
     "ProofDepth": false,
-    "SliceNDice": true
+    "SliceNDice": false
   },
   "ViewVolume": {
     "Translate": [ 0.0, 0.0, 0.0 ],

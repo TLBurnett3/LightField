@@ -71,8 +71,8 @@ namespace Lf
 
         uint16_t                _scatterType;
 
-        float                 _zNear;
-        float                 _zFar;
+        float                   _zNear;
+        float                   _zFar;
 
       public:
 
@@ -102,6 +102,9 @@ namespace Lf
 
         EXPORT void setZFar(const float zF)
         { _zFar  = zF; }
+
+        EXPORT void setScatterType(uint16_t t)
+        { _scatterType = t; }
 
         EXPORT void create  (const glm::ivec2 &nH,const glm::ivec2 &hS,const uint16_t bpp);
 

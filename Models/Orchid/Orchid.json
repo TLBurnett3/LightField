@@ -4,7 +4,7 @@
   "OutputPath": "/Tmp/Orchid",
   "FieldOfView": 90.0,
   "HogelSize": [ 512, 512 ],
-  "NumHogels": [ 512, 512 ],
+  "NumHogels": [ 600, 600 ],
   "SliceMem": 8,
   "Tasks": {
     "WriteAvi": false,

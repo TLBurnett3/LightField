@@ -797,6 +797,7 @@ int rc = 0;
 
     pT->create(_job.hogelSize(),_job.numHogels(),3);
     pT->setPathFile(_job.outputPath(),"ObliqueProof");
+    pT->setScatterType(Task::ProofImage::ObliqueScatter);
     pT->start();
 
     _imgTaskLst.push_back(pT);
