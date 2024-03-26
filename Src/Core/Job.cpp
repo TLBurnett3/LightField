@@ -226,6 +226,7 @@ int rc = 0;
     _hogelPitch = _hogelSize;
 		JSon::parse(doc, "HogelPitch",           _hogelPitch);
 		JSon::parse(doc, "NumHogels",            _numHogels);
+		JSon::parse(doc, "zNearFar",             _zNearFar);
 		JSon::parse(doc, "SliceMem",             _sliceMem);
   }
 
@@ -333,7 +334,7 @@ Job::Job(void) : _filePath(),
                  _mVVT(1),
                  _mScT(1),
                  _fov(90),
-                 _zNearFar(0.01f,1.0f),
+                 _zNearFar(0.001f,1.0f),
                  _sliceMem(8),
                  _outputPath(),
                  _tasks()
