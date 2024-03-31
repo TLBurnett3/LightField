@@ -14,3 +14,21 @@ The Double Frustum algorithm renders radiance image views using two independent 
 The Oblique Slice and Dice algorithm renders directions using sheared orthographic projections; after which, every oblique pixel must be sampled into the radiance image.
 
 ![Oblique Slice and Dice](/Doc/Images/Oblique.png)
+
+## Build using CMake
+Building this project is a two-step process.  First, Group1 and Group5 of [3rdPartyLib](https://github.com/TLBurnett3/3rdPartyLibs) are required to be built and installed on the development/build platform.  Second, using CMake a platform specific make solution must be built and executed to create a build solution.  Currently, only Windows has been tested.
+
+## Running Lightfield
+The Lightfield executable requires a JSon file for definiting the execution parameters.  A few examples are included within the model directories: for example ./Models/Orchid/Orchid.json
+
+### JSon File Description
+
+##### JobName
+Name of the Job
+
+#### Render
+Type of radiance image rendering:  DF or Oblique
+
+#### Output Path 
+Output directory
+
