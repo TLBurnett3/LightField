@@ -1,6 +1,6 @@
 message("Assimp Variables")
 
-set(ASSIMP_VERSION 142)
+set(ASSIMP_VERSION 140)
 set(ASSIMP_INCLUDE_DIR                          ${3RDPARTY_INC_DIR})
 set(ASSIMP_LIBRARY                              ${3RDPARTY_LIB_DIR}/assimp-vc${ASSIMP_VERSION}-mt.lib)
 
