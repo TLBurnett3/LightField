@@ -12,7 +12,7 @@
     "WriteImg": false,
     "ProofDepth": false,
     "WriteDepthImg": false,
-    "SliceOblique": false
+    "SliceNDice": false
   },
   "ViewVolume": {
     "Translate": [ 0.0, 0.0, 0.0 ],
