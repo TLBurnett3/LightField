@@ -28,6 +28,7 @@ Building this project is a two-step process.  First, Group1 and Group5 of [3rdPa
 The Lightfield executable requires a JSon file for definiting the execution parameters.  A few examples are included within the model directories: 
 
 Double Frustum example: Lightfield ./Models/Orchid/Orchid.json
+
 Oblique Slice & Dice example: Lightfield ./Models/Orchid/OrchidSnD.json
 
 ### JSon File Description
