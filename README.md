@@ -27,7 +27,8 @@ Building this project is a two-step process.  First, Group1 and Group5 of [3rdPa
 ## Running Lightfield
 The Lightfield executable requires a JSon file for definiting the execution parameters.  A few examples are included within the model directories: 
 
-For example: Lightfield ./Models/Orchid/Orchid.json
+Double Frustum example: Lightfield ./Models/Orchid/Orchid.json
+Oblique Slice & Dice example: Lightfield ./Models/Orchid/OrchidSnD.json
 
 ### JSon File Description
 
@@ -62,7 +63,7 @@ List of post-render tasks available for execution:
 * WriteImg - Write hogels as png files
 * ProofDepth - Generate a proof image of the hogel projection depth
 * WriteDepthImg - Write hogel depth images as png files 
-* SliceOblique - Slice Oblique images and write hogels by row as AVI files
+* SliceNDice - Slice Oblique images and write hogels by row as AVI files
 
 #### ViewVolume
 Defines a view volume transform matrix (VVT).  The radiance image camera definitions are created from the VVT.

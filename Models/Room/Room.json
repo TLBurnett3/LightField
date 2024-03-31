@@ -8,7 +8,7 @@
   "zNearFar" : [0.1, 1000.0],
   "SliceMem": 24,
   "Tasks": {
-    "WriteAvi": false,
+    "WriteAvi": true,
     "WriteImg": false,
     "ProofDepth": false,
     "WriteDepthImg": false,
