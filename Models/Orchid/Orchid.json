@@ -4,13 +4,15 @@
   "OutputPath": "/Tmp/Orchid",
   "FieldOfView": 90.0,
   "HogelSize": [ 256, 256 ],
-  "NumHogels": [ 400, 400 ],
-  "SliceMem": 8,
+  "NumHogels": [ 500, 500 ],
+  "zNearFar": [0.001, 1.0],
+  "SliceMem": 24,
   "Tasks": {
     "WriteAvi": false,
     "WriteImg": false,
     "ProofDepth": false,
-    "WriteDepthImg": false
+    "WriteDepthImg": false,
+    "SliceOblique": false
   },
   "ViewVolume": {
     "Translate": [ 0.0, 0.0, 0.0 ],
@@ -19,7 +21,7 @@
   },
   "Scene": {
     "Translate": [ -0.08, 0.0, 0.0 ],
-    "Scale": [ 1.0, 1.0, 1.0 ],
+    "Scale": [ 1.2, 1.2, 1.2 ],
     "Rotate": [ 0.0, 0.0, 0.0 ]
   },
   "Light": {

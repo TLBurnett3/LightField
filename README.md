@@ -24,11 +24,46 @@ The Lightfield executable requires a JSon file for definiting the execution para
 ### JSon File Description
 
 ##### JobName
-Name of the Job
+Name of the Job.
 
 #### Render
-Type of radiance image rendering:  DF or Oblique
+Type of radiance image rendering:  DF or Oblique.
 
 #### Output Path 
-Output directory
+Output directory.
 
+#### FieldOfView
+Perspective camera frustum field of view for Double Frustum algorithm.
+
+#### HogelSize
+Size of the hogel micro-image in pixels.  Commonly referred to as directional resolution.
+
+#### NumHogels
+Defines the number of hogel micro-images in a radiance image.
+
+#### zNearFar
+The near and far values for the camera clip planes.
+
+#### Slice Mem
+Memory (in gigabytes) reserved for pixel swizzle for Oblique Slice and Dice algorithm
+
+#### Tasks
+List of post-render tasks available for execution:
+* ProofImage - Write hogel proof image (center view and 8 extreme angle views)
+* WriteAvi - Write hogels by row as AVI files
+* WriteImg - Write hogels as png files
+* ProofDepth - Generate a proof image of the hogel projection depth
+* WriteDepthImg - Write hogel depth images as png files 
+* SliceOblique - Slice Oblique images and write hogels by row as AVI files
+
+#### ViewVolume
+Defines a view volume transform matrix (VVT).  The radiance image camera definitions are created from the VVT.
+
+#### Scene
+Define a scene transform matrix.
+
+#### Light
+Defines a single light for the scene.
+
+#### Models
+Defines a list of models and a model transform matrix.
