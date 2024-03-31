@@ -15,11 +15,19 @@ The Oblique Slice and Dice algorithm renders directions using sheared orthograph
 
 ![Oblique Slice and Dice](/Doc/Images/Oblique.png)
 
+## Source Code
+* Src/Core - Contains the base code for the project
+* Src/Render - Contains a simple OpenGL render engine
+* Src/Tasks - Contains the algorithm processing tasks
+* Src/Lightfield - Contains the main and executor for this project
+
 ## Build using CMake
 Building this project is a two-step process.  First, Group1 and Group5 of [3rdPartyLib](https://github.com/TLBurnett3/3rdPartyLibs) are required to be built and installed on the development/build platform.  Second, using CMake a platform specific make solution must be built and executed to create a build solution.  Currently, only Windows has been tested.
 
 ## Running Lightfield
-The Lightfield executable requires a JSon file for definiting the execution parameters.  A few examples are included within the model directories: for example ./Models/Orchid/Orchid.json
+The Lightfield executable requires a JSon file for definiting the execution parameters.  A few examples are included within the model directories: 
+
+For example: Lightfield ./Models/Orchid/Orchid.json
 
 ### JSon File Description
 
@@ -66,4 +74,4 @@ Define a scene transform matrix.
 Defines a single light for the scene.
 
 #### Models
-Defines a list of models and a model transform matrix.
+Defines a list of models and transforms.
