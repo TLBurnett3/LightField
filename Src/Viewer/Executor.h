@@ -40,6 +40,8 @@
 
 // LightField
 #include "Viewer/RadImage.h"
+#include "Render/VtxArrayObj.h"
+#include "Render/Texture.h"
 //---------------------------------------------------------------------
 
 
@@ -63,7 +65,11 @@ namespace Lf
         RadImage                  *_pRadImage;
         glm::ivec2                _wS;
 
-        glm::ivec2                _vIdx;
+        glm::vec2                 _vA;
+        float                     _fov;
+
+        Render::VtxArrayObj       _vtxAO;
+        Render::Texture           _tex;
 
       public:   
 
@@ -74,8 +80,29 @@ namespace Lf
 
         void GLInfo(void);
 
-      public:
+        int  initGLFW(void);
+        int  initGraphics(void);
 
+        void motionUpdate(GLFWwindow *pW);
+
+      public:
+        void  setViewAngle(const glm::vec2 &vA)
+        { 
+        glm::vec2 hA = glm::vec2(_fov * 0.5f);
+
+          _vA = vA; 
+          _vA = glm::clamp(_vA,-hA,hA);
+        }
+
+        void  incViewAngle(const glm::vec2 &vA)
+        {
+        glm::vec2 hA = glm::vec2(_fov * 0.5f);
+
+          _vA += vA;
+          _vA = glm::clamp(_vA,-hA,hA);
+        }
+
+        void  fetchView(const glm::ivec2 &idx,cv::Mat &img);
         int   init(const char *pCfg,const uint32_t g);
         int   exec(void);
         void  destroy(void);

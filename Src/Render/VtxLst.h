@@ -39,6 +39,7 @@
 
 // LightField
 #include "Render/Def.h"
+#include "Core/Export.h"
 //---------------------------------------------------------------------
 
 
@@ -55,29 +56,29 @@ namespace Lf
         glm::vec3             _vMax;
 
       public:
-        void  reset(void)
+        EXPORT void  reset(void)
         {
           _vMin = glm::vec3(FLT_MAX);
           _vMax = glm::vec3(-FLT_MAX);
         }
 
-        const glm::vec3 vMin(void) const
+        EXPORT const glm::vec3 vMin(void) const
         { return _vMin; }
 
-        const glm::vec3 vMax(void) const
+        EXPORT const glm::vec3 vMax(void) const
         { return _vMax; }
 
-        glm::vec3 dim(void)
+        EXPORT glm::vec3 dim(void)
         { return (_vMax - _vMin); }
       
-        void  bound(const glm::vec3 &v)
+        EXPORT void  bound(const glm::vec3 &v)
         {
           _vMin = glm::min(_vMin,v);
           _vMax = glm::max(_vMax,v);
         }
 
-        VtxLst() : _vMin(FLT_MAX),
-                   _vMax(-FLT_MAX)
+        EXPORT VtxLst() : _vMin(FLT_MAX),
+                          _vMax(-FLT_MAX)
         {}
     };
 
@@ -88,10 +89,10 @@ namespace Lf
         glm::vec3 _N;
         glm::vec2 _T;
 
-      VtxVNT(const glm::vec3 &v,const glm::vec3 &n,const glm::vec2 &t) : _V(v),_N(n),_T(t)
+      EXPORT VtxVNT(const glm::vec3 &v,const glm::vec3 &n,const glm::vec2 &t) : _V(v),_N(n),_T(t)
       {}
 
-      VtxVNT(void) : _V(),_N(),_T()
+      EXPORT VtxVNT(void) : _V(),_N(),_T()
       {}
     };
 
@@ -101,10 +102,10 @@ namespace Lf
         std::vector<VtxVNT>   _vtxLst;
 
       public:
-        void  reserve(size_t n)
+        EXPORT void  reserve(size_t n)
         { _vtxLst.reserve(n); }
 
-        void  multiply(const glm::mat4 &m)
+        EXPORT void  multiply(const glm::mat4 &m)
         {
         size_t n = _vtxLst.size();
 
@@ -115,7 +116,7 @@ namespace Lf
           _vMax = glm::vec3(m * glm::vec4(_vMax,1));
         }
 
-        void  normalize(void)
+        EXPORT void  normalize(void)
         {
         glm::vec3 vS  = (_vMax - _vMin);
         glm::vec3 vT  = (_vMax + _vMin) * 0.5f;
@@ -127,7 +128,7 @@ namespace Lf
           multiply(mT);
         }
 
-        void  normalizeAndTransform(const glm::mat4 &m)
+        EXPORT void  normalizeAndTransform(const glm::mat4 &m)
         {
         glm::vec3 vS  = (_vMax - _vMin);
         glm::vec3 vT  = (_vMax + _vMin) * 0.5f;
@@ -140,18 +141,21 @@ namespace Lf
           multiply(mT);
         }
 
-        void  add(const VtxVNT &vtx)
+        EXPORT void  add(const VtxVNT &vtx)
         { 
           bound(vtx._V);
 
           _vtxLst.push_back(vtx); 
         }
 
-        void  add(const glm::vec3 &v,const glm::vec3 &n,const glm::vec2 &t)
+        EXPORT void  add(const glm::vec3 &v,const glm::vec3 &n,const glm::vec2 &t)
         { add(VtxVNT(v,n,t)); }
 
-        VtxVNTLst(void) : VtxLst(),
-                          _vtxLst()
+        EXPORT int createQuadXY(const glm::vec3 &vP,glm::vec2 &vS);
+        EXPORT int createQuadXZ(const glm::vec3 &vP,glm::vec2 &vS);
+
+        EXPORT VtxVNTLst(void) : VtxLst(),
+                                _vtxLst()
         {
         }
     };
@@ -163,10 +167,10 @@ namespace Lf
         glm::vec3 _V;
         glm::vec3 _N;
 
-      VtxVN(const glm::vec3 &V,const glm::vec3 &N) : _V(V),_N(N)
+      EXPORT VtxVN(const glm::vec3 &V,const glm::vec3 &N) : _V(V),_N(N)
       {}
 
-      VtxVN(void) : _V(),_N()
+      EXPORT VtxVN(void) : _V(),_N()
       {}
     };
 
@@ -176,10 +180,10 @@ namespace Lf
         std::vector<VtxVN>   _vtxLst;
 
       public:
-        void  reserve(const uint16_t n)
+        EXPORT void  reserve(const uint16_t n)
         { _vtxLst.reserve(n); }
 
-        void  multiply(const glm::mat4 &m)
+        EXPORT void  multiply(const glm::mat4 &m)
         {
         size_t n = _vtxLst.size();
 
@@ -190,7 +194,7 @@ namespace Lf
           _vMax = glm::vec3(m * glm::vec4(_vMax,1));
         }
 
-        void  normalize(void)
+        EXPORT void  normalize(void)
         {
         glm::vec3 vS  = (_vMax - _vMin);
         glm::vec3 vT  = (_vMax + _vMin) * 0.5f;
@@ -202,7 +206,7 @@ namespace Lf
           multiply(mT);
         }
 
-        void  normalizeAndTransform(const glm::mat4 &m)
+        EXPORT void  normalizeAndTransform(const glm::mat4 &m)
         {
         glm::vec3 vS  = (_vMax - _vMin);
         glm::vec3 vT  = (_vMax + _vMin) * 0.5f;
@@ -215,18 +219,18 @@ namespace Lf
           multiply(mT);
         }
 
-        void  add(const VtxVN &vtx)
+        EXPORT void  add(const VtxVN &vtx)
         { 
           bound(vtx._V);
 
           _vtxLst.push_back(vtx); 
         }
 
-        void  add(const glm::vec3 &V,const glm::vec3 &N)
+        EXPORT void  add(const glm::vec3 &V,const glm::vec3 &N)
         { add(VtxVN(V,N)); }
 
-        VtxVNLst(void) : VtxLst(),
-                         _vtxLst()
+        EXPORT VtxVNLst(void) : VtxLst(),
+                                _vtxLst()
         {
         }
     };
@@ -239,10 +243,10 @@ namespace Lf
         glm::vec3 _V;
         glm::vec2 _T;
 
-      VtxVT(const glm::vec3 &v,const glm::vec2 &t) : _V(v),_T(t)
+      EXPORT VtxVT(const glm::vec3 &v,const glm::vec2 &t) : _V(v),_T(t)
       {}
 
-      VtxVT(void) : _V(),_T()
+      EXPORT VtxVT(void) : _V(),_T()
       {}
     };
 
@@ -253,17 +257,17 @@ namespace Lf
         std::vector<VtxVT>    _vtxLst;
 
       public:
-        void  reset(void)
+        EXPORT void  reset(void)
         {
           _vtxLst.clear();
 
           VtxLst::reset();
         }
 
-        void  reserve(const uint16_t n)
+        EXPORT void  reserve(const uint16_t n)
         { _vtxLst.reserve(n); }
 
-        void  multiply(const glm::mat4 &m)
+        EXPORT void  multiply(const glm::mat4 &m)
         {
         size_t n = _vtxLst.size();
 
@@ -274,7 +278,7 @@ namespace Lf
           _vMax = glm::vec3(m * glm::vec4(_vMax,1));
         }
 
-        void  normalize(void)
+        EXPORT void  normalize(void)
         {
         glm::vec3 vS  = (_vMax - _vMin);
         glm::vec3 vT  = (_vMax + _vMin) * 0.5f;
@@ -286,7 +290,7 @@ namespace Lf
           multiply(mT);
         }
 
-        void  normalizeAndTransform(const glm::mat4 &m)
+        EXPORT void  normalizeAndTransform(const glm::mat4 &m)
         {
         glm::vec3 vS  = (_vMax - _vMin);
         glm::vec3 vT  = (_vMax + _vMin) * 0.5f;
@@ -299,27 +303,25 @@ namespace Lf
           multiply(mT);
         }
 
-        void  add(const VtxVT &vtx)
+        EXPORT void  add(const VtxVT &vtx)
         { 
           bound(vtx._V);
 
           _vtxLst.push_back(vtx); 
         }
 
-        void  add(const glm::vec3 &v,const glm::vec2 &t)
+        EXPORT void  add(const glm::vec3 &v,const glm::vec2 &t)
         { 
           bound(v);
        
           add(VtxVT(v,t));      
         }
 
-        VtxVTLst(void) : VtxLst(),
+        EXPORT VtxVTLst(void) : VtxLst(),
                          _vtxLst()
         {
         }
     };
-
-
 
 
     class VtxV
@@ -327,10 +329,10 @@ namespace Lf
       public:
         glm::vec3 _V;
 
-      VtxV(const glm::vec3 &v) : _V(v)
+      EXPORT VtxV(const glm::vec3 &v) : _V(v)
       {}
 
-      VtxV(void) : _V()
+      EXPORT VtxV(void) : _V()
       {}
     };
 
@@ -341,10 +343,10 @@ namespace Lf
         std::vector<VtxV>     _vtxLst;
 
       public:
-        void  reserve(const uint16_t n)
+        EXPORT void  reserve(const uint16_t n)
         { _vtxLst.reserve(n); }
 
-        void  multiply(const glm::mat4 &m)
+        EXPORT void  multiply(const glm::mat4 &m)
         {
         size_t n = _vtxLst.size();
 
@@ -355,7 +357,7 @@ namespace Lf
           _vMax = glm::vec3(m * glm::vec4(_vMax,1));
         }
 
-        void  normalize(void)
+        EXPORT void  normalize(void)
         {
         glm::vec3 vS  = (_vMax - _vMin);
         glm::vec3 vT  = (_vMax + _vMin) * 0.5f;
@@ -367,7 +369,7 @@ namespace Lf
           multiply(mT);
         }
 
-        void  normalizeAndTransform(const glm::mat4 &m)
+        EXPORT void  normalizeAndTransform(const glm::mat4 &m)
         {
         glm::vec3 vS  = (_vMax - _vMin);
         glm::vec3 vT  = (_vMax + _vMin) * 0.5f;
@@ -380,18 +382,18 @@ namespace Lf
           multiply(mT);
         }
 
-        void  add(const VtxV &vtx)
+        EXPORT void  add(const VtxV &vtx)
         { 
           bound(vtx._V);
 
           _vtxLst.push_back(vtx); 
         }
 
-        void  add(const glm::vec3 &v)
+        EXPORT void  add(const glm::vec3 &v)
         { add(VtxV(v)); }
 
-        VtxVLst(void) : VtxLst(),
-                        _vtxLst()
+        EXPORT VtxVLst(void) : VtxLst(),
+                               _vtxLst()
         {
         }
     };
@@ -401,8 +403,6 @@ namespace Lf
     //---------------------------------------------------------------------   
     typedef std::vector<GLZ>      IdxLst; 
     //---------------------------------------------------------------------
-    int  createQuadXY(const glm::vec3 &vP,VtxVNTLst &vLst,glm::vec2 &d);
-    int  createQuadXZ(const glm::vec3 &vP,VtxVNTLst &vLst,glm::vec2 &d);
   };
 };
 //---------------------------------------------------------------------

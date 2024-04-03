@@ -36,6 +36,7 @@
 
 // LightField
 #include "Render/Def.h"
+#include "Core/Export.h"
 //---------------------------------------------------------------------
 
 
@@ -66,42 +67,42 @@ namespace Lf
       private:
       protected:
       public:
-        const bool isUploaded(void) const
+        EXPORT  const bool isUploaded(void) const
         { return _iDim.z ? true : false; }
 
-        const glm::ivec2 iDim(void) const 
+        EXPORT const glm::ivec2 iDim(void) const 
         {  return glm::ivec2(_iDim); }
 
-        int width(void) const
+        EXPORT int width(void) const
         { return _iDim.x; }
 
-        int height(void) const
+        EXPORT int height(void) const
         { return _iDim.y; }
 
-        int bpp(void) const 
+        EXPORT int bpp(void) const 
         { return _iDim.z; }
 
-        GLuint    textureId(void) const
+        EXPORT GLuint    textureId(void) const
         { return _tId; }
 
-        void setProperties(const glm::mat4 &mP)
+        EXPORT void setProperties(const glm::mat4 &mP)
         { _mProp = mP; }
 
-        const glm::mat4 &properties(void) const
+        EXPORT const glm::mat4 &properties(void) const
         { return _mProp; }
 
-        virtual void  bind(void)
+        EXPORT virtual void  bind(void)
         { glBindTexture(GL_TEXTURE_2D,_tId); }
 
 
-        virtual void upload (const uint8_t *pI,
+        EXPORT virtual void upload (const uint8_t *pI,
                              const uint16_t w,const uint16_t h,const uint16_t bpp,
                              const GLint f = 0);
  
-        void upload(cv::Mat &img);
+        EXPORT void upload(cv::Mat &img);
 
-        Texture(void);
-        virtual ~Texture();
+        EXPORT Texture(void);
+        EXPORT virtual ~Texture();
     };
   };
 };

@@ -40,6 +40,7 @@
 #include "Viewer/Executor.h"
 #include "Core/Timer.h"
 
+
 using namespace Lf;
 using namespace Viewer;
 //---------------------------------------------------------------------
@@ -65,8 +66,14 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
 {
   if (action == GLFW_RELEASE)
   {
+  Viewer::Executor *pE = (Viewer::Executor *)glfwGetWindowUserPointer(pW);
+
     switch (key)
     {      
+      case GLFW_KEY_HOME:
+        pE->setViewAngle(glm::vec2(0));
+        break;
+
       case GLFW_KEY_ESCAPE:
         glfwSetWindowShouldClose(pW,GL_TRUE);
         break;
@@ -77,6 +84,80 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
   }
 }
 
+
+//---------------------------------------------------------------------
+// motionUpdate
+//---------------------------------------------------------------------
+void Executor::motionUpdate(GLFWwindow *pW)
+{
+float   m = 1.0f;
+
+  if (glfwGetKey(pW,GLFW_KEY_UP) == GLFW_PRESS)
+    incViewAngle(glm::vec2(0,-m));
+
+  if (glfwGetKey(pW,GLFW_KEY_DOWN) == GLFW_PRESS)
+    incViewAngle(glm::vec2(0,m));
+
+  if (glfwGetKey(pW,GLFW_KEY_RIGHT) == GLFW_PRESS)
+    incViewAngle(glm::vec2(m,0));
+
+  if (glfwGetKey(pW,GLFW_KEY_LEFT) == GLFW_PRESS)
+    incViewAngle(glm::vec2(-m,0));
+}
+
+
+//---------------------------------------------------------------------
+// exec
+//---------------------------------------------------------------------
+int Executor::exec(void) 
+{
+int         rc      = 0;
+glm::ivec2  nV      = _pRadImage->numViews();
+glm::vec3   vP      = glm::vec3(0,-1000,0);
+glm::vec3   vD      = glm::vec3(0,1,0);
+glm::vec3   vU      = glm::vec3(0,0,1);
+glm::mat4   mProj   = glm::perspective(45.0f,(float)_wS.x/(float)_wS.y,0.1f,2048.0f);;
+glm::mat4   mView   = glm::lookAt(vP,vP + vD,vU);
+glm::ivec2  vIdx;
+glm::ivec2  vIdxLast(nV >> 1);
+
+  glEnable(GL_CULL_FACE);
+  glEnable(GL_TEXTURE_2D);
+  glCullFace(GL_BACK);
+  glClearColor(0.25f,0.25f,0.25f,0);
+
+  while (!glfwWindowShouldClose(_pWindow))
+  {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glViewport(0,0,_wS.x,_wS.y);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf(glm::value_ptr(mProj));
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf(glm::value_ptr(mView));
+
+    if (vIdx != vIdxLast)
+    {
+    cv::Mat img;
+
+      _pRadImage->fetchView(vIdx,img);
+      _tex.upload(img);
+      vIdxLast = vIdx;
+    }
+
+    _tex.bind();
+    _vtxAO.render();
+
+    glfwSwapBuffers(_pWindow);
+    glfwPollEvents();
+
+    motionUpdate(_pWindow);
+  }
+
+  return rc;
+}
 
 
 //---------------------------------------------------------------------
@@ -177,6 +258,65 @@ char        *pS = 0;
   std::cout << std::endl;
 }
 
+//---------------------------------------------------------------------
+// initGLFW
+//---------------------------------------------------------------------
+int Executor::initGLFW(void)
+{
+int rc = -1;
+
+  glfwSetErrorCallback(ErrorCallback);
+
+  if (glfwInit())    
+  {
+    _pWindow = initWindow(_wS,"Lightfield Viewer",0,0,true);
+
+    if (_pWindow)
+    {
+    std::filesystem::path cPath = std::filesystem::current_path();
+        
+      glfwSetWindowUserPointer(_pWindow,this);
+
+      glfwSetKeyCallback      (_pWindow,Keyboard_Callback);
+
+#ifdef _WIN32
+      glewExperimental = GL_TRUE;
+      glewInit();
+#endif   
+
+      GLInfo();
+
+      rc = 0;
+    }
+  }
+
+  return rc;
+}
+
+
+//---------------------------------------------------------------------
+// initGraphics
+//---------------------------------------------------------------------
+int Executor::initGraphics(void)
+{
+int               rc = 0;
+glm::ivec2        vS = _pRadImage->viewSize();
+glm::ivec2        nV = _pRadImage->numViews();
+cv::Mat           img;
+Render::VtxVNTLst quad;
+int               mode(0);
+
+  mode = quad.createQuadXZ(glm::vec3(0),glm::vec2(vS));
+  
+  _vtxAO.upload(quad,mode);
+
+  _pRadImage->fetchView((nV >> 1),img);
+
+  _tex.upload(img);
+
+  
+  return rc;
+}
 
 
 //---------------------------------------------------------------------
@@ -193,61 +333,21 @@ int rc  = 0;
   rc = _pRadImage->examine(std::filesystem::path(pCfg));
 
   if (rc == 0)
-  {
-    glfwSetErrorCallback(ErrorCallback);
+    rc = initGLFW();
 
-    if (glfwInit())    
-    {
-      _pWindow = initWindow(_wS,"Lightfield Viewer",0,0,true);
+  if (rc == 0)
+    rc = _pRadImage->init();
 
-      if (_pWindow)
-      {
-      std::filesystem::path cPath = std::filesystem::current_path();
+  if (rc == 0)
+    _pRadImage->start();
 
-        glfwSetKeyCallback      (_pWindow,Keyboard_Callback);
-
-#ifdef _WIN32
-        glewExperimental = GL_TRUE;
-        glewInit();
-#endif   
-
-        GLInfo();
-
-        rc = _pRadImage->init();
-
-        if (rc == 0)
-          _pRadImage->start();
-      }
-      else
-        rc = -1;
-    }
-    else
-      rc = -1;
-  }
+  if (rc == 0)
+    rc = initGraphics();
 
   return rc;
 }
 
 
-//---------------------------------------------------------------------
-// exec
-//---------------------------------------------------------------------
-int Executor::exec(void) 
-{
-int rc      = 0;
-
-  glClearColor(0,0,0,0);
-  glViewport(0,0,_wS.x,_wS.y);
-
-  while (!glfwWindowShouldClose(_pWindow))
-  {
-
-    glfwSwapBuffers(_pWindow);
-    glfwPollEvents();
-  }
-
-  return rc;
-}
 
 
 //---------------------------------------------------------------------
@@ -276,7 +376,10 @@ void Executor::destroy(void)
 Executor::Executor(void) : _pWindow(0),
                            _pRadImage(0),
                            _wS(2048),
-                           _vIdx(0)
+                           _vA(0),
+                           _fov(0),
+                           _vtxAO(),
+                           _tex()
 {
 }
 

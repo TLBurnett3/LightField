@@ -41,24 +41,20 @@ using namespace Render;
 
 //---------------------------------------------------------------------
 // createQuadXY
-// Thomas Burnett
-// March 15, 2014
-//
-// Creates a quad vertex list.
 //---------------------------------------------------------------------
-int  createQuadXY(const glm::vec3 &vP,VtxVNTLst &vLst,glm::vec2 &d)
+int  VtxVNTLst::createQuadXY(const glm::vec3 &vP,glm::vec2 &vS)
 {
-glm::vec2 hD = glm::vec2(d) * 0.5f;
+glm::vec2 hD = glm::vec2(vS) * 0.5f;
 glm::vec3 vX = glm::vec3(1,0,0) * hD.x;
 glm::vec3 vY = glm::vec3(0,1,0) * hD.y;
 glm::vec3 vZ = glm::vec3(0,0,1);
 
-  vLst.reset();
+  reset();
 
-  vLst.add(vP + (-vX + vY),vZ,glm::vec2(0.0f,1.0f));
-  vLst.add(vP + (-vX - vY),vZ,glm::vec2(0.0f,0.0f));
-  vLst.add(vP + ( vX + vY),vZ,glm::vec2(1.0f,1.0f));
-  vLst.add(vP + ( vX - vY),vZ,glm::vec2(1.0f,0.0f));
+  add(vP + (-vX + vY),vZ,glm::vec2(0.0f,1.0f));
+  add(vP + (-vX - vY),vZ,glm::vec2(0.0f,0.0f));
+  add(vP + ( vX + vY),vZ,glm::vec2(1.0f,1.0f));
+  add(vP + ( vX - vY),vZ,glm::vec2(1.0f,0.0f));
 
   return GL_TRIANGLE_STRIP;
 }
@@ -66,24 +62,20 @@ glm::vec3 vZ = glm::vec3(0,0,1);
 
 //---------------------------------------------------------------------
 // createQuadXZ
-// Thomas Burnett
-// March 15, 2014
-//
-// Creates a quad vertex list.
 //---------------------------------------------------------------------
-int  createQuadXZ(const glm::vec3 &vP,VtxVNTLst &vLst,glm::vec2 &d)
+int  VtxVNTLst::createQuadXZ(const glm::vec3 &vP,glm::vec2 &vS)
 {
-glm::vec2 hD = glm::vec2(d) * 0.5f;
+glm::vec2 hD = glm::vec2(vS) * 0.5f;
 glm::vec3 vX = glm::vec3(1,0,0) * hD.x;
 glm::vec3 vY = glm::vec3(0,1,0);
 glm::vec3 vZ = glm::vec3(0,0,1) * hD.y;
 
-  vLst.reset();
+  reset();
 
-  vLst.add(vP + (-vX - vZ),vY,glm::vec2(0.0f,1.0f));
-  vLst.add(vP + (-vX + vZ),vY,glm::vec2(0.0f,0.0f));
-  vLst.add(vP + ( vX - vZ),vY,glm::vec2(1.0f,1.0f));
-  vLst.add(vP + ( vX + vZ),vY,glm::vec2(1.0f,0.0f));
+  add(vP + (-vX - vZ),vY,glm::vec2(0.0f,1.0f));
+  add(vP + (-vX + vZ),vY,glm::vec2(0.0f,0.0f));
+  add(vP + ( vX - vZ),vY,glm::vec2(1.0f,1.0f));
+  add(vP + ( vX + vZ),vY,glm::vec2(1.0f,0.0f));
 
   return GL_TRIANGLE_STRIP;
 }

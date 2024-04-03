@@ -86,6 +86,14 @@ namespace Lf
         void scatter(const cv::Point &vIdx,cv::Mat &img);
   
       public:
+        glm::ivec2 viewSize(void)
+        { return _vS; }
+
+        glm::ivec2 numViews(void)
+        { return _nV; }
+
+        void fetchView(const glm::ivec2 &idx,cv::Mat &img);
+
         int examine(const std::filesystem::path &dPath); 
 
         int init(void);

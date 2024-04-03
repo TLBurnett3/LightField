@@ -64,7 +64,7 @@ namespace Lf
 
       public:   
     
-        void  render  (void)
+        EXPORT void  render  (void)
         { 
           glBindVertexArray(_idVAO); 
 
@@ -76,24 +76,24 @@ namespace Lf
           glBindVertexArray(0); 
         }
 
-        void  upload(const VtxVLst   &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
-        void  upload(const VtxVTLst  &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
-        void  upload(const VtxVNTLst &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
-        void  upload(const VtxVNLst  &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVLst   &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVTLst  &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVNTLst &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVNLst  &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
 
-        void  upload(const VtxVLst   &vLst,const GLuint mode = GL_TRIANGLES);
-        void  upload(const VtxVTLst  &vLst,const GLuint mode = GL_TRIANGLES);
-        void  upload(const VtxVNTLst &vLst,const GLuint mode = GL_TRIANGLES);
-        void  upload(const VtxVNLst  &vLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVLst   &vLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVTLst  &vLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVNTLst &vLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVNLst  &vLst,const GLuint mode = GL_TRIANGLES);
 
 
-        VtxArrayObj() :  Object(),
-                         _idVAO(0),
-                         _idVBO(0),
-                         _idIBO(0)
+        EXPORT VtxArrayObj() :  Object(),
+                                _idVAO(0),
+                                _idVBO(0),
+                                _idIBO(0)
         {}
 
-        virtual ~VtxArrayObj();
+        EXPORT virtual ~VtxArrayObj();
     };
   };
 };
