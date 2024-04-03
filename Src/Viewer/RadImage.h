@@ -78,13 +78,13 @@ namespace Lf
         glm::ivec2    _nV;
         glm::ivec2    _vS;
 
-        float         _aR;
-        glm::vec2     _hInc;
       public:   
 
       // Methods
       private:
-      protected:  
+      protected:
+        void scatter(const cv::Point &vIdx,cv::Mat &img);
+  
       public:
         int examine(const std::filesystem::path &dPath); 
 

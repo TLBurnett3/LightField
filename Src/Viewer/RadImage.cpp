@@ -102,17 +102,40 @@ char  buf[64];
   return rc;
 }
 
+//---------------------------------------------------------------------
+// scatter
+//---------------------------------------------------------------------
+void RadImage::scatter(const cv::Point &vIdx,cv::Mat &img)
+{
+cv::Point   idx(0);
+uint32_t    i(0);
+glm::ivec2  inc = _hS / _nV;
+
+  for (idx.y = 0;idx.y < img.rows;idx.y += inc.y)
+  {
+    for (idx.x = 0;idx.x < img.cols;idx.x += inc.x)
+    {
+    cv::Vec3b c = img.at<cv::Vec3b>(idx);
+
+      _matArray[i].at<cv::Vec3b>(vIdx) = c;
+      i++;
+    }
+  }
+}
+
 
 //---------------------------------------------------------------------
 // exec
 //---------------------------------------------------------------------
 void RadImage::exec(void)
 {
-glm::ivec2        idx(0);
+cv::Point  idx(0);
+cv::Point  vIdx(0);
+glm::ivec2 hInc = _nH / _nV;
 
   std::cout << "Loading radiance image" << std::endl;
 
-  for (idx.y = 0;(idx.y < _nH.y) && _run;idx.y += _hInc.y)
+  for (idx.y = 0;(idx.y < _nH.y) && _run;idx.y += hInc.y)
   {
   std::filesystem::path fPath = _dPath;
   char  buf[64];
@@ -123,27 +146,29 @@ glm::ivec2        idx(0);
     {
     cv::VideoCapture      c(fPath.string());
     
-      idx.x = 0;
+      idx.x   = 0;
+      vIdx.x  = 0;
   
       while ((idx.x < _nH.x) && _run)
       {
       cv::Mat img;
 
-        {
-        uint32_t          i(0);
+        c >> img;
 
-          while (i < _hInc.x)
-          {
-            c >> img;
-            i++;
-            idx.x++;
-          }
+        if ((idx.x % hInc.x) == 0)
+        {
+          scatter(vIdx,img);
+
+          vIdx.x++;
         }
+
+        idx.x++;
       }
 
       c.release();
     }
 
+    vIdx.y++;
     std::cout << ".";
   }
 
@@ -159,22 +184,8 @@ int RadImage::init(void)
 {
 int rc = 0;
 
-  _aR   = (float)_nH.x / (float)_nH.y;
-
-  if (_nH.x > _nH.y)
-  {
-    _vS.x = glm::min(_nH.x,(int)MaxViewSize);
-    _vS.y = (int)((float)_vS.x / _aR);
-  }
-  else
-  {
-    _vS.y = glm::min(_nH.y,(int)MaxViewSize);
-    _vS.x = (int)((float)_vS.y * _aR);
-  }
-
-  _nV = glm::min(_hS,glm::ivec2(MaxNumViews));
-
-  _hInc   = glm::vec2((float)_nH.x / (float)_vS.x,(float)_nH.y / (float)_vS.y);
+  _vS = _nH;
+  _nV = _hS >> 1;
 
   std::cout << "Num Views: " << _nV.x << "," << _nV.y << std::endl;
   std::cout << "View Size: " << _vS.x << "," << _vS.y << std::endl;
@@ -188,7 +199,7 @@ int rc = 0;
   cv::Mat    img(_vS.y,_vS.x,CV_8UC3);
   cv::Scalar clr(255,221,244); // pink lace
 
-    _matArray.reserve(_nV.x * _nV.y);
+    _matArray.resize(_nV.x * _nV.y);
 
     for (idx.y = 0;idx.y < _nV.y;idx.y++)
     {
@@ -197,9 +208,14 @@ int rc = 0;
         _matArray[i].create(_vS.y,_vS.x,CV_8UC3);
         _matArray[i].setTo(clr);
         i++;
-      }  
+      }
+
+      std::cout << ".";  
     }  
   }
+
+  std::cout << std::endl;
+  std::cout << "Finished Allocating memory" << std::endl;
 
   return rc;
 }
@@ -214,9 +230,7 @@ RadImage::RadImage(void) :  Core::Thread(),
                             _nH(0),
                             _hS(0),
                             _nV(0),
-                            _vS(0),
-                            _aR(0),
-                            _hInc(0)
+                            _vS(0)
 {
 }
 
