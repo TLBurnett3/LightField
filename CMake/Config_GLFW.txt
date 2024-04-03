@@ -6,10 +6,11 @@ LIST (APPEND CMAKE_MODULE_PATH      ${3RDPARTY_LIB_DIR}/cmake/glfw3)
 
 if (WIN32)
   set (GLFW_INCLUDE_DIR                      ${3RDPARTY_INC_DIR}/GLFW)
-  set (GLFW3_DEBUG_LIBRARY                   debug     ${3RDPARTY_LIB_DIR}/glfw3d.lib)
-  set (GLFW3_RELEASE_LIBRARY                 optimized ${3RDPARTY_LIB_DIR}/glfw3.lib)
+#  set (GLFW3_DEBUG_LIBRARY                   debug     ${3RDPARTY_LIB_DIR}/glfw3d.lib)
+#  set (GLFW3_RELEASE_LIBRARY                 optimized ${3RDPARTY_LIB_DIR}/glfw3.lib)
+  set (GLFW3_RELEASE_LIBRARY                  ${3RDPARTY_LIB_DIR}/glfw3.lib)
 
-  install (FILES      ${3RDPARTY_BIN_DIR}/glfw3d.dll             CONFIGURATIONS Debug   DESTINATION bin)
+ # install (FILES      ${3RDPARTY_BIN_DIR}/glfw3d.dll             CONFIGURATIONS Debug   DESTINATION bin)
   install (FILES      ${3RDPARTY_BIN_DIR}/glfw3.dll              CONFIGURATIONS Release DESTINATION bin)
 endif (WIN32)
 

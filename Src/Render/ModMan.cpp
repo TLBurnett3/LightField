@@ -44,24 +44,6 @@ using namespace Lf;
 using namespace Render;
 //---------------------------------------------------------------------
 
-/*
-//---------------------------------------------------------------------
-// setLightList
-//---------------------------------------------------------------------
-void ModMan::setLightList(const Common::LightLst &lst)
-{ 
-  _lightLst = lst; 
-}
-
-
-//---------------------------------------------------------------------
-// addLight
-//---------------------------------------------------------------------
-void ModMan::addLight(const Common::Light &light)
-{ 
-  _lightLst.push_back(light); 
-}*/
-
 
 //---------------------------------------------------------------------
 // summary
@@ -81,11 +63,6 @@ size_t n  = _modelLst.size();
 void ModMan::render(const Camera &camera,const Shader &shader,const glm::mat4 &mT)
 {
 size_t n  = _modelLst.size();
-
- // for (int i = 0; i < _lightLst.size(); i++)
- // {
- //   control.shader()->bindLight(_lightLst[i].properties(), i, frustum);
- // }
 
   for (size_t i = 0;i < n;i++)
     _modelLst[i]->render(camera,shader,mT);

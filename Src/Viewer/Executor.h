@@ -22,27 +22,24 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Base.h
+// Executor.h
 // Thomas Burnett
 
 #pragma once
 
+#include "Render/Def.h"
 
 //---------------------------------------------------------------------
 // Includes
 // System
-#include <memory>
-#include <queue>
 #include <filesystem>
+#include <vector>
 
 // 3rdPartyLibs
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <glm/glm.hpp>
+#include <GLFW/glfw3.h>
 
 // LightField
-#include "Core/Export.h"
-#include "Core/Thread.h"
+#include "Viewer/RadImage.h"
 //---------------------------------------------------------------------
 
 
@@ -50,76 +47,41 @@
 // Classes
 namespace Lf
 {
-  namespace Task
+  namespace Viewer
   {
-    class Base : public Core::Thread
+    class Executor
     {
       // Defines
       private:
       protected:
       public:
-        typedef std::shared_ptr<std::pair<cv::Mat,glm::ivec2>>    SpImg;
-        typedef std::queue<SpImg>                                 ImgQ;
 
       // Members
       private:
       protected:
-        std::string               _tName;
-        ImgQ                      _imgQ;
-        std::mutex                _access;
-        std::condition_variable   _workCondition;
+        GLFWwindow                *_pWindow;
+        RadImage                  *_pRadImage;
+        glm::ivec2                _wS;
+
+        glm::ivec2                _vIdx;
 
       public:   
 
       // Methods
       private:
       protected:
-        EXPORT void makeDir(const std::filesystem::path &dPath)
-        {
-          if (!dPath.empty() && !std::filesystem::exists(dPath))
-            std::filesystem::create_directory(dPath);
-        }      
+        GLFWwindow *Executor::initWindow(const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
+
+        void GLInfo(void);
 
       public:
-        EXPORT std::string name(void)
-        { return _tName; }
 
-        EXPORT bool finished(void)
-        {
-        bool  f = false;
-    
-          {
-          std::unique_lock<std::mutex> lock(_access);
-            
-            f = _imgQ.empty();
-          }
-          
-          return f;
-        }
+        int   init(const char *pCfg,const uint32_t g);
+        int   exec(void);
+        void  destroy(void);
 
-        EXPORT virtual void  stop(void)
-        { 
-          Core::Thread::stop();
-          _workCondition.notify_one();       
-        }
-
-        EXPORT void  queue(SpImg &spImg)
-        { 
-          {
-          std::unique_lock<std::mutex> lock(_access);
-
-            _imgQ.push(spImg); 
-          }
-
-          _workCondition.notify_one();
-        }
-
-        EXPORT virtual void process(cv::Mat &img,glm::ivec2 &idx) = 0;
-
-        EXPORT virtual void exec(void);
-  
-        EXPORT Base(const char *pN);
-        EXPORT ~Base();
+        Executor(void);
+        ~Executor();
     };
   };
 };

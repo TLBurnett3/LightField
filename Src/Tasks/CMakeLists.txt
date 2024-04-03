@@ -10,6 +10,7 @@ set (HEADERS
   Base.h
   ProofImage.h
   WriteAvi.h
+  ReadAvi.h
   WriteImg.h
   SliceNDice.h
 )
@@ -18,6 +19,7 @@ set(SOURCE
   Base.cpp
   ProofImage.cpp
   WriteAvi.cpp
+  ReadAvi.cpp
   WriteImg.cpp
   SliceNDice.cpp
 )

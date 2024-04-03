@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Base.h
+// RadImage.h
 // Thomas Burnett
 
 #pragma once
@@ -50,76 +50,49 @@
 // Classes
 namespace Lf
 {
-  namespace Task
+  namespace Viewer
   {
-    class Base : public Core::Thread
+    class RadImage : public Core::Thread
     {
       // Defines
       private:
       protected:
+        enum 
+        {
+          MaxNumViews      = 256,
+          MaxViewSize      = 256,
+        };
+
+        typedef std::vector<cv::Mat>  MatArray;
+
       public:
-        typedef std::shared_ptr<std::pair<cv::Mat,glm::ivec2>>    SpImg;
-        typedef std::queue<SpImg>                                 ImgQ;
 
       // Members
       private:
       protected:
-        std::string               _tName;
-        ImgQ                      _imgQ;
-        std::mutex                _access;
-        std::condition_variable   _workCondition;
+        MatArray                  _matArray;
+        std::filesystem::path     _dPath;
 
+        glm::ivec2    _nH;
+        glm::ivec2    _hS;
+        glm::ivec2    _nV;
+        glm::ivec2    _vS;
+
+        float         _aR;
+        glm::vec2     _hInc;
       public:   
 
       // Methods
       private:
-      protected:
-        EXPORT void makeDir(const std::filesystem::path &dPath)
-        {
-          if (!dPath.empty() && !std::filesystem::exists(dPath))
-            std::filesystem::create_directory(dPath);
-        }      
-
+      protected:  
       public:
-        EXPORT std::string name(void)
-        { return _tName; }
+        int examine(const std::filesystem::path &dPath); 
 
-        EXPORT bool finished(void)
-        {
-        bool  f = false;
-    
-          {
-          std::unique_lock<std::mutex> lock(_access);
-            
-            f = _imgQ.empty();
-          }
-          
-          return f;
-        }
-
-        EXPORT virtual void  stop(void)
-        { 
-          Core::Thread::stop();
-          _workCondition.notify_one();       
-        }
-
-        EXPORT void  queue(SpImg &spImg)
-        { 
-          {
-          std::unique_lock<std::mutex> lock(_access);
-
-            _imgQ.push(spImg); 
-          }
-
-          _workCondition.notify_one();
-        }
-
-        EXPORT virtual void process(cv::Mat &img,glm::ivec2 &idx) = 0;
-
-        EXPORT virtual void exec(void);
+        int init(void);
+        virtual void exec(void);
   
-        EXPORT Base(const char *pN);
-        EXPORT ~Base();
+        RadImage(void);
+        ~RadImage();
     };
   };
 };

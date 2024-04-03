@@ -22,68 +22,51 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Base.cpp 
 // Thomas Burnett
-
+// Main.cpp 
 
 //---------------------------------------------------------------------
 // Includes
-// System
+#include <string>
+#include <iostream>
 
-// 3rdPartyLibs
+// 3rd Party Libs
 
 // LightField
-#include "Tasks/Base.h"
-
-using namespace Lf;
-using namespace Task;
+#include "Viewer/Executor.h"
 //---------------------------------------------------------------------
 
 
 //---------------------------------------------------------------------
-// exec
+// main
 //---------------------------------------------------------------------
-void Base::exec(void)
+int main(int argc,char *argv[])
 {
-  while (_run || !_imgQ.empty())
+int                   rc = 0;
+char                  *p = 0;
+uint32_t              g  = 24;
+Lf::Viewer::Executor  e;
+
+  if (argc > 1)
+    p = argv[1];
+
+  if (argc > 2)
+    g = atoi(argv[2]);
+    
+  std::cout << "LfViewer Initialization\n";
+
+  if (p)
   {
-   SpImg spImg(0);
+    rc = e.init(p,g);
 
-    {
-    std::unique_lock<std::mutex> lock(_access);
+    if (rc == 0)
+      rc = e.exec();
 
-      _workCondition.wait(lock,[this]{return ((_run == false) | !_imgQ.empty()); });  
-
-      if (!_imgQ.empty())
-      {
-         spImg = _imgQ.front();
-        _imgQ.pop();
-      }
-    }
-
-    if (spImg)
-      process(spImg->first,spImg->second);
+    e.destroy();
   }
-}
 
+  std::cout << "LfViewer Exit: RC " << rc << std::endl;
 
-//---------------------------------------------------------------------
-// Base
-//---------------------------------------------------------------------
-Base::Base(const char *pN) :  Core::Thread(),
-                              _tName(pN),
-                              _imgQ(),
-                              _access(),
-                              _workCondition()
-{
-}
-
-
-//---------------------------------------------------------------------
-// ~Base
-//---------------------------------------------------------------------
-Base::~Base()
-{
-
+  return rc;
 }
 
