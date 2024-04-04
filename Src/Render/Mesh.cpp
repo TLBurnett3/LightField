@@ -36,7 +36,6 @@
 // RenderEngine
 
 #include "Render/Mesh.h"
-//#include "Common/Light.h"
 
 using namespace Lf;
 using namespace Render;

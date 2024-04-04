@@ -94,7 +94,6 @@ GLint fmt   = GL_RGB;
     glPixelStorei(GL_UNPACK_ALIGNMENT,1);
   }
    
-
 #ifndef _GLES2
   if (fmt == GL_RED)
   {

@@ -71,6 +71,7 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
     switch (key)
     {      
       case GLFW_KEY_HOME:
+      case GLFW_KEY_BACKSPACE:
         pE->setViewAngle(glm::vec2(0));
         break;
 
@@ -113,16 +114,20 @@ int Executor::exec(void)
 {
 int         rc      = 0;
 glm::ivec2  nV      = _pRadImage->numViews();
-glm::vec3   vP      = glm::vec3(0,-1000,0);
-glm::vec3   vD      = glm::vec3(0,1,0);
+glm::ivec2  vS      = _pRadImage->viewSize();
+float       d       = glm::max(vS.x,vS.y) * 1.25f;
+glm::vec3   vP      = glm::vec3(0,d,0);
+glm::vec3   vD      = glm::vec3(0,-1,0);
 glm::vec3   vU      = glm::vec3(0,0,1);
-glm::mat4   mProj   = glm::perspective(45.0f,(float)_wS.x/(float)_wS.y,0.1f,2048.0f);;
-glm::mat4   mView   = glm::lookAt(vP,vP + vD,vU);
-glm::ivec2  vIdx;
-glm::ivec2  vIdxLast(nV >> 1);
+glm::mat4   mP      = glm::perspective(45.0f,(float)_wS.x/(float)_wS.y,0.1f,2048.0f);
+glm::mat4   mV      = glm::lookAt(vP,vP + vD,vU);
+glm::mat4   mM;
+glm::vec2   vA(_vA);
 
   glEnable(GL_CULL_FACE);
   glEnable(GL_TEXTURE_2D);
+  glActiveTexture(GL_TEXTURE0);
+  glDisable(GL_LIGHTING);
   glCullFace(GL_BACK);
   glClearColor(0.25f,0.25f,0.25f,0);
 
@@ -133,27 +138,44 @@ glm::ivec2  vIdxLast(nV >> 1);
     glViewport(0,0,_wS.x,_wS.y);
 
     glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(glm::value_ptr(mProj));
+    glLoadMatrixf(glm::value_ptr(mP));
+
+    mM = glm::rotate(mV,glm::radians(_vA.y),glm::vec3(1,0,0));    
+    mM = glm::rotate(mM,glm::radians(_vA.x),glm::vec3(0,0,1));
 
     glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixf(glm::value_ptr(mView));
+    glLoadMatrixf(glm::value_ptr(mM));
 
-    if (vIdx != vIdxLast)
+    if ((vA != _vA) || _pRadImage->isRunning())
     {
-    cv::Mat img;
+    float       hA = _fov * 0.5f;
+    cv::Mat     img;
+    glm::ivec2  idx;
 
-      _pRadImage->fetchView(vIdx,img);
+      idx.x = (int)map( _vA.x,-hA,hA,(float)0,(float)(nV.x-1));
+      idx.y = (int)map(-_vA.y,-hA,hA,(float)0,(float)(nV.y-1));
+
+      _pRadImage->fetchView(idx,img);
       _tex.upload(img);
-      vIdxLast = vIdx;
+
+      vA = _vA;
     }
 
     _tex.bind();
-    _vtxAO.render();
+
+    glBegin(GL_TRIANGLE_STRIP);
+      for (size_t i = 0;i < _quad._vtxLst.size();i++)
+      {
+        glTexCoord2f(_quad._vtxLst[i]._T.x,_quad._vtxLst[i]._T.y);
+        glVertex3f(_quad._vtxLst[i]._V.x,_quad._vtxLst[i]._V.y,_quad._vtxLst[i]._V.z);
+      }
+    glEnd();
 
     glfwSwapBuffers(_pWindow);
     glfwPollEvents();
 
     motionUpdate(_pWindow);
+
   }
 
   return rc;
@@ -303,18 +325,13 @@ int               rc = 0;
 glm::ivec2        vS = _pRadImage->viewSize();
 glm::ivec2        nV = _pRadImage->numViews();
 cv::Mat           img;
-Render::VtxVNTLst quad;
-int               mode(0);
 
-  mode = quad.createQuadXZ(glm::vec3(0),glm::vec2(vS));
-  
-  _vtxAO.upload(quad,mode);
+  _quad.createQuadXZ(glm::vec3(0),glm::vec2(vS));
 
   _pRadImage->fetchView((nV >> 1),img);
 
   _tex.upload(img);
 
-  
   return rc;
 }
 
@@ -348,8 +365,6 @@ int rc  = 0;
 }
 
 
-
-
 //---------------------------------------------------------------------
 // destroy
 //---------------------------------------------------------------------
@@ -377,8 +392,8 @@ Executor::Executor(void) : _pWindow(0),
                            _pRadImage(0),
                            _wS(2048),
                            _vA(0),
-                           _fov(0),
-                           _vtxAO(),
+                           _fov(90.0f),
+                           _quad(),
                            _tex()
 {
 }

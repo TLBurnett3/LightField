@@ -144,7 +144,7 @@ void RadImage::exec(void)
 {
 cv::Point  idx(0);
 cv::Point  vIdx(0);
-glm::ivec2 hInc = _nH / _nV;
+glm::ivec2 hInc = _nH / _vS;
 
   std::cout << "Loading radiance image" << std::endl;
 

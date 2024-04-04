@@ -30,7 +30,7 @@
 
 //---------------------------------------------------------------------
 // Includes
-
+#include "Core/Export.h"
 #include "Render/Object.h"
 #include "Render/VtxLst.h"
 //---------------------------------------------------------------------
@@ -75,7 +75,7 @@ namespace Lf
  
       public:   
     
-        void  render  (void)
+        EXPORT void  render  (void)
         { 
           assert(_renderFunc);
           (this->*_renderFunc)();
@@ -85,24 +85,24 @@ namespace Lf
         void  upload(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &cloud,const int mode);
   #endif
 
-        void  upload(const VtxVLst   &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
-        void  upload(const VtxVTLst  &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
-        void  upload(const VtxVNTLst &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
-        void  upload(const VtxVNLst  &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVLst   &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVTLst  &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVNTLst &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVNLst  &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
 
-        void  upload(const VtxVLst   &vLst,const GLuint mode = GL_TRIANGLES);
-        void  upload(const VtxVTLst  &vLst,const GLuint mode = GL_TRIANGLES);
-        void  upload(const VtxVNTLst &vLst,const GLuint mode = GL_TRIANGLES);
-        void  upload(const VtxVNLst  &vLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVLst   &vLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVTLst  &vLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVNTLst &vLst,const GLuint mode = GL_TRIANGLES);
+        EXPORT void  upload(const VtxVNLst  &vLst,const GLuint mode = GL_TRIANGLES);
 
 
-        VtxBufferObj() :  Object(),
-                         _idVBO(0),
-                         _idIBO(0),
-                         _renderFunc(0)
+        EXPORT VtxBufferObj() :  Object(),
+                                 _idVBO(0),
+                                 _idIBO(0),
+                                 _renderFunc(0)
         {}
 
-        virtual ~VtxBufferObj();
+        EXPORT virtual ~VtxBufferObj();
     };
   };
 };
