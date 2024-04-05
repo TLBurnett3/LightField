@@ -67,6 +67,9 @@ namespace Lf
 
         glm::vec2                 _vA;
         float                     _fov;
+        float                     _dC;
+        glm::vec2                 _vRMax;
+        glm::vec2                 _vRInc;
 
         Render::VtxVNTLst         _quad;
         Render::Texture           _tex;
@@ -91,18 +94,14 @@ namespace Lf
       public:
         void  setViewAngle(const glm::vec2 &vA)
         { 
-        glm::vec2 hA = glm::vec2(_fov * 0.5f);
-
           _vA = vA; 
-          _vA = glm::clamp(_vA,-hA,hA);
+          _vA = glm::clamp(_vA,-_vRMax,_vRMax);
         }
 
         void  incViewAngle(const glm::vec2 &vA)
         {
-        glm::vec2 hA = glm::vec2(_fov * 0.5f);
-
-          _vA += vA;
-          _vA = glm::clamp(_vA,-hA,hA);
+          _vA += (vA * _vRInc);
+          _vA = glm::clamp(_vA,-_vRMax,_vRMax);
         }
 
         void  fetchView(const glm::ivec2 &idx,cv::Mat &img);

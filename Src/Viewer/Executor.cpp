@@ -115,8 +115,7 @@ int Executor::exec(void)
 int         rc      = 0;
 glm::ivec2  nV      = _pRadImage->numViews();
 glm::ivec2  vS      = _pRadImage->viewSize();
-float       d       = glm::max(vS.x,vS.y) * 1.25f;
-glm::vec3   vP      = glm::vec3(0,d,0);
+glm::vec3   vP      = glm::vec3(0,_dC,0);
 glm::vec3   vD      = glm::vec3(0,-1,0);
 glm::vec3   vU      = glm::vec3(0,0,1);
 glm::mat4   mP      = glm::perspective(45.0f,(float)_wS.x/(float)_wS.y,0.1f,2048.0f);
@@ -148,12 +147,11 @@ glm::vec2   vA(_vA);
 
     if ((vA != _vA) || _pRadImage->isRunning())
     {
-    float       hA = _fov * 0.5f;
     cv::Mat     img;
     glm::ivec2  idx;
 
-      idx.x = (int)map( _vA.x,-hA,hA,(float)0,(float)(nV.x-1));
-      idx.y = (int)map(-_vA.y,-hA,hA,(float)0,(float)(nV.y-1));
+      idx.x = (int)map( _vA.x,-_vRMax.x,_vRMax.x,(float)0,(float)(nV.x-1));
+      idx.y = (int)map(-_vA.y,-_vRMax.y,_vRMax.y,(float)0,(float)(nV.y-1));
 
       _pRadImage->fetchView(idx,img);
       _tex.upload(img);
@@ -326,11 +324,26 @@ glm::ivec2        vS = _pRadImage->viewSize();
 glm::ivec2        nV = _pRadImage->numViews();
 cv::Mat           img;
 
+  _dC = glm::max(vS.x,vS.y) * 1.25f;
+
   _quad.createQuadXZ(glm::vec3(0),glm::vec2(vS));
 
   _pRadImage->fetchView((nV >> 1),img);
 
   _tex.upload(img);
+
+  // determine maximum rotation for correct viewing
+  {
+  glm::vec2 hH = vS >> 1;
+  float     hA = _fov * 0.5f;
+  glm::vec2 o  = glm::sin(glm::radians(hA)) * hH;
+  glm::vec2 B  = glm::degrees(glm::asin(o / glm::vec2(_dC)));
+  glm::vec2 C  = glm::vec2(180) - B - hA;
+  glm::vec2 X  = glm::vec2(180) - C;
+
+    _vRMax = glm::vec2(90) - X;
+    _vRInc = _vRMax / glm::vec2(nV >> 1);
+  }
 
   return rc;
 }
@@ -393,6 +406,8 @@ Executor::Executor(void) : _pWindow(0),
                            _wS(2048),
                            _vA(0),
                            _fov(90.0f),
+                           _dC(0),
+                           _vRMax(0),
                            _quad(),
                            _tex()
 {
