@@ -40,9 +40,16 @@
 #include "Viewer/Executor.h"
 #include "Core/Timer.h"
 
-
 using namespace Lf;
 using namespace Viewer;
+//---------------------------------------------------------------------
+
+
+//---------------------------------------------------------------------
+// mouse globals 
+glm::vec2                 begPos(0);
+glm::vec2                 curPos(0);
+bool                      isMotionTracking(false);
 //---------------------------------------------------------------------
 
 
@@ -81,6 +88,50 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
 
       default:
         break;
+    }
+  }
+}
+
+
+//---------------------------------------------------------------------
+// MouseButton_Callback
+//---------------------------------------------------------------------
+static void MouseButton_Callback(GLFWwindow *pW,int button,int action,int mods)
+{
+  if (button == GLFW_MOUSE_BUTTON_1)
+  {
+    if (action == GLFW_PRESS)
+    {
+    glm::dvec2 vP;
+
+      glfwGetCursorPos(pW,&vP.x,&vP.y);
+
+      begPos = curPos = glm::vec2(vP);     
+
+      isMotionTracking = true;
+    }
+    else
+      isMotionTracking = false;
+  }
+}
+
+
+//---------------------------------------------------------------------
+// MouseMotion_Callback
+//---------------------------------------------------------------------
+static void MouseMotion_Callback(GLFWwindow *pW,double x,double y)
+{
+  if (isMotionTracking)
+  {
+    curPos = glm::vec2((float)x,(float)y);
+
+    {
+    Viewer::Executor *pE  = (Viewer::Executor *)glfwGetWindowUserPointer(pW);
+    glm::vec2         a   = (curPos - begPos) * 0.01f;
+  
+      a.y = -a.y;
+
+      pE->incViewAngle(a);
     }
   }
 }
@@ -297,7 +348,10 @@ int rc = -1;
         
       glfwSetWindowUserPointer(_pWindow,this);
 
-      glfwSetKeyCallback      (_pWindow,Keyboard_Callback);
+      glfwSetKeyCallback          (_pWindow,Keyboard_Callback);
+      glfwSetMouseButtonCallback  (_pWindow,MouseButton_Callback);
+      glfwSetCursorPosCallback    (_pWindow,MouseMotion_Callback);
+
 
 #ifdef _WIN32
       glewExperimental = GL_TRUE;
@@ -317,12 +371,14 @@ int rc = -1;
 //---------------------------------------------------------------------
 // initGraphics
 //---------------------------------------------------------------------
-int Executor::initGraphics(void)
+int Executor::initGraphics(const float fov)
 {
 int               rc = 0;
 glm::ivec2        vS = _pRadImage->viewSize();
 glm::ivec2        nV = _pRadImage->numViews();
 cv::Mat           img;
+
+  _fov = fov;
 
   _dC = glm::max(vS.x,vS.y) * 1.25f;
 
@@ -352,12 +408,12 @@ cv::Mat           img;
 //---------------------------------------------------------------------
 // init
 //---------------------------------------------------------------------
-int Executor::init(const char *pCfg,const uint32_t g) 
+int Executor::init(const char *pCfg,const uint32_t gb,const float fov) 
 {
 int rc  = 0;
 
-  std::cout << pCfg << " with " << g << "gb" << std::endl;
-  
+  std::cout << pCfg << " with " << gb << "gb" << std::endl;
+ 
   _pRadImage = new RadImage();
 
   rc = _pRadImage->examine(std::filesystem::path(pCfg));
@@ -366,13 +422,13 @@ int rc  = 0;
     rc = initGLFW();
 
   if (rc == 0)
-    rc = _pRadImage->init();
+    rc = _pRadImage->init(gb);
 
   if (rc == 0)
     _pRadImage->start();
 
   if (rc == 0)
-    rc = initGraphics();
+    rc = initGraphics(fov);
 
   return rc;
 }

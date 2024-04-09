@@ -83,6 +83,7 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
 }
 
 
+
 //---------------------------------------------------------------------
 // parseJob
 //---------------------------------------------------------------------
@@ -733,7 +734,7 @@ int rc = 0;
 
     dPath /= "HogelAvi";
 
-    pT->setPathFile(dPath,"HogelRow_");
+    pT->setPathFile(dPath,"HogelRow");
     pT->start();
 
     _imgTaskLst.push_back(pT);
@@ -896,7 +897,7 @@ int rc  = parseJob(pCfg);
       {
       std::filesystem::path cPath = std::filesystem::current_path();
 
-        glfwSetKeyCallback      (_pWindow,Keyboard_Callback);
+        glfwSetKeyCallback          (_pWindow,Keyboard_Callback);
 
 #ifdef _WIN32
         glewExperimental = GL_TRUE;

@@ -87,7 +87,7 @@ namespace Lf
         void GLInfo(void);
 
         int  initGLFW(void);
-        int  initGraphics(void);
+        int  initGraphics(const float fov);
 
         void motionUpdate(GLFWwindow *pW);
 
@@ -105,7 +105,7 @@ namespace Lf
         }
 
         void  fetchView(const glm::ivec2 &idx,cv::Mat &img);
-        int   init(const char *pCfg,const uint32_t g);
+        int   init(const char *pCfg,const uint32_t gb,const float fov);
         int   exec(void);
         void  destroy(void);
 

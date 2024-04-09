@@ -19,6 +19,7 @@ The Oblique Slice and Dice algorithm renders directions using sheared orthograph
 * Src/Core - Contains the base code for the project
 * Src/Render - Contains a simple OpenGL render engine
 * Src/Tasks - Contains the algorithm processing tasks
+* Src/Viewer - Contains a light-field radiance image viewer. See below.
 * Src/Lightfield - Contains the main and executor for this project
 
 ## Build using CMake
@@ -77,3 +78,12 @@ Defines a single light for the scene.
 
 #### Models
 Defines a list of models and transforms.
+
+# Viewer
+Viewer is a light-field radiance image viewer that uses a directory of hogel .avi files for input.
+
+Usage: LfViewer <path to hogel .avi directory> -gb <gigabytes> -fov <fov>
+
+Viewer loads as much of the radiance image into memory as defined by the command line -gb parameter.  The -gb parameter defines the maximum amount of memory that should be used by Viewer to storage the radiance image in main memory.  The -fov paramater defines the field of view of hogels.
+
+The view can be rotated via the mouse (left-button drag) and/or the arrow keys; this simulates a perspective correct view into the light-field. The home or backspace key will reset the view to center. 

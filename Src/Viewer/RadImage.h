@@ -96,7 +96,7 @@ namespace Lf
 
         int examine(const std::filesystem::path &dPath); 
 
-        int init(void);
+        int init(const uint32_t gb);
         virtual void exec(void);
   
         RadImage(void);

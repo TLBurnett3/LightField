@@ -42,22 +42,40 @@
 //---------------------------------------------------------------------
 int main(int argc,char *argv[])
 {
-int                   rc = 0;
-char                  *p = 0;
-uint32_t              g  = 24;
+int                   rc  = 0;
+char                  *p  = 0;
+uint32_t              gb  = 24;
+float                 fov = 90.0f;
 Lf::Viewer::Executor  e;
+
+  std::cout << "Usage: LfViewer <path to .avi files> -gb <gigabyes> -fov <fov>\n";
 
   if (argc > 1)
     p = argv[1];
 
   if (argc > 2)
-    g = atoi(argv[2]);
+  {
+  uint32_t i = 2;
+
+    while ((i + 2) <= argc)
+    {
+      if (strcmp(argv[i+0],"-gb") == 0)
+        gb = atoi(argv[i + 1]);
+      if (strcmp(argv[i+0],"-fov") == 0)
+        fov = atof(argv[i + 1]);
+
+      i += 2;
+    }
+  }
     
-  std::cout << "LfViewer Initialization\n";
+  std::cout << "LfViewer Initialization" << std::endl;
+  std::cout << "AVI Path: " << p << std::endl;
+  std::cout << "  Memory: " << gb << " gigabytes" << std::endl;
+  std::cout << "     FoV: " << fov << std::endl;
 
   if (p)
   {
-    rc = e.init(p,g);
+    rc = e.init(p,gb,fov);
 
     if (rc == 0)
       rc = e.exec();

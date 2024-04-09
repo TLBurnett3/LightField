@@ -193,12 +193,21 @@ glm::ivec2 hInc = _nH / _vS;
 //---------------------------------------------------------------------
 // init
 //---------------------------------------------------------------------
-int RadImage::init(void)
+int RadImage::init(const uint32_t gb)
 {
-int rc = 0;
+int      rc   = 0;
+uint64_t gMem = (uint64_t)gb * 1024 * 1024 * 1024;
 
   _vS = _nH;
-  _nV = _hS >> 1;
+  _nV = _hS;
+
+  while (((uint64_t)_vS.x * (uint64_t)_vS.y * (uint64_t)_nV.x * (uint64_t)_nV.y * 3) >= gMem)
+  {
+    _nV >>= 1;
+
+    if (((uint64_t)_vS.x * (uint64_t)_vS.y * (uint64_t)_nV.x * (uint64_t)_nV.y * 3) >= gMem)
+      _vS >>= 1;
+  }
 
   std::cout << "Num Views: " << _nV.x << "," << _nV.y << std::endl;
   std::cout << "View Size: " << _vS.x << "," << _vS.y << std::endl;
