@@ -7,7 +7,7 @@ project(LightField)
 ##############################################################################################
 # Variables
 
-set (LIGHTFIELD_VERSION_MAJOR      0)
+set (LIGHTFIELD_VERSION_MAJOR      1)
 set (LIGHTFIELD_VERSION_MINOR      0)
 set (LIGHTFIELD_VERSION_PATCH      0)
 
@@ -26,7 +26,7 @@ set (3RDPARTY_LIB_DIR          ${3RDPARTY_BASE_DIR}/lib)
 
 
 if (WIN32)
-  set (CMAKE_INSTALL_PREFIX   /local)
+  set (CMAKE_INSTALL_PREFIX   /TLB3)
 endif (WIN32)
 
 
