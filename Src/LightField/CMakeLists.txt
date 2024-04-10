@@ -11,9 +11,13 @@ link_directories(${CMAKE_LIBRARY_PATH})
 
 set(HEADERS
   Executor.h
+  DoubleFrustum.h
+  Oblique.h
 )
 
 set(SOURCE
+  DoubleFrustum.cpp
+  Oblique.cpp
   Executor.cpp
   Main.cpp
 )

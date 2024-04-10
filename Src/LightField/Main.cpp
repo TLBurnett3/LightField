@@ -34,6 +34,8 @@
 
 // LightField
 #include "LightField/Executor.h"
+#include "LightField/DoubleFrustum.h"
+#include "LightField/Oblique.h"
 //---------------------------------------------------------------------
 
 
@@ -42,21 +44,40 @@
 //---------------------------------------------------------------------
 int main(int argc,char *argv[])
 {
-int             rc = 0;
-Lf::Executor    e;
-char            *p = "Cfg/Default.json";
+int             rc    = 0;
+char            *p    = "Cfg/Default.json";
+Lf::Core::SpJob spJob = std::make_shared<Lf::Core::Job>();
 
   if (argc > 1)
     p = argv[1];
     
   std::cout << "LightField Initialization\n";
 
-  rc = e.init(p);
+  std::cout << "Parsing job file: " << p << std::endl;
+
+  rc = spJob->parse(std::filesystem::path(p));
+
+  std::cout << "Job file parsed: " << ((rc == 0) ? "Successful" : "Failed") << std::endl;
 
   if (rc == 0)
-    rc = e.exec();
+  {
+  Lf::Executor *pE = 0;
 
-  e.destroy();
+    if (spJob->renderType() == Lf::Core::Job::DoubleFrustum)
+      pE = new Lf::DoubleFrustum();
+    else if (spJob->renderType() == Lf::Core::Job::Oblique)
+      pE = new Lf::Oblique();
+
+    if (pE)
+    {
+      rc = pE->init(spJob);
+
+      if (rc == 0)
+        rc = pE->exec();
+
+      pE->destroy();
+    }
+  }
 
   std::cout << "LightField Exit: RC " << rc << std::endl;
 

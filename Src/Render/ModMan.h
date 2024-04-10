@@ -108,7 +108,7 @@ namespace Lf
         }
 
         EXPORT void print(std::ostream &s);
-        EXPORT void render(const Camera &camera,const Shader &shader,const glm::mat4 &mT);
+        EXPORT void render(const Camera &camera,const Shader *pShader,const glm::mat4 &mT);
 
         EXPORT int  init(const std::filesystem::path &cPath);
         EXPORT int  load(const std::filesystem::path &mPath,const glm::mat4 &mT);

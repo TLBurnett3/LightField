@@ -83,24 +83,24 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
 }
 
 
-
 //---------------------------------------------------------------------
-// parseJob
+// findTask
 //---------------------------------------------------------------------
-int Executor::parseJob(const char *pCfg) 
+Task::Base    *Executor::findTask(const char *tName,TaskList &tLst)
 {
-std::string cfgFile(pCfg);
-int rc  = 0;
+std::string         n     = tName;
+TaskList::iterator  ii    = tLst.begin();
+TaskList::iterator  iEnd  = tLst.end();
 
-  std::cout << "Parsing job file: " << cfgFile << std::endl;
+  while (ii != iEnd)
+  {
+    if (n == (*ii)->name())
+      return (*ii);
 
-  rc = _job.parse(cfgFile);
+    ii++;
+  }
 
-  _job.print(std::cout);
-
-  std::cout << "Job file parsed: " << ((rc == 0) ? "Successful" : "Failed") << std::endl;
-
-  return rc;
+  return 0;       
 }
 
 
@@ -204,107 +204,6 @@ char        *pS = 0;
 
 
 //---------------------------------------------------------------------
-// fetchHogelAndQueue
-//---------------------------------------------------------------------
-void Executor::fetchHogelAndQueue(glm::ivec2 idx)
-{
-glm::ivec2  hS      = _job.hogelSize();
-
-  if (_imgTaskLst.size())
-  {
-  TaskList::iterator        ii    = _imgTaskLst.begin();
-  TaskList::iterator        iEnd  = _imgTaskLst.end();
-  Task::Base::SpImg         spImg = std::make_shared<std::pair<cv::Mat,glm::ivec2>>();
-
-    spImg->first.create(hS.y,hS.x,CV_8UC3);
-    spImg->second = idx;
-
-    glReadBuffer(GL_BACK);
-    glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_BGR,GL_UNSIGNED_BYTE,spImg->first.data); 
-    
-    cv::flip(spImg->first,spImg->first,0);
-
-    while (ii != iEnd)
-    {
-      (*ii)->queue(spImg);
-      ii++;
-    }
-  }
-
-  if (_dthTaskLst.size())
-  {
-  TaskList::iterator        ii    = _dthTaskLst.begin();
-  TaskList::iterator        iEnd  = _dthTaskLst.end();
-  Task::Base::SpImg         spImg = std::make_shared<std::pair<cv::Mat,glm::ivec2>>();
-
-    spImg->first.create(hS.y,hS.x,CV_32FC1);
-    spImg->second = idx;
-
-    glReadBuffer(GL_BACK);
-    glReadPixels(0,0,(GLsizei)hS.x,(GLsizei)hS.y,GL_DEPTH_COMPONENT,GL_FLOAT,spImg->first.data);
-
-    cv::flip(spImg->first,spImg->first,0);
-
-    while (ii != iEnd)
-    {
-      (*ii)->queue(spImg);
-      ii++;
-    }
-  }
-}
-
-
-//---------------------------------------------------------------------
-// fetchObliqueAndQueue
-//---------------------------------------------------------------------
-void Executor::fetchObliqueAndQueue(glm::ivec2 idx)
-{
-glm::ivec2  nH      = _job.numHogels();
-
-  if (_imgTaskLst.size())
-  {
-  TaskList::iterator        ii    = _imgTaskLst.begin();
-  TaskList::iterator        iEnd  = _imgTaskLst.end();
-  Task::Base::SpImg         spImg = std::make_shared<std::pair<cv::Mat,glm::ivec2>>();
-
-    spImg->first.create(nH.y,nH.x,CV_8UC3);
-    spImg->second = idx;
-
-    glReadBuffer(GL_BACK);
-    glReadPixels(0,0,(GLsizei)nH.x,(GLsizei)nH.y,GL_BGR,GL_UNSIGNED_BYTE,spImg->first.data); 
-    
-    cv::flip(spImg->first,spImg->first,0);
-
-    while (ii != iEnd)
-    {
-      (*ii)->queue(spImg);
-      ii++;
-    }
-  }
-
-  if (_dthTaskLst.size())
-  {
-  TaskList::iterator        ii    = _dthTaskLst.begin();
-  TaskList::iterator        iEnd  = _dthTaskLst.end();
-  Task::Base::SpImg         spImg = std::make_shared<std::pair<cv::Mat,glm::ivec2>>();
-
-    spImg->first.create(nH.y,nH.x,CV_32FC1);
-    spImg->second = idx;
-
-    glReadBuffer(GL_BACK);
-    glReadPixels(0,0,(GLsizei)nH.x,(GLsizei)nH.y,GL_DEPTH_COMPONENT,GL_FLOAT,spImg->first.data);
-
-    cv::flip(spImg->first,spImg->first,0);
-
-    while (ii != iEnd)
-    {
-      (*ii)->queue(spImg);
-      ii++;
-    }
-  }
-}
-
-//---------------------------------------------------------------------
 // taskWait
 //---------------------------------------------------------------------
 void Executor::taskWait(Task::Base *pT) 
@@ -365,323 +264,30 @@ void Executor::taskSync(void)
 }
 
 
-
-//---------------------------------------------------------------------
-// renderHogel
-//---------------------------------------------------------------------
-void Executor::renderHogel(Render::Camera &camera,const glm::vec3 &vI)
-{
-glm::mat4   mT = _job.viewVolumeTransform();
-glm::vec3   vP = mT * glm::vec4(vI,1);
-glm::vec3   vU = glm::normalize(mT[2]);  
-glm::vec3   vD = glm::normalize(mT[1]); // we render along the y axis of the VVT
-
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  _shader.use();
-  _shader.setTextureSampler(0);
-
-  // back frustum, away from viewer into the display
-  if (1)
-  {
-  glm::vec3 vE(vP + (vD * camera.zNear()));
-
-    glCullFace(GL_BACK);
-    glDepthRange(0.5f,1.0f);
-
-    camera.backFrustum(vE,-vD,vU);
-
-    _shader.bindCameraPosition(vE);
-    _modMan.render(camera,_shader,_job.sceneTransform());
-
-    glFlush();
-  }
-
-  // front frustum, toward the viewer out of the display
-  if (1)
-  {
-  glm::vec3 vE(vP + (vD * -camera.zNear()));
-
-    glCullFace(GL_FRONT);
-    glDepthRange(0.5f,0.0f);
-
-    camera.frontFrustum(vE,vD,-vU);
-
-    _shader.bindCameraPosition(vE);
-    _modMan.render(camera,_shader,_job.sceneTransform());
-  }   
-
-  glFinish();
-}
-
-
-
-//---------------------------------------------------------------------
-// renderDoubleFrustumPlane
-//---------------------------------------------------------------------
-void Executor::renderDoubleFrustumPlane(void) 
-{
-glm::ivec2      nH      = _job.numHogels();
-glm::ivec2      hS      = _job.hogelSize();
-float           s       = glm::max(nH.x,nH.y);
-glm::ivec2      idx(0);
-uint32_t        n(0);
-Core::Timer     tH;
-Render::Camera  camera;
-
-  glfwMakeContextCurrent(_pWindow);
-  glfwSetWindowSize     (_pWindow,hS.x,hS.y);
-  glfwSetWindowTitle    (_pWindow,"Lightfield - Double Frustum");
-
-  tH.start();
-
-  std::cout << "Starting Double Frustum Hogel Rendering " << std::endl;
-
-  camera.setPerspective(_job.fov(),(float)hS.x/(float)(hS.y),_job.zNear(),_job.zFar());
-
-  glViewport(0,0,hS.x,hS.y);
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
-  glClearColor(0,0,0,0);
-  glPixelStorei(GL_PACK_ALIGNMENT,1);
-
-  for (;(idx.y < nH.y) && !glfwWindowShouldClose(_pWindow);idx.y++)
-  {
-  Core::Timer tR;
-
-    tR.start();
-
-    std::cout << "Rendering Hogel Row: " << idx.y << std::endl;
-
-    for (idx.x = 0;(idx.x < nH.x) && !glfwWindowShouldClose(_pWindow);idx.x++)
-    {
-    glm::vec3 vI = glm::vec3(idx.x,0,idx.y);
-
-      vI /= s;
-      vI -= glm::vec3(0.5f,0.0f,0.5f);
-      vI *= glm::vec3(1.0f,0.0f,-1.0f);
-
-      renderHogel(camera,vI);
-      fetchHogelAndQueue(idx);
-
-      glfwSwapBuffers(_pWindow);
-      glfwPollEvents();
-
-      n++;
-    }
-
-    {
-    double t = tR.seconds();
-    double c = (double)idx.y / (double)nH.y * 100.0;
-
-      std::cout << "    Row Time: " << t << " seconds";
-      std::cout << "    FPS: " << (double)idx.x / t;
-      std::cout << "    Complete: " << c << '%' << std::endl;
-    }
-
-    taskSync();
-  }
-
-  {
-  double t = tH.seconds();
-
-    std::cout << "Completed Double Frustum Hogel Rendering " << std::endl;
-    std::cout << "Render Time: " << t << " seconds" << std::endl;
-    std::cout << "FPS: " << (double)n / t << std::endl;
-  }
-}
-
-
-//---------------------------------------------------------------------
-// renderOblique
-//---------------------------------------------------------------------
-void Executor::renderOblique(Render::Camera &camera,const glm::vec2 &rA)
-{
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  if (1)
-  {
-  glm::vec2 r  = glm::radians(rA);
-  glm::mat4 mT = glm::shearY3D(_job.sceneTransform(),-r[0],r[1]);
- 
-    _shader.bindCameraPosition(glm::vec3(camera.view()[3]));
-    _modMan.render(camera,_shader,mT);
-  }    
-    
-  glFinish();
-}
-
-
-//---------------------------------------------------------------------
-// renderObliqueSet
-//---------------------------------------------------------------------
-uint32_t Executor::renderObliqueSet(void) 
-{
-glm::ivec2      nH      = _job.numHogels();
-glm::ivec2      hS      = _job.hogelSize();
-glm::mat4       mVVT    = _job.viewVolumeTransform();
-glm::vec3       vC      = glm::vec3(mVVT[3]);
-glm::vec3       vT      = glm::vec3(mVVT[1]);
-glm::vec3       vP      = vC;
-glm::vec3       vD      = vC - vT;
-glm::vec3       vU      = vC - glm::vec3(mVVT[2]);
-glm::vec2       rT      = glm::vec2(_job.fov()) / 2.0f;
-glm::vec2       rS      = glm::vec2(_job.fov()) / glm::vec2(hS);
-glm::vec2       rA      = -rT;
-glm::vec2       hD      = glm::vec2(mVVT[0].x,mVVT[2].z) * 0.5f;
-float           zF      = _job.zFar();
-Render::Camera  camera;
-glm::ivec2      idx(0);
-uint32_t        n(0);
-
-  glViewport(0,0,nH.x,nH.y);
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
-  glClearColor(0,0,0,0);
-  glPixelStorei(GL_PACK_ALIGNMENT,1);
-
-  camera.setOrthographic(-hD.x,hD.x,-hD.y,hD.y,-zF,zF);
-
-  for (;(idx.y < hS.y) && !glfwWindowShouldClose(_pWindow);idx.y++)
-  {
-  Core::Timer tR;
-
-    tR.start();
-
-    rA.x  = -rT.x;
-
-    std::cout << "Rendering Oblique Row: " << idx.y << std::endl;
-
-    for (idx.x = 0;(idx.x < hS.x) && !glfwWindowShouldClose(_pWindow);idx.x++)
-    {
-      camera.lookAt(vP,vD,vU);
-
-      renderOblique(camera,rA);
-      fetchObliqueAndQueue(idx);
-
-      glfwSwapBuffers(_pWindow);
-      glfwPollEvents();
-
-      rA.x  += rS.x; 
-
-      n++;
-    }
-
-    {
-    double t = tR.seconds();
-    double c = (double)idx.y / (double)nH.y * 100.0;
-
-      std::cout << "    Row Time: " << t << " seconds";
-      std::cout << "    FPS: " << (double)idx.x / t;
-      std::cout << "    Complete: " << c << '%' << std::endl;
-    }
-
-    rA.y  += rS.y;
-
-    taskSync();
-  }
-
-  return n;
-}
-
-
-//---------------------------------------------------------------------
-// renderObliquePlane
-//---------------------------------------------------------------------
-void Executor::renderObliquePlane(void) 
-{
-glm::ivec2      nH      = _job.numHogels();
-uint32_t        n       = 0;
-Core::Timer     tH;
-
-  glfwMakeContextCurrent(_pWindow);
-  glfwSetWindowSize     (_pWindow,nH.x,nH.y);
-  glfwSetWindowTitle    (_pWindow,"Lightfield - Obliques");
-
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
-
-  tH.start();
-
-  std::cout << "Starting Oblique Rendering " << std::endl;
-
-  n = renderObliqueSet();
-
-  {
-  double t = tH.seconds();
-
-    std::cout << "Completed Oblique Plane Rendering " << std::endl;
-    std::cout << "Render Time: " << t << " seconds" << std::endl;
-    std::cout << "FPS: " << (double)n / t << std::endl;
-  }
-}
-
-
-
-//---------------------------------------------------------------------
-// renderObliqueAndSlice
-//---------------------------------------------------------------------
-void Executor::renderObliqueAndSlice(void)
-{ 
-Task::SliceNDice    *pSnDT  = (Task::SliceNDice *)findTask("SliceOblique",_imgTaskLst);
-
-  if (pSnDT)
-  {
-  size_t            nR        = pSnDT->numSliceRows(); 
-  double            FPS       = 0;
-  glm::ivec2        nH        = _job.numHogels();
-  uint32_t          n         = 0;
-  Core::Timer	      tH;
-
-    if (nR == 0)
-      nR = nH.y;
-
-    glfwMakeContextCurrent(_pWindow);
-    glfwSetWindowSize(_pWindow,nH.x,nH.y);
-    glfwSetWindowTitle    (_pWindow,"Lightfield - Obliques & Slice n Dice");
-
-    for (size_t i = 0;(i < (size_t)nH.y) && !glfwWindowShouldClose(_pWindow);i += nR)
-    {
-      if ((i + nR) >= (size_t)nH.y)
-        nR = (size_t)nH.y - i;
-
-      std::cout << "Slicing Rows: " << i << " to " << i + nR << std::endl;
-
-      pSnDT->setSliceRange(i,nR);
-
-      n += renderObliqueSet();
-
-      pSnDT->writeAVIs();
-    }
-
-    {
-    double t = tH.seconds();
-
-      std::cout << "Completed Oblique Slice and Dice Rendering " << std::endl;
-      std::cout << "Render & Slice n Dice Time: " << t << " seconds" << std::endl;
-      std::cout << "FPS: " << (double)n / t << std::endl;
-    }
-  }
-}
-
-
 //---------------------------------------------------------------------
 // loadModels
 //---------------------------------------------------------------------
 int Executor::loadModels(std::filesystem::path &cPath)
 {
-int rc = _modMan.init(cPath);
+int rc = -1;
 
-  for (size_t i = 0;i < _job.numModels();i++)
+  _pModMan = new Render::ModMan();
+
+  if (_pModMan)
   {
-    if (_modMan.load(_job.modelPath(i),_job.modelTransform(i)) == 0)
-      std::cout << "Succesful Load: " << _job.modelPath(i) << std::endl;
-    else
+    rc =_pModMan->init(cPath);
+
+    for (size_t i = 0;i < _spJob->numModels();i++)
     {
-      std::cout << "Unsuccesful Load: " << _job.modelPath(i) << std::endl;
-      rc |= -1;
-    }
-  }   
+      if (_pModMan->load(_spJob->modelPath(i),_spJob->modelTransform(i)) == 0)
+        std::cout << "Succesful Load: " << _spJob->modelPath(i) << std::endl;
+      else
+      {
+        std::cout << "Unsuccesful Load: " << _spJob->modelPath(i) << std::endl;
+        rc |= -1;
+      }
+    }   
+  }
 
   return rc;
 }
@@ -698,179 +304,14 @@ int                    rc = 0;
 
   vShader /= "Shaders/Phong.vtx";
   fShader /= "Shaders/Phong.frg";
+
+  _pShader = new Render::Shader();
  
-  rc |= _shader.addVertexShader(vShader);
-  rc |= _shader.addFragmentShader(fShader);
+  rc |= _pShader->addVertexShader(vShader);
+  rc |= _pShader->addFragmentShader(fShader);
 
   if (rc == 0)
-    rc |= _shader.compile();
-
-  return rc;
-}
-
-
-//---------------------------------------------------------------------
-// createDoubleFrustumTasks
-//---------------------------------------------------------------------
-int Executor::createDoubleFrustumTasks(void)
-{
-int rc = 0;
-
-  if (_job.isTask(Core::Job::ProofImage))
-  {
-  Task::ProofImage  *pT = new Task::ProofImage("HogelProof");
-
-    pT->create(_job.numHogels(),_job.hogelSize(),3);
-    pT->setPathFile(_job.outputPath(),"HogelProof");
-    pT->start();
-
-    _imgTaskLst.push_back(pT);
-  }
-
-  if (_job.isTask(Core::Job::WriteAvi))
-  {
-  Task::WriteAvi        *pT = new Task::WriteAvi("HogelAvi");
-  std::filesystem::path dPath(_job.outputPath());
-
-    dPath /= "HogelAvi";
-
-    pT->setPathFile(dPath,"HogelRow");
-    pT->start();
-
-    _imgTaskLst.push_back(pT);
-  }
-
-  if (_job.isTask(Core::Job::WriteImg))
-  {
-  Task::WriteImg        *pT = new Task::WriteImg("HogelImg");
-  std::filesystem::path dPath(_job.outputPath());
-
-    dPath /= "HogelImg";
-
-    pT->setPathFile(dPath,"HogelImg_%06dx%06d","png");
-    pT->start();
-
-    _imgTaskLst.push_back(pT);
-  }
-
-  if (_job.isTask(Core::Job::ProofDepth))
-  {
-  Task::ProofImage  *pT = new Task::ProofImage("DthProof");
-
-    pT->setZNear(_job.zNear());
-    pT->setZFar(_job.zFar());
-    pT->create(_job.numHogels(),_job.hogelSize(),1);
-    pT->setPathFile(_job.outputPath(),"DthProof");
-    pT->start();
-
-    _dthTaskLst.push_back(pT);
-  }
-
-  if (_job.isTask(Core::Job::WriteDepthImg))
-  {
-  Task::WriteImg        *pT = new Task::WriteImg("DthImg");
-  std::filesystem::path dPath(_job.outputPath());
-
-    dPath /= "HogelDth";
-
-    pT->setZNear(_job.zNear());
-    pT->setZFar(_job.zFar());
-    pT->setPathFile(dPath,"HogelDthImg_%06dx%06d","png");
-    pT->start();
-
-    _dthTaskLst.push_back(pT);
-  }
-
-  return rc;
-}
-
-
-//---------------------------------------------------------------------
-// createObliqueTasks
-//---------------------------------------------------------------------
-int Executor::createObliqueTasks(void)
-{
-int rc = 0;
-
-  if (_job.isTask(Core::Job::ProofImage))
-  {
-  Task::ProofImage  *pT = new Task::ProofImage("ObliqueProof");
-
-    pT->create(_job.numHogels(),_job.hogelSize(),3);
-    pT->setPathFile(_job.outputPath(),"ObliqueProof");
-    pT->setScatterType(Task::ProofImage::ObliqueScatter);
-    pT->start();
-
-    _imgTaskLst.push_back(pT);
-  }
-
-  if (_job.isTask(Core::Job::WriteAvi) && !_job.isTask(Core::Job::SliceOblique))
-  {
-  Task::WriteAvi        *pT = new Task::WriteAvi("ObliqueAvi");
-  std::filesystem::path dPath(_job.outputPath());
-
-    dPath /= "ObliqueAvi";
-
-    pT->setPathFile(dPath,"ObliqueRow");
-    pT->start();
-
-    _imgTaskLst.push_back(pT);
-  }
-
-  if (_job.isTask(Core::Job::WriteImg) && !_job.isTask(Core::Job::SliceOblique))
-  {
-  Task::WriteImg        *pT = new Task::WriteImg("ObliqueImg");
-  std::filesystem::path dPath(_job.outputPath());
-
-    dPath /= "ObliqueImg";
-
-    pT->setPathFile(dPath,"ObliqueImg_%06dx%06d","png");
-    pT->start();
-
-    _imgTaskLst.push_back(pT);
-  }
-
-  if (_job.isTask(Core::Job::SliceOblique))
-  {
-  Task::SliceNDice      *pT = new Task::SliceNDice("SliceOblique");
-  std::filesystem::path dPath(_job.outputPath());
-
-    dPath /= "HogelAvi";
-
-    pT->setPathFile(dPath,"HogelRow");
-    pT->init(_job.numHogels(),_job.hogelSize(),_job.sliceMem());
-    pT->start();
-
-    _imgTaskLst.push_back(pT);
-  }
-
-  if (_job.isTask(Core::Job::ProofDepth) && !_job.isTask(Core::Job::SliceOblique))
-  {
-  Task::ProofImage  *pT = new Task::ProofImage("ObliqueDthProof");
-
-    pT->setZNear(_job.zNear());
-    pT->setZFar(_job.zFar());
-    pT->create(_job.hogelSize(),_job.numHogels(),1);
-    pT->setPathFile(_job.outputPath(),"ObliqueDthProof");
-    pT->start();
-
-    _dthTaskLst.push_back(pT);
-  }
-
-  if (_job.isTask(Core::Job::WriteDepthImg) && !_job.isTask(Core::Job::SliceOblique))
-  {
-  Task::WriteImg        *pT = new Task::WriteImg("ObliqueDthImg");
-  std::filesystem::path dPath(_job.outputPath());
-
-    dPath /= "ObliqueDth";
-
-    pT->setZNear(_job.zNear());
-    pT->setZFar(_job.zFar());
-    pT->setPathFile(dPath,"ObliqueDthImg_%06dx%06d","png");
-    pT->start();
-
-    _dthTaskLst.push_back(pT);
-  }
+    rc |= _pShader->compile();
 
   return rc;
 }
@@ -879,44 +320,43 @@ int rc = 0;
 //---------------------------------------------------------------------
 // init
 //---------------------------------------------------------------------
-int Executor::init(const char *pCfg) 
+int Executor::init(Core::SpJob &spJob) 
 {
-int rc  = parseJob(pCfg);
+int   rc = -1;
 
-  if (rc == 0)
+  _spJob = spJob;
+
+  glfwSetErrorCallback(ErrorCallback);
+
+  if (glfwInit())    
   {
-    glfwSetErrorCallback(ErrorCallback);
+  glm::ivec2 wS = _spJob->hogelSize();
 
-    if (glfwInit())    
+    _pWindow = initWindow(wS,"Lightfield",0,0,true);
+
+    if (_pWindow)
     {
-    glm::ivec2 wS = _job.hogelSize();
+    std::filesystem::path cPath = std::filesystem::current_path();
 
-      _pWindow = initWindow(wS,"Lightfield",0,0,true);
-
-      if (_pWindow)
-      {
-      std::filesystem::path cPath = std::filesystem::current_path();
-
-        glfwSetKeyCallback          (_pWindow,Keyboard_Callback);
+      glfwSetKeyCallback          (_pWindow,Keyboard_Callback);
 
 #ifdef _WIN32
-        glewExperimental = GL_TRUE;
-        glewInit();
+      glewExperimental = GL_TRUE;
+      glewInit();
 #endif   
 
-        GLInfo();
+      GLInfo();
 
-        rc |= loadModels(cPath);
-        rc |= loadShaders(cPath);
+      rc = loadModels(cPath);
 
-        if (_job.renderType() == Core::Job::DoubleFrustum)
-          rc |= createDoubleFrustumTasks();
-        else if (_job.renderType() == Core::Job::Oblique)
-          rc |= createObliqueTasks();
-        else
-          assert(0);
-      }
+      if (rc == 0)
+      rc = loadShaders(cPath);
+
+      if (rc == 0)
+        createTasks();
     }
+    else
+      std::cout << "Failed to create GLFW window" << std::endl;
   }
 
   return rc;
@@ -924,28 +364,16 @@ int rc  = parseJob(pCfg);
 
 
 //---------------------------------------------------------------------
-// exec
+// bindLight
 //---------------------------------------------------------------------
-int Executor::exec(void) 
+void  Executor::bindLight(void) 
 {
-int rc      = 0;
+  assert(_pShader);
 
-  _shader.bindLightPosition(_job.lightPosition());
-  _shader.bindLightAmbient (_job.lightAmbient());
-  _shader.bindLightDiffuse (_job.lightDiffuse());
-  _shader.bindLightSpecular(_job.lightSpecular());
-
-  if (_job.renderType() == Core::Job::RenderTypes::DoubleFrustum)
-    renderDoubleFrustumPlane();
-  else if (_job.renderType() == Core::Job::RenderTypes::Oblique)
-  {
-    if (_job.isTask(Core::Job::SliceOblique))
-      renderObliqueAndSlice();
-    else
-      renderObliquePlane();
-  }
-
-  return rc;
+  _pShader->bindLightPosition(_spJob->lightPosition());
+  _pShader->bindLightAmbient (_spJob->lightAmbient());
+  _pShader->bindLightDiffuse (_spJob->lightDiffuse());
+  _pShader->bindLightSpecular(_spJob->lightSpecular());
 }
 
 
@@ -978,6 +406,12 @@ void Executor::destroy(void)
     }
   }
 
+  if (_pModMan)
+    delete _pModMan;
+
+  if (_pShader)
+    delete _pShader;
+
   if (_pWindow)
     glfwDestroyWindow(_pWindow);
 
@@ -1000,10 +434,10 @@ void Executor::destroy(void)
 //---------------------------------------------------------------------
 // Executor
 //---------------------------------------------------------------------
-Executor::Executor(void) : _job(),
+Executor::Executor(void) : _spJob(),
                            _pWindow(0),
-                           _modMan(),
-                           _shader(),
+                           _pModMan(0),
+                           _pShader(0),
                            _imgTaskLst(),
                            _dthTaskLst()
 {

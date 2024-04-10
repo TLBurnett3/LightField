@@ -45,7 +45,7 @@ using namespace Render;
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void Mesh::render(const Camera &camera,const Shader &shader,const glm::mat4 &mT)
+void Mesh::render(const Camera &camera,const Shader *pShader,const glm::mat4 &mT)
 {
 bool      visible(true);
   
@@ -62,9 +62,9 @@ bool      visible(true);
   glm::mat4   mMVP  = camera.projection() * mMV;
   glm::mat3   mN    = glm::inverseTranspose(glm::mat3(mMV));
 
-    shader.bindMVP(mMVP);
-    shader.bindMV(mMV);
-    shader.bindN(mN);
+    pShader->bindMVP(mMVP);
+    pShader->bindMV(mMV);
+    pShader->bindN(mN);
   //  shader.bindMaterial(_pTexture->properties());
 
     _pTexture->bind();

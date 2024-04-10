@@ -185,7 +185,7 @@ JSon::Value &v = doc["Tasks"];
   {
 		std::cout << std::endl;
 
-		JSon::parse(v, "ProofImage",         _tasks[ProofImage],          true);
+		JSon::parse(v, "ProofImage",         _tasks[ProofImage],          false);
 		JSon::parse(v, "WriteAvi",           _tasks[WriteAvi],            false);
 		JSon::parse(v, "WriteImg",           _tasks[WriteImg],            false);
 		JSon::parse(v, "WriteDemo",          _tasks[WriteDemo],           false);

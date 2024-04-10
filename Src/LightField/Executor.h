@@ -62,11 +62,11 @@ namespace Lf
     // Members
     private:
     protected:
-      Lf::Core::Job   _job;
+      Lf::Core::SpJob _spJob;
       GLFWwindow      *_pWindow;
 
-      Render::ModMan  _modMan;
-      Render::Shader  _shader;
+      Render::ModMan  *_pModMan;
+      Render::Shader  *_pShader;
 
       TaskList        _imgTaskLst;
       TaskList        _dthTaskLst;
@@ -76,57 +76,31 @@ namespace Lf
     // Methods
     private:
     protected:
-      Task::Base    *findTask(const char *tName,TaskList &tLst)
-      {
-      std::string         n     = tName;
-      TaskList::iterator  ii    = tLst.begin();
-      TaskList::iterator  iEnd  = tLst.end();
+      Task::Base    *findTask(const char *tName,TaskList &tLst);
 
-        while (ii != iEnd)
-        {
-          if (n == (*ii)->name())
-            return (*ii);
-
-          ii++;
-        }
-
-        return 0;       
-      }
-
-      int parseJob(const char *pCfg);
-
-      GLFWwindow *Executor::initWindow(const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
-
-      void renderHogel  (Render::Camera &camera,const glm::vec3 &vI);
-      void renderOblique(Render::Camera &camera,const glm::vec2 &rA);
-
-      void renderDoubleFrustumPlane     (void);
-      void renderObliquePlane           (void);
-      uint32_t renderObliqueSet         (void);
-      void renderObliqueAndSlice        (void);
-
-      void fetchHogelAndQueue(glm::ivec2 idx);
-      void fetchObliqueAndQueue(glm::ivec2 idx);
+      GLFWwindow    *initWindow(const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
 
       void GLInfo(void);
 
-      int  loadModels (std::filesystem::path &cPath);
-      int  loadShaders(std::filesystem::path &cPath);
-
-      int  createDoubleFrustumTasks(void);
-      int  createObliqueTasks(void);
+      void bindLight(void);
 
       void taskWait(Task::Base *pT);
       void taskSync(void);
 
-    public:
+      virtual int  loadModels (std::filesystem::path &cPath);
+      virtual int  loadShaders(std::filesystem::path &cPath);
 
-      int   init(const char *pCfg);
-      int   exec(void);
-      void  destroy(void);
+      virtual void fetchAndQueue(glm::ivec2 idx) = 0;
+      virtual void createTasks  (void)           = 0;
+
+    public:
+      virtual int   exec    (void) = 0;
+
+      virtual int   init    (Core::SpJob &spJob);
+      virtual void  destroy (void);
 
       Executor(void);
-      ~Executor();
+      virtual ~Executor();
   };
 };
 //---------------------------------------------------------------------

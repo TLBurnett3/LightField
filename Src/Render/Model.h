@@ -115,7 +115,7 @@ namespace Lf
 
         void  print(std::ostream &s,bool detail = false);
 
-        void  render(const Camera &camera,const Shader &shader,const glm::mat4 &mT);
+        void  render(const Camera &camera,const Shader *pShader,const glm::mat4 &mT);
 
         Model(void);
         ~Model();

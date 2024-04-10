@@ -409,9 +409,9 @@ Assimp::Importer  importer;
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void Model::render(const Camera &camera,const Shader &shader,const glm::mat4 &mT)
+void Model::render(const Camera &camera,const Shader *pShader,const glm::mat4 &mT)
 {
-  _pRoot->render(camera,shader,mT);
+  _pRoot->render(camera,pShader,mT);
 }
 
 

@@ -34,6 +34,7 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <memory>
 
 // 3rdPartyLibs
 #include "glm/glm.hpp"
@@ -233,6 +234,8 @@ namespace Lf
         EXPORT Job(void);
         EXPORT virtual ~Job();
     };
+
+    typedef std::shared_ptr<Job>    SpJob;
   };
 };
  //---------------------------------------------------------------------
