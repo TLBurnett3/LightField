@@ -10,8 +10,8 @@ if (WIN32)
 #  set (GLFW3_RELEASE_LIBRARY                 optimized ${3RDPARTY_LIB_DIR}/glfw3.lib)
   set (GLFW3_RELEASE_LIBRARY                  ${3RDPARTY_LIB_DIR}/glfw3.lib)
 
- # install (FILES      ${3RDPARTY_BIN_DIR}/glfw3d.dll             CONFIGURATIONS Debug   DESTINATION bin)
-  install (FILES      ${3RDPARTY_BIN_DIR}/glfw3.dll              CONFIGURATIONS Release DESTINATION bin)
+  install (FILES      ${3RDPARTY_BIN_DIR}/glfw3.dll             CONFIGURATIONS Debug   DESTINATION bin)
+  install (FILES      ${3RDPARTY_BIN_DIR}/glfw3.dll             CONFIGURATIONS Release DESTINATION bin)
 endif (WIN32)
 
 if (UNIX)

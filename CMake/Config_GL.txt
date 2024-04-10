@@ -4,12 +4,15 @@ if (WIN32)
 
   #find_package(glew REQUIRED)
 
-  set( GLEW_LIBRARIES                               C:/3rdPartyLibs/VS2019/lib/glew32.lib)
+  set( GLEW_LIBRARIES                               ${3RDPARTY_LIB_DIR}/glew32.lib)
   set (GLEW_INCLUDE_DIR                             ${3RDPARTY_INC_DIR})
 
   message("           GLEW_INCLUDE_DIR:     "      ${GLEW_INCLUDE_DIR})
   message("             GLEW_LIBRARIES:     "      ${GLEW_LIBRARIES})
   message("")
+
+  install (FILES      ${3RDPARTY_BIN_DIR}/glew32.dll      CONFIGURATIONS Debug   DESTINATION bin)
+  install (FILES      ${3RDPARTY_BIN_DIR}/glew32.dll      CONFIGURATIONS Release DESTINATION bin)
 
 endif(WIN32)
 

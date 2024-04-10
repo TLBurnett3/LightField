@@ -9,9 +9,11 @@ project(LightField)
 
 set (LIGHTFIELD_VERSION_MAJOR      1)
 set (LIGHTFIELD_VERSION_MINOR      0)
-set (LIGHTFIELD_VERSION_PATCH      0)
+set (LIGHTFIELD_VERSION_PATCH      2)
 
 set (LIGHTFIELD_SRC_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/Src)
+set (LIGHTFIELD_MODEL_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/Models)
+set (LIGHTFIELD_SHADER_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/Shaders)
 
 if (WIN32)
 set (3RDPARTY_BASE_DIR          /3rdPartyLibs)
@@ -88,6 +90,21 @@ include (CMake/Config_OpenCV.txt)
 
 
 add_subdirectory(Src)
+
+##############################################################################################
+# Install
+
+install (DIRECTORY      ${LIGHTFIELD_MODEL_DIR}/Orchid   CONFIGURATIONS Debug   DESTINATION Models)
+install (DIRECTORY      ${LIGHTFIELD_MODEL_DIR}/Orchid   CONFIGURATIONS Release DESTINATION Models)
+
+install (FILES          ${LIGHTFIELD_SHADER_DIR}/Phong.vtx   CONFIGURATIONS Debug   DESTINATION Shaders)
+install (FILES          ${LIGHTFIELD_SHADER_DIR}/Phong.vtx   CONFIGURATIONS Release DESTINATION Shaders)
+
+install (FILES          ${LIGHTFIELD_SHADER_DIR}/Phong.frg   CONFIGURATIONS Debug   DESTINATION Shaders)
+install (FILES          ${LIGHTFIELD_SHADER_DIR}/Phong.frg   CONFIGURATIONS Release DESTINATION Shaders)
+
+##############################################################################################
+
 
 
 ##############################################################################################
