@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// ModMan.h 
+// Scene.h 
 // Thomas Burnett
 
 
@@ -36,11 +36,11 @@
 #include <filesystem>
 
 // LightField
-#include "Render/Def.h"
+#include "RenderGL/Def.h"
 #include "Core/Export.h"
-#include "Render/Model.h"
-#include "Render/Camera.h"
-#include "Render/Shader.h"
+#include "RenderGL/Model.h"
+#include "RenderGL/Camera.h"
+#include "RenderGL/Shader.h"
 //---------------------------------------------------------------------
 
 
@@ -49,9 +49,9 @@
 // Classes
 namespace Lf
 {
-  namespace Render
+  namespace RenderGL
   {
- 	  class ModMan 	
+ 	  class Scene 	
     {
 	    // Defines
       private:
@@ -115,8 +115,8 @@ namespace Lf
 
    //     void  createImagePlane(const glm::mat4 &mT,const glm::vec3 &hW);
 
-        EXPORT ModMan(void);
-        EXPORT virtual ~ModMan();
+        EXPORT Scene(void);
+        EXPORT virtual ~Scene();
     };
   };
 };

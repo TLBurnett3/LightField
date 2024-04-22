@@ -34,10 +34,10 @@
 #include <iostream>
 
 // tLib
-#include "Render/Shader.h"
+#include "RenderGL/Shader.h"
 
 using namespace Lf;
-using namespace Render;
+using namespace RenderGL;
 //---------------------------------------------------------------------
 
 

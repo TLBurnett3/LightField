@@ -32,10 +32,10 @@
 #include <float.h>
 
 // Engine
-#include "Render/VtxBufferObj.h"
+#include "RenderGL/VtxBufferObj.h"
 
 using namespace Lf;
-using namespace Render;
+using namespace RenderGL;
 //---------------------------------------------------------------------
 
 

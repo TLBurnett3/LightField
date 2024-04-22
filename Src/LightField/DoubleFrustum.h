@@ -37,6 +37,7 @@
 
 // LightField
 #include "Executor.h"
+#include "HogelDef/Plane.h"
 //---------------------------------------------------------------------
 
 
@@ -54,6 +55,8 @@ namespace Lf
     // Members
     private:
     protected:
+      Lf::HogelDef::Plane        *_pHogelPlane;
+
     public:   
 
     // Methods
@@ -61,8 +64,9 @@ namespace Lf
     protected:
       virtual void fetchAndQueue(glm::ivec2 idx);
       virtual void createTasks  (void);
+      void         createHogelPlane(void);
 
-      void render(Render::Camera &camera,const glm::vec3 &vI);
+      void render(RenderGL::Camera &camera,Lf::HogelDef::Hogel *pH);
 
     public:
       int   exec(void);

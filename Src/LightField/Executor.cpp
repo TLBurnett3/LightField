@@ -37,10 +37,10 @@
 #include <glm/ext.hpp>
 
 // LightField
-#include "Render/Def.h"
+#include "RenderGL/Def.h"
 #include "LightField/Executor.h"
 #include "Core/Timer.h"
-#include "Render/Camera.h"
+#include "RenderGL/Camera.h"
 #include "Tasks/ProofImage.h"
 #include "Tasks/WriteAvi.h"
 #include "Tasks/WriteImg.h"
@@ -271,15 +271,15 @@ int Executor::loadModels(std::filesystem::path &cPath)
 {
 int rc = -1;
 
-  _pModMan = new Render::ModMan();
+  _pScene = new RenderGL::Scene();
 
-  if (_pModMan)
+  if (_pScene)
   {
-    rc =_pModMan->init(cPath);
+    rc =_pScene->init(cPath);
 
     for (size_t i = 0;i < _spJob->numModels();i++)
     {
-      if (_pModMan->load(_spJob->modelPath(i),_spJob->modelTransform(i)) == 0)
+      if (_pScene->load(_spJob->modelPath(i),_spJob->modelTransform(i)) == 0)
         std::cout << "Succesful Load: " << _spJob->modelPath(i) << std::endl;
       else
       {
@@ -305,7 +305,7 @@ int                    rc = 0;
   vShader /= "Shaders/Phong.vtx";
   fShader /= "Shaders/Phong.frg";
 
-  _pShader = new Render::Shader();
+  _pShader = new RenderGL::Shader();
  
   rc |= _pShader->addVertexShader(vShader);
   rc |= _pShader->addFragmentShader(fShader);
@@ -346,6 +346,13 @@ int   rc = -1;
 #endif   
 
       GLInfo();
+
+      {
+      std::filesystem::path outPath = _spJob->outputPath();
+
+        if (!outPath.empty() && !std::filesystem::exists(outPath))
+          std::filesystem::create_directory(outPath);
+      }
 
       rc = loadModels(cPath);
 
@@ -406,8 +413,8 @@ void Executor::destroy(void)
     }
   }
 
-  if (_pModMan)
-    delete _pModMan;
+  if (_pScene)
+    delete _pScene;
 
   if (_pShader)
     delete _pShader;
@@ -436,7 +443,7 @@ void Executor::destroy(void)
 //---------------------------------------------------------------------
 Executor::Executor(void) : _spJob(),
                            _pWindow(0),
-                           _pModMan(0),
+                           _pScene(0),
                            _pShader(0),
                            _imgTaskLst(),
                            _dthTaskLst()

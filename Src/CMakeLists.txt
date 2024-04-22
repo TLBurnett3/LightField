@@ -1,5 +1,6 @@
 add_subdirectory(Core)
+add_subdirectory(HogelDef)
 add_subdirectory(Tasks)
-add_subdirectory(Render)
+add_subdirectory(RenderGL)
 add_subdirectory(LightField)
 add_subdirectory(Viewer)

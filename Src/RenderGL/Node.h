@@ -23,18 +23,20 @@
 //---------------------------------------------------------------------
 
 // Thomas Burnett
-// Bound.h
+// Node.h
 
 #pragma once
 
-
 //---------------------------------------------------------------------
 // Includes
-
-// System
+#include <string>
+#include <vector>
+#include <ostream>
 
 // LightField
-
+#include "RenderGL/Mesh.h"
+#include "RenderGL/Bound.h"
+#include "RenderGL/Camera.h"
 //---------------------------------------------------------------------
 
 
@@ -43,99 +45,64 @@
 // Classes
 namespace Lf
 {
-  namespace Render
+  namespace RenderGL
   {
-    class Bound
+    class Node : public Bound
     {
+      friend class Model;
+
       // Definitions
       private:
       protected:
-      public:   
+        typedef   std::vector<Mesh *>      MeshLst;
+        typedef   std::vector<Node *>      NodeList;
+      public:
+    
 
       // Members
       private:
       protected:
-        glm::vec3           _vMin;
-        glm::vec3           _vMax;
-        glm::vec3           _vCen;
-        glm::vec3           _vDim;
-        float               _radius;
+        std::string   _sName;
 
+        glm::mat4     _mT;  // transform matrix
+
+        MeshLst       _meshLst;
+        NodeList      _nodeLst;
       public:
-      
+
+
       // Methods
       private:
       protected:
-        void calculate(void)
-        { 
-          _vCen   = (_vMax + _vMin) * 0.5f; 
-          _vDim   = (_vMax - _vMin);
-          _radius = glm::distance(_vMax,_vMin) * 0.5f;
-        }
+        void printMatrix(std::ostream &s,std::string idt,const char *str,const glm::mat4 &m);
 
       public:
-        void  adjustBounds(const glm::mat4 &mT)
-        {
-          _vMin = glm::vec3(mT * glm::vec4(_vMin,0));
-          _vMax = glm::vec3(mT * glm::vec4(_vMax,0));
+        const glm::mat4 &transform(void) const
+        { return _mT; }
 
-          calculate();
-        }
+        void  setName(const char *name)
+        { _sName = name; }
 
-        void  bound(const glm::vec3 &v)
-        {
-          _vMin = glm::min(_vMin,v);
-          _vMax = glm::max(_vMax,v);
+        void  setTransformMatrix(glm::mat4 mT)
+        { _mT  = mT; }
 
-          calculate();
-        }
-      
-        void  bound(const glm::vec3 &v1,const glm::vec3 &v2)
-        {
-          _vMin = glm::min(_vMin,v1);
-          _vMax = glm::max(_vMax,v1);
+        void  addNode(Node *pN)
+        { _nodeLst.push_back(pN); }
 
-          _vMin = glm::min(_vMin,v2);
-          _vMax = glm::max(_vMax,v2);
-
-          calculate();
-        }
-
-        void setMax(const glm::vec3 &v)
+        void  addMesh(Mesh *pM)
         { 
-          _vMax = v; 
-
-          calculate();
+          bound(pM->vMin(),pM->vMax());
+          _meshLst.push_back(pM); 
         }
 
-        void setMin(const glm::vec3 &v)
-        { 
-          _vMin = v; 
+  //      void cullFrustum(const glm::mat4 &mView,const Control &control);
 
-          calculate();
-        }
+        void  print(std::ostream &s,std::string idt);
 
-        const glm::vec3 &vMin(void) const
-        { return _vMin; }
+        void  render(const Camera &camera,const Shader *pShader,const glm::mat4 &mT);
 
-        const glm::vec3 &vMax(void) const
-        { return _vMax; }
-
-        const glm::vec3 &cen(void) const
-        { return _vCen; }
-
-        const float radius(void) const
-        { return _radius; }
-   
-        Bound(void) : _vMin(FLT_MAX),
-                      _vMax(-FLT_MAX),
-                      _vCen(0),
-                      _vDim(0),
-                      _radius(0)
-        {}
-
-        ~Bound()
-        {}
+        Node(void);
+        ~Node();
     };
   };
 };

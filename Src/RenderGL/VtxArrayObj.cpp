@@ -33,10 +33,10 @@
 #include <float.h>
 
 // Engine
-#include "Render/VtxArrayObj.h"
+#include "RenderGL/VtxArrayObj.h"
 
 using namespace Lf;
-using namespace Render;
+using namespace RenderGL;
 //---------------------------------------------------------------------
 
 

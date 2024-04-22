@@ -37,10 +37,10 @@
 #include <glm/ext.hpp>
 
 // LightField
-#include "Render/Def.h"
+#include "RenderGL/Def.h"
 #include "LightField/Oblique.h"
 #include "Core/Timer.h"
-#include "Render/Camera.h"
+#include "RenderGL/Camera.h"
 #include "Tasks/ProofImage.h"
 #include "Tasks/WriteAvi.h"
 #include "Tasks/WriteImg.h"
@@ -192,7 +192,7 @@ void Oblique::createTasks(void)
 //---------------------------------------------------------------------
 // renderOblique
 //---------------------------------------------------------------------
-void Oblique::renderOblique(Render::Camera &camera,const glm::vec2 &rA)
+void Oblique::renderOblique(RenderGL::Camera &camera,const glm::vec2 &rA)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -202,7 +202,7 @@ void Oblique::renderOblique(Render::Camera &camera,const glm::vec2 &rA)
   glm::mat4 mT = glm::shearY3D(_spJob->sceneTransform(),-r[0],r[1]);
  
     _pShader->bindCameraPosition(glm::vec3(camera.view()[3]));
-    _pModMan->render(camera,_pShader,mT);
+    _pScene->render(camera,_pShader,mT);
   }    
     
   glFinish();
@@ -227,7 +227,7 @@ glm::vec2       rS      = glm::vec2(_spJob->fov()) / glm::vec2(hS);
 glm::vec2       rA      = -rT;
 glm::vec2       hD      = glm::vec2(mVVT[0].x,mVVT[2].z) * 0.5f;
 float           zF      = _spJob->zFar();
-Render::Camera  camera;
+RenderGL::Camera  camera;
 glm::ivec2      idx(0);
 uint32_t        n(0);
 

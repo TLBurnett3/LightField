@@ -31,8 +31,8 @@
 // Includes
 #include <vector>
 
-#include "Render/Def.h"
-#include "Render/VtxLst.h"
+#include "RenderGL/Def.h"
+#include "RenderGL/VtxLst.h"
 //---------------------------------------------------------------------
 
 
@@ -41,7 +41,7 @@
 // Classes
 namespace Lf
 {
-  namespace Render
+  namespace RenderGL
   {
     class Object
     { 

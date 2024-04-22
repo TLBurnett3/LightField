@@ -35,10 +35,10 @@
 
 // RenderEngine
 
-#include "Render/Mesh.h"
+#include "RenderGL/Mesh.h"
 
 using namespace Lf;
-using namespace Render;
+using namespace RenderGL;
 //---------------------------------------------------------------------
 
 

@@ -31,10 +31,10 @@
 #include <assert.h>
 
 
-#include "Render/Node.h"
+#include "RenderGL/Node.h"
 
 using namespace Lf;
-using namespace Render;
+using namespace RenderGL;
 //---------------------------------------------------------------------
 
 

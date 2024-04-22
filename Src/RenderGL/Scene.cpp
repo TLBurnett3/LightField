@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// ModMan.cpp 
+// Scene.cpp 
 // Thomas Burnett
 
 
@@ -36,19 +36,19 @@
 #include <assimp/postprocess.h>
 
 // LightField
-#include "Render/ModMan.h"
-#include "Render/VtxArrayObj.h"
+#include "RenderGL/Scene.h"
+#include "RenderGL/VtxArrayObj.h"
 
 
 using namespace Lf;
-using namespace Render;
+using namespace RenderGL;
 //---------------------------------------------------------------------
 
 
 //---------------------------------------------------------------------
 // summary
 //---------------------------------------------------------------------
-void ModMan::print(std::ostream &s)
+void Scene::print(std::ostream &s)
 {
 size_t n  = _modelLst.size();
 
@@ -60,7 +60,7 @@ size_t n  = _modelLst.size();
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void ModMan::render(const Camera &camera,const Shader *pShader,const glm::mat4 &mT)
+void Scene::render(const Camera &camera,const Shader *pShader,const glm::mat4 &mT)
 {
 size_t n  = _modelLst.size();
 
@@ -73,7 +73,7 @@ size_t n  = _modelLst.size();
 //---------------------------------------------------------------------
 // createImagePlane
 //---------------------------------------------------------------------
-void ModMan::createImagePlane(const glm::mat4 &mT,const glm::vec3 &fD)
+void Scene::createImagePlane(const glm::mat4 &mT,const glm::vec3 &fD)
 {
 VtxVNTLst           vtxLst;
 cv::Mat             img(cv::Size(64,64),CV_8UC3);
@@ -111,7 +111,7 @@ int                 rM          = createQuadXZ(glm::vec3(0),vtxLst,glm::vec2(fD.
 //---------------------------------------------------------------------
 // load
 //---------------------------------------------------------------------
-int ModMan::load(const std::filesystem::path &mFile,
+int Scene::load(const std::filesystem::path &mFile,
                           const glm::mat4 &mT)
 {
 int   rc      = 0;
@@ -159,7 +159,7 @@ Model *pModel = new Model();
 //---------------------------------------------------------------------
 // init
 //---------------------------------------------------------------------
-int ModMan::init(const std::filesystem::path &cPath)
+int Scene::init(const std::filesystem::path &cPath)
 {
 int rc = 0;
 
@@ -168,9 +168,9 @@ return rc;
 
 
 //---------------------------------------------------------------------
-// ModMan
+// Scene
 //---------------------------------------------------------------------
-ModMan::ModMan(void) : _modelLst(),
+Scene::Scene(void) : _modelLst(),
                        _max(-FLT_MAX),
                        _min(FLT_MIN),
                        _cen(0),
@@ -180,9 +180,9 @@ ModMan::ModMan(void) : _modelLst(),
 
 
 //---------------------------------------------------------------------
-// ~ModMan
+// ~Scene
 //---------------------------------------------------------------------
-ModMan::~ModMan()
+Scene::~Scene()
 {
   while (!_modelLst.empty())
   {

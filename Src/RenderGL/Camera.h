@@ -45,7 +45,7 @@
 // Classes
 namespace Lf
 {
-  namespace Render
+  namespace RenderGL
   {
     class Camera
     {

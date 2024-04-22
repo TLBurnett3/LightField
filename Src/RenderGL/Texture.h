@@ -22,28 +22,21 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
+// Texture.h
 // Thomas Burnett
-// Mesh.h
 
 #pragma once
 
+
 //---------------------------------------------------------------------
 // Includes
-
-// System
-#include <string>
-#include <ostream>
-
 // 3rdPartyLibs
-#include <glm/glm.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 // LightField
-#include "Render/Def.h"
-#include "Render/Bound.h"
-#include "Render/Texture.h"
-#include "Render/Object.h"
-#include "Render/Camera.h"
-#include "Render/Shader.h"
+#include "RenderGL/Def.h"
+#include "Core/Export.h"
 //---------------------------------------------------------------------
 
 
@@ -52,68 +45,65 @@
 // Classes
 namespace Lf
 {
-  namespace Render
+  namespace RenderGL
   {
-    class Mesh : public Bound
-    {
-      friend class Model;
-
-      // Definitions
+    class Texture 
+    { 
+      // Defines
       private:
       protected:
-      public:   
-
+      public:
+     
       // Members
       private:
       protected:
-        std::string         _mName;
-
-        Texture             *_pTexture;
-        Object              *_pObject;
-
-        unsigned long       _numFaces;
-        unsigned long       _numVertices;
-        unsigned long       _numNormals;
-        unsigned long       _numTexCoords;
+        GLuint              _tId;
+        glm::ivec3          _iDim;
+        glm::mat4           _mProp;
 
       public:
 
       // Methods
       private:
- 
       protected:
       public:
-        void  setName(const std::string &name)
-        { _mName = name; }
+        EXPORT  const bool isUploaded(void) const
+        { return _iDim.z ? true : false; }
 
-        void  setTexture(Texture *pM)
-        { _pTexture = pM; }
+        EXPORT const glm::ivec2 iDim(void) const 
+        {  return glm::ivec2(_iDim); }
 
-        void  setRenderObject(Object *pRO)
-        { _pObject = pRO; }      
-      
-        void  setNumFaces(const unsigned long nF)
-        { _numFaces = nF; }
+        EXPORT int width(void) const
+        { return _iDim.x; }
 
-        void  setNumVertices(const unsigned long nV)
-        { _numVertices = nV; }
+        EXPORT int height(void) const
+        { return _iDim.y; }
 
-        void  setNumNormals(const unsigned long nN)
-        { _numNormals= nN; }
+        EXPORT int bpp(void) const 
+        { return _iDim.z; }
 
-        void  setNumTexCoords(const unsigned long nTC)
-        { _numTexCoords = nTC; }
+        EXPORT GLuint    textureId(void) const
+        { return _tId; }
 
-        void print(std::ostream &s,std::string idt,bool detail = false);
+        EXPORT void setProperties(const glm::mat4 &mP)
+        { _mProp = mP; }
 
-        void render(const Camera &camera,const Shader *pShader,const glm::mat4 &mT);
+        EXPORT const glm::mat4 &properties(void) const
+        { return _mProp; }
 
-        Mesh(void);
-        ~Mesh();
+        EXPORT virtual void  bind(void)
+        { glBindTexture(GL_TEXTURE_2D,_tId); }
+
+
+        EXPORT virtual void upload (const uint8_t *pI,
+                             const uint16_t w,const uint16_t h,const uint16_t bpp,
+                             const GLint f = 0);
+ 
+        EXPORT void upload(cv::Mat &img);
+
+        EXPORT Texture(void);
+        EXPORT virtual ~Texture();
     };
   };
 };
 //---------------------------------------------------------------------
-
-
-

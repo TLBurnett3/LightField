@@ -32,10 +32,10 @@
 #include <float.h>
 
 // LightField
-#include "Render/VtxLst.h"
+#include "RenderGL/VtxLst.h"
 
 using namespace Lf;
-using namespace Render;
+using namespace RenderGL;
 //---------------------------------------------------------------------
 
 

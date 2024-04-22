@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "Render/Def.h"
+#include "RenderGL/Def.h"
 
 //---------------------------------------------------------------------
 // Includes
@@ -41,9 +41,9 @@
 // LightField
 #include "Core/Job.h"
 #include "Tasks/Base.h"
-#include "Render/Camera.h"
-#include "Render/Shader.h"
-#include "Render/ModMan.h"
+#include "RenderGL/Camera.h"
+#include "RenderGL/Shader.h"
+#include "RenderGL/Scene.h"
 //---------------------------------------------------------------------
 
 
@@ -65,8 +65,8 @@ namespace Lf
       Lf::Core::SpJob _spJob;
       GLFWwindow      *_pWindow;
 
-      Render::ModMan  *_pModMan;
-      Render::Shader  *_pShader;
+      RenderGL::Scene  *_pScene;
+      RenderGL::Shader  *_pShader;
 
       TaskList        _imgTaskLst;
       TaskList        _dthTaskLst;

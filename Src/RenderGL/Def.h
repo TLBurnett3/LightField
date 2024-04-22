@@ -50,7 +50,7 @@
 
 namespace Lf
 {
-  namespace Render
+  namespace RenderGL
   {
     //---------------------------------------------------------------------
     // Defines

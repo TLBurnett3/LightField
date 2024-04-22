@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 3.6)
 
-project(LfRender)
+project(LfRenderGL)
 
 include_directories(${CMAKE_INCLUDE_PATH})
 include_directories(${3RDPARTY_INC_DIR})
@@ -19,7 +19,7 @@ set (HEADERS
   VtxArrayObj.h
   VtxBufferObj.h
   Shader.h
-  ModMan.h
+  Scene.h
   )
 
 set(SOURCE
@@ -31,7 +31,7 @@ set(SOURCE
   VtxArrayObj.cpp
   VtxBufferObj.cpp
   Shader.cpp
-  ModMan.cpp
+  Scene.cpp
   )
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCE} )

@@ -22,88 +22,67 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Texture.h
+// Hogel.h
 // Thomas Burnett
 
 #pragma once
 
-
 //---------------------------------------------------------------------
 // Includes
+// System
+#include <vector>
+
 // 3rdPartyLibs
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 
-// LightField
-#include "Render/Def.h"
-#include "Core/Export.h"
+// Lightfield
+
 //---------------------------------------------------------------------
-
 
 
 //---------------------------------------------------------------------
 // Classes
 namespace Lf
 {
-  namespace Render
+  namespace HogelDef
   {
-    class Texture 
-    { 
+    class Hogel 
+    {
       // Defines
       private:
       protected:
       public:
-     
+
       // Members
       private:
-      protected:
-        GLuint              _tId;
-        glm::ivec3          _iDim;
-        glm::mat4           _mProp;
-
-      public:
+      protected:        
+      public:   
+        glm::ivec2    _idx; // the (X,Y) index of this hogel in the hogel plane
+        glm::vec2     _vC;  // the distance, in pixels, from the hogel center to the hogel plane's minimum extent
+        glm::mat4     _mH;  // the transform matrix for this hogel, in normalized hogel plane space ([-0.5,0.5] in each dimension)
 
       // Methods
       private:
       protected:
       public:
-        EXPORT  const bool isUploaded(void) const
-        { return _iDim.z ? true : false; }
 
-        EXPORT const glm::ivec2 iDim(void) const 
-        {  return glm::ivec2(_iDim); }
+        Hogel(const glm::ivec2 &idx,const glm::vec2 &vC,const glm::mat4 &mH) : _idx(idx),
+                                                                               _vC(vC),
+                                                                               _mH(mH)
+        {};
 
-        EXPORT int width(void) const
-        { return _iDim.x; }
+        Hogel(const glm::ivec2 &idx,const glm::vec2 &vC) : _vC(vC),
+                                                           _mH(1)
+        {};
 
-        EXPORT int height(void) const
-        { return _iDim.y; }
-
-        EXPORT int bpp(void) const 
-        { return _iDim.z; }
-
-        EXPORT GLuint    textureId(void) const
-        { return _tId; }
-
-        EXPORT void setProperties(const glm::mat4 &mP)
-        { _mProp = mP; }
-
-        EXPORT const glm::mat4 &properties(void) const
-        { return _mProp; }
-
-        EXPORT virtual void  bind(void)
-        { glBindTexture(GL_TEXTURE_2D,_tId); }
-
-
-        EXPORT virtual void upload (const uint8_t *pI,
-                             const uint16_t w,const uint16_t h,const uint16_t bpp,
-                             const GLint f = 0);
- 
-        EXPORT void upload(cv::Mat &img);
-
-        EXPORT Texture(void);
-        EXPORT virtual ~Texture();
+        Hogel(void) : _idx(0),
+                      _vC(0),
+                      _mH(1)
+        {};
     };
+
+    typedef std::vector<Hogel> HogelLst;
   };
 };
 //---------------------------------------------------------------------

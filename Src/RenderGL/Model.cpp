@@ -38,16 +38,16 @@
 #include <assimp/Importer.hpp>
 
 // LightField
-#include "Render/Model.h"
+#include "RenderGL/Model.h"
 
 #ifndef _GLES2
-#include "Render/VtxArrayObj.h"
+#include "RenderGL/VtxArrayObj.h"
 #else
 #include "Engine/VtxBufferObj.h"
 #endif
 
 using namespace Lf;
-using namespace Render;
+using namespace RenderGL;
 //---------------------------------------------------------------------
 
 

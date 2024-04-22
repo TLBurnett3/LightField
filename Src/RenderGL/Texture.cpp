@@ -30,10 +30,10 @@
 // Includes
 
 // LightField
-#include "Render/Texture.h"
+#include "RenderGL/Texture.h"
 
 using namespace Lf;
-using namespace Render;
+using namespace RenderGL;
 //---------------------------------------------------------------------
 
 

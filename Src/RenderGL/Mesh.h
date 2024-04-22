@@ -23,8 +23,7 @@
 //---------------------------------------------------------------------
 
 // Thomas Burnett
-// Model.h
-
+// Mesh.h
 
 #pragma once
 
@@ -33,18 +32,18 @@
 
 // System
 #include <string>
-#include <vector>
 #include <ostream>
 
 // 3rdPartyLibs
 #include <glm/glm.hpp>
-#include <filesystem>
 
 // LightField
-#include "Render/Node.h"
-#include "Render/Bound.h"
-#include "Render/Camera.h"
-//#include "Render/Control.h"
+#include "RenderGL/Def.h"
+#include "RenderGL/Bound.h"
+#include "RenderGL/Texture.h"
+#include "RenderGL/Object.h"
+#include "RenderGL/Camera.h"
+#include "RenderGL/Shader.h"
 //---------------------------------------------------------------------
 
 
@@ -53,72 +52,64 @@
 // Classes
 namespace Lf
 {
-  namespace Render
+  namespace RenderGL
   {
-    class Model : public Bound
+    class Mesh : public Bound
     {
+      friend class Model;
+
       // Definitions
       private:
       protected:
-        typedef   std::vector<Texture *>    TextureLst;
-        typedef   std::vector<Mesh *>       MeshLst;
-      public:
-   
+      public:   
+
       // Members
       private:
       protected:
-        std::string             _sName;
-        std::filesystem::path _mPath;
+        std::string         _mName;
 
-        TextureLst     _textureLst;
-        MeshLst        _meshLst;    
-        Node           *_pRoot;
+        Texture             *_pTexture;
+        Object              *_pObject;
+
+        unsigned long       _numFaces;
+        unsigned long       _numVertices;
+        unsigned long       _numNormals;
+        unsigned long       _numTexCoords;
 
       public:
-
 
       // Methods
       private:
-        void  walkNode(const struct aiNode  *pAINode);
-
-        Texture           *createTexture   (const struct aiMaterial *pAIMaterial);
-        Mesh              *createMesh      (const struct aiMesh *pAIMesh);
-        Node              *createNode      (const struct aiNode *pAINode);
-
-        void  walkTextures  (const struct aiScene *pAIScene);
-        void  walkMeshes    (const struct aiScene *pAIScene);
-        void  walkScene     (const struct aiScene *pAIScene,const glm::mat4 &mT,const uint32_t f);
-
-        void  printVec3(std::ostream &s,std::string idt,const char *name,const glm::vec3 v);
-
-        void  normalizeModel(void);
-        void  moveToOrigin(void);
-
+ 
       protected:
       public:
-        void   addTexture(Texture *pT)
-        { _textureLst.push_back(pT); }
+        void  setName(const std::string &name)
+        { _mName = name; }
 
-        void   addMesh(Mesh *pM)
-        { _meshLst.push_back(pM); }
+        void  setTexture(Texture *pM)
+        { _pTexture = pM; }
 
-        void  setRootNode(Node *pN)
-        { _pRoot = pN; }
+        void  setRenderObject(Object *pRO)
+        { _pObject = pRO; }      
+      
+        void  setNumFaces(const unsigned long nF)
+        { _numFaces = nF; }
 
-        Node *root(void)
-        { return _pRoot; }
+        void  setNumVertices(const unsigned long nV)
+        { _numVertices = nV; }
 
-        int   load(const std::filesystem::path &mFile,
-                   const glm::mat4 &mT,
-                   const uint32_t aFlags = 0,
-                   const uint32_t flags = 0);
+        void  setNumNormals(const unsigned long nN)
+        { _numNormals= nN; }
 
-        void  print(std::ostream &s,bool detail = false);
+        void  setNumTexCoords(const unsigned long nTC)
+        { _numTexCoords = nTC; }
 
-        void  render(const Camera &camera,const Shader *pShader,const glm::mat4 &mT);
+        void print(std::ostream &s,std::string idt,bool detail = false);
 
-        Model(void);
-        ~Model();
+        void render(const Camera &camera,const Shader *pShader,const glm::mat4 &mT);
+
+        Mesh(void);
+        ~Mesh();
     };
   };
 };

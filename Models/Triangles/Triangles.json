@@ -1,30 +1,29 @@
 {
-  "JobName": "Orchid",
+  "JobName": "Triangles",
   "Renderer": "DF",
-  "OutputPath": "/Tmp/Orchid",
+  "OutputPath": "/Tmp/Triangles",
   "FieldOfView": 90.0,
-  "HogelSize": [ 128, 128 ],
-  "NumHogels": [ 256, 256 ],
-  "zNearFar": [0.001, 1.0],
-  "SliceMem": 12,
+  "HogelSize": [ 1000, 1000 ],
+  "NumHogels": [ 5, 5 ],
+  "zNearFar": [0.001,2.0],
+  "FrameBufferMem": 12,
   "Tasks": {
+    "ProofImage": true,
     "WriteAvi": true,
     "WriteImg": false,
-    "ProofDepth": false,
-    "WriteDepthImg": false,
-    "SliceNDice": false
+    "ProofDepth": false
   },
   "ViewVolume": {
     "Translate": [ 0.0, 0.0, 0.0 ],
-    "Scale": [ 1.8, 1.8, 1.8 ],
+    "Scale": [ 1.0, 1.0, 1.0 ],
     "Rotate": [ 0.0, 0.0, 0.0 ]
   },
   "Scene": {
-    "Translate": [ -0.08, 0.0, 0.0 ],
-    "Scale": [ 1.2, 1.2, 1.2 ],
+    "Translate": [ 0.0, 0.0, 0.0 ],
+    "Scale": [ 1.0, 1.0, 1.0 ],
     "Rotate": [ 0.0, 0.0, 0.0 ]
   },
-  "LightOff": {
+  "NoLight": {
     "Ambient": [ 0.2, 0.2, 0.2, 0.0 ],
     "Diffuse": [ 1.0, 1.0, 1.0, 0.0 ],
     "Specular": [ 0.0, 0.0, 0.0, 0.0 ],
@@ -32,9 +31,9 @@
   },
   "Models": [
     {
-      "File": "Orchid.obj",
+      "File": "Triangles.obj",
       "Transform": {
-        "Translate": [ 0.0, -1.0, 0.0 ],
+        "Translate": [ 0.0, 0.0, 0.0 ],
         "Scale": [ 1.0, 1.0, 1.0 ],
         "Rotate": [ 0.0, 0.0, 0.0 ]
       }

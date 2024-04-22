@@ -37,10 +37,10 @@
 #include <glm/ext.hpp>
 
 // LightField
-#include "Render/Def.h"
+#include "RenderGL/Def.h"
 #include "LightField/DoubleFrustum.h"
 #include "Core/Timer.h"
-#include "Render/Camera.h"
+#include "RenderGL/Camera.h"
 #include "Tasks/ProofImage.h"
 #include "Tasks/WriteAvi.h"
 #include "Tasks/WriteImg.h"
@@ -174,14 +174,31 @@ void DoubleFrustum::createTasks(void)
 
 
 //---------------------------------------------------------------------
+// createHogelPlane
+//---------------------------------------------------------------------
+void DoubleFrustum::createHogelPlane(void)
+{
+glm::ivec2  nH    = _spJob->numHogels();
+glm::ivec2  hS    = _spJob->hogelSize();
+
+  _pHogelPlane = new Lf::HogelDef::Plane();
+
+  _pHogelPlane->create(nH,hS,hS);
+}
+
+
+
+//---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void DoubleFrustum::render(Render::Camera &camera,const glm::vec3 &vI)
+void DoubleFrustum::render(RenderGL::Camera &camera,Lf::HogelDef::Hogel *pH)
 {
-glm::mat4   mT = _spJob->viewVolumeTransform();
-glm::vec3   vP = mT * glm::vec4(vI,1);
-glm::vec3   vU = glm::normalize(mT[2]);  
-glm::vec3   vD = glm::normalize(mT[1]); // we render along the y axis of the VVT
+float     zN    = _spJob->zNear();
+glm::mat4 mH    = _spJob->viewVolumeTransform() * pH->_mH;
+glm::vec3 vE    = mH[3];
+glm::vec3 vD    = glm::normalize(mH[2]);
+glm::vec3 vU    = glm::normalize(mH[1]);
+glm::vec3 vT    = vD * zN;
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -191,15 +208,13 @@ glm::vec3   vD = glm::normalize(mT[1]); // we render along the y axis of the VVT
   // back frustum, away from viewer into the display
   if (1)
   {
-  glm::vec3 vE(vP + (vD * camera.zNear()));
-
     glCullFace(GL_BACK);
     glDepthRange(0.5f,1.0f);
 
-    camera.backFrustum(vE,-vD,vU);
+    camera.backFrustum(vE + vT,-vD,vU);
 
     _pShader->bindCameraPosition(vE);
-    _pModMan->render(camera,_pShader,_spJob->sceneTransform());
+    _pScene->render(camera,_pShader,_spJob->sceneTransform());
 
     glFlush();
   }
@@ -207,15 +222,13 @@ glm::vec3   vD = glm::normalize(mT[1]); // we render along the y axis of the VVT
   // front frustum, toward the viewer out of the display
   if (1)
   {
-  glm::vec3 vE(vP + (vD * -camera.zNear()));
-
     glCullFace(GL_FRONT);
     glDepthRange(0.5f,0.0f);
 
-    camera.frontFrustum(vE,vD,-vU);
+    camera.frontFrustum(vE - vT,vD,-vU);
 
     _pShader->bindCameraPosition(vE);
-    _pModMan->render(camera,_pShader,_spJob->sceneTransform());
+    _pScene->render(camera,_pShader,_spJob->sceneTransform());
   }   
 
   glFinish();
@@ -230,11 +243,11 @@ int DoubleFrustum::exec(void)
 int             rc      = 0;
 glm::ivec2      nH      = _spJob->numHogels();
 glm::ivec2      hS      = _spJob->hogelSize();
-float           s       = glm::max(nH.x,nH.y);
 glm::ivec2      idx(0);
 uint32_t        n(0);
+float           s = glm::max(nH.x,nH.y);
 Core::Timer     tH;
-Render::Camera  camera;
+RenderGL::Camera  camera;
 
   bindLight();
 
@@ -260,13 +273,9 @@ Render::Camera  camera;
 
     for (idx.x = 0;(idx.x < nH.x) && !glfwWindowShouldClose(_pWindow);idx.x++)
     {
-    glm::vec3 vI = glm::vec3(idx.x,0,idx.y);
+    Lf::HogelDef::Hogel  *pH = _pHogelPlane->hogel(idx);
 
-      vI /= s;
-      vI -= glm::vec3(0.5f,0.0f,0.5f);
-      vI *= glm::vec3(1.0f,0.0f,-1.0f);
-
-      render(camera,vI);
+      render(camera,pH);
       fetchAndQueue(idx);
 
       glfwSwapBuffers(_pWindow);
@@ -313,6 +322,8 @@ int rc  = Executor::init(spJob);
     glfwMakeContextCurrent(_pWindow);
     glfwSetWindowSize     (_pWindow,hS.x,hS.y);
     glfwSetWindowTitle    (_pWindow,"Lightfield - Double Frustum");
+
+    createHogelPlane();
   }
 
   return rc;
@@ -322,7 +333,8 @@ int rc  = Executor::init(spJob);
 //---------------------------------------------------------------------
 // DoubleFrustum
 //---------------------------------------------------------------------
-DoubleFrustum::DoubleFrustum(void) : Executor()
+DoubleFrustum::DoubleFrustum(void) : Executor(),
+                                     _pHogelPlane(0)
 {
 }
 
@@ -332,5 +344,6 @@ DoubleFrustum::DoubleFrustum(void) : Executor()
 //---------------------------------------------------------------------
 DoubleFrustum::~DoubleFrustum()
 {
+  delete _pHogelPlane;
 }
 

@@ -38,7 +38,7 @@
 #include <glm/ext.hpp>
 
 // LightField
-#include "Render/Def.h"
+#include "RenderGL/Def.h"
 #include "Core/Export.h"
 //---------------------------------------------------------------------
 
@@ -47,7 +47,7 @@
 // Classes
 namespace Lf
 {
-  namespace Render
+  namespace RenderGL
   {
     class VtxLst
     {

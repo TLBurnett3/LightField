@@ -21,18 +21,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 //---------------------------------------------------------------------
- 
+
 // VtxArrayObj.h
 // Thomas Burnett
 
-
 #pragma once
+
+#ifndef _GLES2
 
 //---------------------------------------------------------------------
 // Includes
-#include "Core/Export.h"
-#include "Render/Object.h"
-#include "Render/VtxLst.h"
+
+#include "RenderGL/Object.h"
+#include "RenderGL/VtxLst.h"
 //---------------------------------------------------------------------
 
 
@@ -41,49 +42,39 @@
 // Classes
 namespace Lf
 {
-  namespace Render
+  namespace RenderGL
   {
-    class VtxBufferObj : public Object
+    class VtxArrayObj : public Object
     { 
       private:
       protected:
-        typedef	void	(VtxBufferObj::*iRenderFunc)   (void);
-
       public:
  
       private:
-        iRenderFunc _renderFunc;
-
       protected:
+        GLuint            _idVAO;
         GLuint            _idVBO;
         GLuint            _idIBO;
 
       public:
 
       private:
-        void renderIV   (void);
-        void renderIVT  (void);
-        void renderIVN  (void);
-        void renderIVNT (void);
-
-        void renderVT  (void);
-        void renderVD  (void);
-        void renderV   (void);
-        void renderVNT (void);
-
       protected:
  
+
       public:   
     
         EXPORT void  render  (void)
         { 
-          assert(_renderFunc);
-          (this->*_renderFunc)();
-        }
+          glBindVertexArray(_idVAO); 
 
-  #ifdef tLibPCL
-        void  upload(const pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &cloud,const int mode);
-  #endif
+          if (_idIBO)
+            glDrawElements(_mode,(GLsizei)_num,GLZ_TYPE,0);
+          else
+            glDrawArrays(_mode,0,(GLsizei)_num); 
+
+          glBindVertexArray(0); 
+        }
 
         EXPORT void  upload(const VtxVLst   &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
         EXPORT void  upload(const VtxVTLst  &vLst,const IdxLst &iLst,const GLuint mode = GL_TRIANGLES);
@@ -96,14 +87,17 @@ namespace Lf
         EXPORT void  upload(const VtxVNLst  &vLst,const GLuint mode = GL_TRIANGLES);
 
 
-        EXPORT VtxBufferObj() :  Object(),
-                                 _idVBO(0),
-                                 _idIBO(0),
-                                 _renderFunc(0)
+        EXPORT VtxArrayObj() :  Object(),
+                                _idVAO(0),
+                                _idVBO(0),
+                                _idIBO(0)
         {}
 
-        EXPORT virtual ~VtxBufferObj();
+        EXPORT virtual ~VtxArrayObj();
     };
   };
 };
 //---------------------------------------------------------------------
+
+
+#endif

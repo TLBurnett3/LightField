@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "Render/Def.h"
+#include "RenderGL/Def.h"
 
 //---------------------------------------------------------------------
 // Includes
@@ -40,8 +40,8 @@
 
 // LightField
 #include "Viewer/RadImage.h"
-#include "Render/VtxLst.h"
-#include "Render/Texture.h"
+#include "RenderGL/VtxLst.h"
+#include "RenderGL/Texture.h"
 //---------------------------------------------------------------------
 
 
@@ -71,8 +71,8 @@ namespace Lf
         glm::vec2                 _vRMax;
         glm::vec2                 _vRInc;
 
-        Render::VtxVNTLst         _quad;
-        Render::Texture           _tex;
+        RenderGL::VtxVNTLst         _quad;
+        RenderGL::Texture           _tex;
 
       public:   
 
