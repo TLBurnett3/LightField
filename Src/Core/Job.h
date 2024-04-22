@@ -149,6 +149,7 @@ namespace Lf
 
         std::string							_outputPath;
 
+        bool                    _cullFace;
         bool                    _tasks[TaskDefsNum];
 
       public:   
@@ -211,6 +212,9 @@ namespace Lf
 
         const float fov(void)
         { return _fov; }
+
+        const bool isCullFace(void)
+        { return _cullFace; }
 
         const bool isTask(TaskDefs t)
         { return _tasks[t]; }

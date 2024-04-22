@@ -228,6 +228,7 @@ int rc = 0;
 		JSon::parse(doc, "NumHogels",            _numHogels);
 		JSon::parse(doc, "zNearFar",             _zNearFar);
 		JSon::parse(doc, "SliceMem",             _sliceMem);
+		JSon::parse(doc, "CullFace",             _cullFace);
   }
 
   rc |= JSon::parse(doc,"ViewVolume",_mVVT);
@@ -280,6 +281,7 @@ void Job::print(std::ostream &o)
   o << "                    FoV: "  << _fov << std::endl;
   o << "         Z Near and Far: (" << _zNearFar.x << ","   << _zNearFar.y << ")" << std::endl;
   o << "           Slice Memory: "  << _sliceMem << "g" << std::endl;
+  o << "               CullFace: "  << (_cullFace ? "True" : "False") << std::endl;
 
 	o << "        ProofImage Task: " << (_tasks[ProofImage]         ? "true" : "false") << std::endl;
 	o << "          WriteAvi Task: " << (_tasks[WriteAvi]           ? "true" : "false") << std::endl;
@@ -337,6 +339,7 @@ Job::Job(void) : _filePath(),
                  _zNearFar(0.001f,1.0f),
                  _sliceMem(8),
                  _outputPath(),
+                 _cullFace(false),
                  _tasks()
 {
   for (int i = 0;i < TaskDefsNum;i++)

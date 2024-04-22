@@ -1,0 +1,42 @@
+{
+  "JobName": "DyingGaul",
+  "Renderer": "DF",
+  "OutputPath": "/Tmp/DyingGaul",
+  "FieldOfView": 90.0,
+  "HogelSize": [ 128, 128 ],
+  "NumHogels": [ 256, 256 ],
+  "zNearFar": [ 0.001, 1.0 ],
+  "FrameBufferMem": 12,
+  "Tasks": {
+    "ProofImage": true,
+    "WriteAvi": true,
+    "WriteImg": false,
+    "ProofDepth": false
+  },
+  "ViewVolume": {
+    "Translate": [ 0.0, 0.0, 0.0 ],
+    "Scale": [ 1.0, 1.0, 1.0 ],
+    "Rotate": [ 0.0, 0.0, 0.0 ]
+  },
+  "Scene": {
+    "Translate": [ 0.0, 0.0, 0.0 ],
+    "Scale": [ 1.0, 1.0, 1.0 ],
+    "Rotate": [ 100.0, 0.0, 180.0 ]
+  },
+  "NoLight": {
+    "Ambient": [ 0.2, 0.2, 0.2, 0.0 ],
+    "Diffuse": [ 1.0, 1.0, 1.0, 0.0 ],
+    "Specular": [ 0.0, 0.0, 0.0, 0.0 ],
+    "Position": [ 10.0, 10.0, 10.0, 1.0 ]
+  },
+  "Models": [
+    {
+      "File": "DyingGaul.obj",
+      "Transform": {
+        "Translate": [ 0.0, 0.0, 0.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "Rotate": [ 0.0, 0.0, 0.0 ]
+      }
+    }
+  ]
+}

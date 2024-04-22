@@ -1,0 +1,13 @@
+newmtl DyingGaul:phong3SG
+illum 4
+Kd 1 1 1
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd DyingGaul_phong3SG_Base_Color_AO.png
+Ni 1.00
+newmtl initialShadingGroup
+illum 4
+Kd 0.50 0.50 0.50
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+Ni 1.00

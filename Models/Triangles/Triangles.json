@@ -7,10 +7,11 @@
   "NumHogels": [ 5, 5 ],
   "zNearFar": [0.001,2.0],
   "FrameBufferMem": 12,
+  "CullFace": true,
   "Tasks": {
     "ProofImage": true,
-    "WriteAvi": true,
-    "WriteImg": false,
+    "WriteAvi": false,
+    "WriteImg": true,
     "ProofDepth": false
   },
   "ViewVolume": {

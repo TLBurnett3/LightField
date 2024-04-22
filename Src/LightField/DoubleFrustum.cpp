@@ -187,7 +187,6 @@ glm::ivec2  hS    = _spJob->hogelSize();
 }
 
 
-
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
@@ -208,7 +207,12 @@ glm::vec3 vT    = vD * zN;
   // back frustum, away from viewer into the display
   if (1)
   {
-    glCullFace(GL_BACK);
+    if (_spJob->isCullFace())  
+    {
+      glFrontFace(GL_CCW);
+      glCullFace(GL_BACK);
+    }
+
     glDepthRange(0.5f,1.0f);
 
     camera.backFrustum(vE + vT,-vD,vU);
@@ -222,7 +226,12 @@ glm::vec3 vT    = vD * zN;
   // front frustum, toward the viewer out of the display
   if (1)
   {
-    glCullFace(GL_FRONT);
+    if (_spJob->isCullFace())  
+    {
+      glFrontFace(GL_CW);
+      glCullFace(GL_FRONT);
+    }
+
     glDepthRange(0.5f,0.0f);
 
     camera.frontFrustum(vE - vT,vD,-vU);
@@ -240,13 +249,12 @@ glm::vec3 vT    = vD * zN;
 //---------------------------------------------------------------------
 int DoubleFrustum::exec(void) 
 {
-int             rc      = 0;
-glm::ivec2      nH      = _spJob->numHogels();
-glm::ivec2      hS      = _spJob->hogelSize();
-glm::ivec2      idx(0);
-uint32_t        n(0);
-float           s = glm::max(nH.x,nH.y);
-Core::Timer     tH;
+int               rc      = 0;
+glm::ivec2        nH      = _spJob->numHogels();
+glm::ivec2        hS      = _spJob->hogelSize();
+glm::ivec2        idx(0);
+uint32_t          n(0);
+Core::Timer       tH;
 RenderGL::Camera  camera;
 
   bindLight();
@@ -259,7 +267,10 @@ RenderGL::Camera  camera;
 
   glViewport(0,0,hS.x,hS.y);
   glEnable(GL_DEPTH_TEST);
-  glEnable(GL_CULL_FACE);
+
+  if (_spJob->isCullFace())  
+    glEnable(GL_CULL_FACE);
+
   glClearColor(0,0,0,0);
   glPixelStorei(GL_PACK_ALIGNMENT,1);
 

@@ -1,0 +1,43 @@
+{
+  "JobName": "DyingGaul",
+  "Renderer": "BT",
+  "Algorithm": "IntMap",
+  "OutputPath": "/Tmp/MvPU/DyingGaul",
+  "FieldOfView": 90.0,
+  "HogelSize": [ 1024, 1024 ],
+  "NumHogels": [ 4, 4 ],
+  "zNearFar": [ 0.001, 100.0 ],
+  "FrameBufferMem": 12,
+  "Tasks": {
+    "ProofImage": true,
+    "WriteAvi": false,
+    "WritePng": false,
+    "ProofDepth": false
+  },
+  "ViewVolume": {
+    "Translate": [ 0.0, 0.0, 0.0 ],
+    "Scale": [ 1.0, 1.0, 1.0 ],
+    "Rotate": [ 0.0, 0.0, 0.0 ]
+  },
+  "Scene": {
+    "Translate": [ 0.0, 0.0, 0.0 ],
+    "Scale": [ 1.0, 1.0, 1.0 ],
+    "Rotate": [ 100.0, 0.0, 180.0 ]
+  },
+  "Light": {
+    "Ambient": [ 0.2, 0.2, 0.2, 0.0 ],
+    "Diffuse": [ 1.0, 1.0, 1.0, 0.0 ],
+    "Specular": [ 0.0, 0.0, 0.0, 0.0 ],
+    "Position": [ 10.0, 10.0, 10.0, 1.0 ]
+  },
+  "Models": [
+    {
+      "File": "DyingGaul.obj",
+      "Transform": {
+        "Translate": [ 0.0, 0.0, 0.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "Rotate": [ 0.0, 0.0, 0.0 ]
+      }
+    }
+  ]
+}
