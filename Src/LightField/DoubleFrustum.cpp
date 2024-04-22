@@ -207,12 +207,6 @@ glm::vec3 vT    = vD * zN;
   // back frustum, away from viewer into the display
   if (1)
   {
-    if (_spJob->isCullFace())  
-    {
-      glFrontFace(GL_CCW);
-      glCullFace(GL_BACK);
-    }
-
     glDepthRange(0.5f,1.0f);
 
     camera.backFrustum(vE + vT,-vD,vU);
@@ -226,12 +220,6 @@ glm::vec3 vT    = vD * zN;
   // front frustum, toward the viewer out of the display
   if (1)
   {
-    if (_spJob->isCullFace())  
-    {
-      glFrontFace(GL_CW);
-      glCullFace(GL_FRONT);
-    }
-
     glDepthRange(0.5f,0.0f);
 
     camera.frontFrustum(vE - vT,vD,-vU);
@@ -267,6 +255,9 @@ RenderGL::Camera  camera;
 
   glViewport(0,0,hS.x,hS.y);
   glEnable(GL_DEPTH_TEST);
+
+  glFrontFace(GL_CCW);
+  glCullFace(GL_BACK);
 
   if (_spJob->isCullFace())  
     glEnable(GL_CULL_FACE);

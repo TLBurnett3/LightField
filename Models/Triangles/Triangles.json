@@ -7,7 +7,7 @@
   "NumHogels": [ 5, 5 ],
   "zNearFar": [0.001,2.0],
   "FrameBufferMem": 12,
-  "CullFace": true,
+  "CullFace": false,
   "Tasks": {
     "ProofImage": true,
     "WriteAvi": false,

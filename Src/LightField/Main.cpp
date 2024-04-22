@@ -57,6 +57,8 @@ Lf::Core::SpJob spJob = std::make_shared<Lf::Core::Job>();
 
   rc = spJob->parse(std::filesystem::path(p));
 
+  spJob->print(std::cout);
+
   std::cout << "Job file parsed: " << ((rc == 0) ? "Successful" : "Failed") << std::endl;
 
   if (rc == 0)
