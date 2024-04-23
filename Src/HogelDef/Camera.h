@@ -64,8 +64,18 @@ namespace Lf
       protected:
  
       public:
+        void setBowTieFrustum(const float fov)
+        {
+        float tanHalfFovy = tan(glm::radians(fov) / 2.0f);
+
+	        _mProj = glm::mat4(0);
+	        _mProj[0][0] = -1.0f / tanHalfFovy;
+	        _mProj[1][1] = -1.0f / tanHalfFovy;
+	        _mProj[2][3] = -1.0f;
+	        _mProj[3][2] = -1.0f;
+        }
  
-        void backFrustum(const glm::vec3 &vE,const glm::vec3 &vD,const glm::vec3 &vU)
+        void setBackFrustum(const glm::vec3 &vE,const glm::vec3 &vD,const glm::vec3 &vU)
         {      
         glm::vec3 f(normalize(vD));
 		    glm::vec3 s(normalize(cross(f,vU)));
@@ -97,7 +107,7 @@ namespace Lf
 		      _mView[3][3] = 1;
         }
       
-        void frontFrustum(const glm::vec3 &vE,const glm::vec3 &vD,const glm::vec3 &vU)
+        void setFrontFrustum(const glm::vec3 &vE,const glm::vec3 &vD,const glm::vec3 &vU)
         {       
         glm::vec3 f(normalize(vD));
 		    glm::vec3 s(normalize(cross(f,vU)));

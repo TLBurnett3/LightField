@@ -5,8 +5,8 @@
   "FieldOfView": 90.0,
   "HogelSize": [ 256, 256 ],
   "NumHogels": [ 500, 500 ],
-  "zNearFar" : [0.1, 1000.0],
-  "SliceMem": 24,
+  "zNearFar": [ 0.1, 1000.0 ],
+  "MemSize": 24,
   "Tasks": {
     "WriteAvi": true,
     "WriteImg": false,

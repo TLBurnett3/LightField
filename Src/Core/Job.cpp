@@ -227,7 +227,7 @@ int rc = 0;
 		JSon::parse(doc, "HogelPitch",           _hogelPitch);
 		JSon::parse(doc, "NumHogels",            _numHogels);
 		JSon::parse(doc, "zNearFar",             _zNearFar);
-		JSon::parse(doc, "SliceMem",             _sliceMem);
+		JSon::parse(doc, "MemSize",              _memSize);
 		JSon::parse(doc, "CullFace",             _cullFace);
   }
 
@@ -280,7 +280,7 @@ void Job::print(std::ostream &o)
   o << "            Hogel Pitch: (" << _hogelPitch.x << "," << _hogelPitch.y << ")" << std::endl;
   o << "                    FoV: "  << _fov << std::endl;
   o << "         Z Near and Far: (" << _zNearFar.x << ","   << _zNearFar.y << ")" << std::endl;
-  o << "           Slice Memory: "  << _sliceMem << "g" << std::endl;
+  o << "                MemSize: "  << _memSize << "g" << std::endl;
   o << "               CullFace: "  << (_cullFace ? "True" : "False") << std::endl;
 
 	o << "        ProofImage Task: " << (_tasks[ProofImage]         ? "true" : "false") << std::endl;
@@ -328,6 +328,8 @@ Job::Job(void) : _filePath(),
                  _jobName(),
                  _renderer("DoubleFrustum"),
                  _renderType(DoubleFrustum),
+                 _algorithm("Default"),
+                 _algorithmType(Default),
                  _modelDefs(),   
                  _lightDef(),
                  _numHogels(0),
@@ -337,7 +339,7 @@ Job::Job(void) : _filePath(),
                  _mScT(1),
                  _fov(90),
                  _zNearFar(0.001f,1.0f),
-                 _sliceMem(8),
+                 _memSize(8),
                  _outputPath(),
                  _cullFace(false),
                  _tasks()

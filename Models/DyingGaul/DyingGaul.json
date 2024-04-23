@@ -6,7 +6,7 @@
   "HogelSize": [ 128, 128 ],
   "NumHogels": [ 256, 256 ],
   "zNearFar": [ 0.001, 1.0 ],
-  "FrameBufferMem": 12,
+  "MemSize": 12,
   "CullFace": false,
   "Tasks": {
     "ProofImage": true,

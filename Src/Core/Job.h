@@ -79,15 +79,18 @@ namespace Lf
     class LightDef
     {
       public:
+        glm::vec3   _position;
         glm::vec4   _ambient;
         glm::vec4   _diffuse;
         glm::vec4   _specular;
-        glm::vec3   _position;
+        float       _att;
 
-        LightDef(void): _ambient(1.0f),
+        LightDef(void): _position(1.0f),
+                        _ambient(1.0f),
                         _diffuse(0.0f),
-                        _specular(0.0),
-                        _position(1.0f)
+                        _specular(0.0f),
+                        _att(0.0f)
+                        
         {}
     };
 
@@ -123,6 +126,11 @@ namespace Lf
           Oblique
         };
 
+        enum AlgorithmTypes
+        {
+          Default,
+        };
+
       // Members
       private:
       protected:
@@ -130,8 +138,12 @@ namespace Lf
         std::string						  _dirPath;
 
         std::string             _jobName;
+
         std::string             _renderer;
         int                     _renderType;
+
+        std::string             _algorithm;
+        int                     _algorithmType;
 
         ModelDefs               _modelDefs;
         LightDef                _lightDef;
@@ -145,7 +157,8 @@ namespace Lf
 
         float                   _fov;     
         glm::vec2               _zNearFar;
-        uint32_t                _sliceMem;
+
+        uint32_t                _memSize;
 
         std::string							_outputPath;
 
@@ -158,10 +171,10 @@ namespace Lf
       private:
       protected:
 
-        int  parseLight     (JSon::Value &doc);
-        int  parseModels    (JSon::Value &doc);
-        int  parseTasks     (JSon::Value &doc);
-        int  parseDocument  (JSon::Value &doc);
+        EXPORT virtual int  parseLight     (JSon::Value &doc);
+        EXPORT virtual int  parseModels    (JSon::Value &doc);
+        EXPORT virtual int  parseTasks     (JSon::Value &doc);
+        EXPORT virtual int  parseDocument  (JSon::Value &doc);
 
       public:
 
@@ -174,8 +187,11 @@ namespace Lf
         const int renderType(void)
         { return _renderType; }
 
- //       const LightLst &lightList(void)
- //       { return _lightLst; }
+       const std::string algorithm(void)
+        { return _algorithm; }
+
+        const int algorithmType(void)
+        { return _algorithmType; }
 
         const size_t numModels(void)
         { return _modelDefs.size(); }
@@ -201,8 +217,8 @@ namespace Lf
         const float &zFar(void)
         { return _zNearFar.y; }
 
-        const uint16_t sliceMem(void)
-        { return _sliceMem; }
+        const uint16_t memSize(void)
+        { return _memSize; }
 
         const glm::mat4 &viewVolumeTransform(void)
         { return _mVVT; }

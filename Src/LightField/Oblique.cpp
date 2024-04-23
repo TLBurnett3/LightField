@@ -153,7 +153,7 @@ void Oblique::createTasks(void)
     dPath /= "HogelAvi";
 
     pT->setPathFile(dPath,"HogelRow");
-    pT->init(_spJob->numHogels(),_spJob->hogelSize(),_spJob->sliceMem());
+    pT->init(_spJob->numHogels(),_spJob->hogelSize(),_spJob->memSize());
     pT->start();
 
     _imgTaskLst.push_back(pT);

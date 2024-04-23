@@ -6,7 +6,7 @@
   "HogelSize": [ 128, 128 ],
   "NumHogels": [ 256, 256 ],
   "zNearFar": [0.001, 1.0],
-  "SliceMem": 12,
+  "MemSize": 12,
   "CullFace": true,
   "Tasks": {
     "WriteAvi": true,
@@ -25,7 +25,7 @@
     "Scale": [ 1.2, 1.2, 1.2 ],
     "Rotate": [ 0.0, 0.0, 0.0 ]
   },
-  "NoLight": {
+  "Light": {
     "Ambient": [ 0.2, 0.2, 0.2, 0.0 ],
     "Diffuse": [ 1.0, 1.0, 1.0, 0.0 ],
     "Specular": [ 0.0, 0.0, 0.0, 0.0 ],

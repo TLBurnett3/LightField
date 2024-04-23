@@ -1,25 +1,26 @@
 {
   "JobName": "Orchid",
-  "Renderer": "Oblique",
-  "OutputPath": "\\Tmp\\Orchid",
-  "FieldOfView": 90.0,
-  "HogelSize": [ 256, 256 ],
-  "NumHogels": [ 500, 500 ],
-  "zNearFar": [ 0.001, 1.0 ],
-  "MemSize": 24,
+  "Renderer": "BT",
+  "Algorithm": "Basic",
+  "OutputPath": "/Tmp/Orchid",
+  "FieldOfView": 30.0,
+  "HogelSize": [ 128, 128 ],
+  "NumHogels": [ 256, 256 ],
+  "zNearFar": [0.001,2.0],
+  "MemSize": 12,
   "Tasks": {
-    "WriteAvi": false,
-    "WriteImg": false,
-    "ProofDepth": false,
-    "SliceNDice": true
+    "ProofImage": true,
+    "WriteAvi": true,
+    "WritePng": false,
+    "ProofDepth": false
   },
   "ViewVolume": {
     "Translate": [ 0.0, 0.0, 0.0 ],
-    "Scale": [ 1.8, 1.8, 1.8 ],
+    "Scale": [ 1.5, 1.5, 1.5 ],
     "Rotate": [ 0.0, 0.0, 0.0 ]
   },
   "Scene": {
-    "Translate": [ -0.08, 0.0, 0.0 ],
+    "Translate": [ -0.1, 0.0, 0.0 ],
     "Scale": [ 1.0, 1.0, 1.0 ],
     "Rotate": [ 0.0, 0.0, 0.0 ]
   },

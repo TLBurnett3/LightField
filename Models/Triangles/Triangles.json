@@ -5,8 +5,8 @@
   "FieldOfView": 90.0,
   "HogelSize": [ 1000, 1000 ],
   "NumHogels": [ 5, 5 ],
-  "zNearFar": [0.001,2.0],
-  "FrameBufferMem": 12,
+  "zNearFar": [ 0.001, 2.0 ],
+  "MemSize": 12,
   "CullFace": false,
   "Tasks": {
     "ProofImage": true,

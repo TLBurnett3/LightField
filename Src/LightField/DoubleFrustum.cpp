@@ -208,7 +208,7 @@ glm::vec3 vT    = vD * zN;
   {
     glDepthRange(0.5f,1.0f);
 
-    camera.backFrustum(vE + vT,-vD,vU);
+    camera.setBackFrustum(vE + vT,-vD,vU);
 
     _pShader->bindNormalScale(1.0f);
     _pShader->bindCameraPosition(vE);
@@ -222,7 +222,7 @@ glm::vec3 vT    = vD * zN;
   {
     glDepthRange(0.5f,0.0f);
 
-    camera.frontFrustum(vE - vT,vD,-vU);
+    camera.setFrontFrustum(vE - vT,vD,-vU);
 
     _pShader->bindNormalScale(-1.0f);
     _pShader->bindCameraPosition(vE);
