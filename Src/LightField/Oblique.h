@@ -59,7 +59,7 @@ namespace Lf
 
     // Methods
     private:
-      void      renderOblique(RenderGL::Camera &camera,const glm::vec2 &rA);
+      void      renderOblique(HogelDef::Camera &camera,const glm::vec2 &rA);
 
       void      renderObliquePlane       (void);
       uint32_t  renderObliqueSet         (void);

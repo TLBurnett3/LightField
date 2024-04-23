@@ -60,6 +60,8 @@ namespace Lf
       protected: 
         std::string       _sName;
 
+        float             _nS;
+
         ShaderSrcLst      _vertexShaderLst;      
         ShaderSrcLst      _geometryShaderLst;
         ShaderSrcLst      _fragmentShaderLst;
@@ -102,6 +104,14 @@ namespace Lf
         void setName(const char *pName)
         { _sName = pName; }
 
+        EXPORT void bindNormalScale(const float s) 
+        {
+          if (s < 0)
+            _nS = -1.0f;
+          else
+            _nS = 1.0f;
+        }
+
         EXPORT int addVertexShader(const std::filesystem::path &fName)
         { return addSourceFile(fName,_vertexShaderLst); }
 
@@ -123,12 +133,11 @@ namespace Lf
 
         EXPORT void bindMV(const glm::mat4 &mT) const
         { 
-          glUniformMatrix4fv(_locMatMV,1,false,glm::value_ptr(mT)); 
-        }
+        glm::mat4   mMVs  = glm::scale(mT,glm::vec3(_nS,_nS,_nS));
+        glm::mat3   mN    = glm::inverseTranspose(glm::mat3(mMVs));
 
-        EXPORT void bindN(const glm::mat3 &mT) const
-        { 
-          glUniformMatrix3fv(_locMatN,1,false,glm::value_ptr(mT)); 
+          glUniformMatrix4fv(_locMatMV,1,false,glm::value_ptr(mT)); 
+          glUniformMatrix3fv(_locMatN,1, false,glm::value_ptr(mN)); 
         }
 
         EXPORT void bindLightAmbient(const glm::vec4 &cA) const

@@ -36,7 +36,7 @@
 // LightField
 #include "RenderGL/Mesh.h"
 #include "RenderGL/Bound.h"
-#include "RenderGL/Camera.h"
+#include "Core/Camera.h"
 //---------------------------------------------------------------------
 
 
@@ -99,7 +99,7 @@ namespace Lf
 
         void  print(std::ostream &s,std::string idt);
 
-        void  render(const Camera &camera,const Shader *pShader,const glm::mat4 &mT);
+        void  render(const Core::Camera *pCamera,const Shader *pShader,const glm::mat4 &mT);
 
         Node(void);
         ~Node();

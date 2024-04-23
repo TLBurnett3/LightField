@@ -40,7 +40,7 @@
 #include "RenderGL/Def.h"
 #include "LightField/Oblique.h"
 #include "Core/Timer.h"
-#include "RenderGL/Camera.h"
+#include "HogelDef/Camera.h"
 #include "Tasks/ProofImage.h"
 #include "Tasks/WriteAvi.h"
 #include "Tasks/WriteImg.h"
@@ -192,7 +192,7 @@ void Oblique::createTasks(void)
 //---------------------------------------------------------------------
 // renderOblique
 //---------------------------------------------------------------------
-void Oblique::renderOblique(RenderGL::Camera &camera,const glm::vec2 &rA)
+void Oblique::renderOblique(HogelDef::Camera &camera,const glm::vec2 &rA)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -202,7 +202,7 @@ void Oblique::renderOblique(RenderGL::Camera &camera,const glm::vec2 &rA)
   glm::mat4 mT = glm::shearY3D(_spJob->sceneTransform(),-r[0],r[1]);
  
     _pShader->bindCameraPosition(glm::vec3(camera.view()[3]));
-    _pScene->render(camera,_pShader,mT);
+    _pScene->render(&camera,_pShader,mT);
   }    
     
   glFinish();
@@ -214,22 +214,22 @@ void Oblique::renderOblique(RenderGL::Camera &camera,const glm::vec2 &rA)
 //---------------------------------------------------------------------
 uint32_t Oblique::renderObliqueSet(void) 
 {
-glm::ivec2      nH      = _spJob->numHogels();
-glm::ivec2      hS      = _spJob->hogelSize();
-glm::mat4       mVVT    = _spJob->viewVolumeTransform();
-glm::vec3       vC      = glm::vec3(mVVT[3]);
-glm::vec3       vT      = glm::vec3(mVVT[1]);
-glm::vec3       vP      = vC;
-glm::vec3       vD      = vC - vT;
-glm::vec3       vU      = vC - glm::vec3(mVVT[2]);
-glm::vec2       rT      = glm::vec2(_spJob->fov()) / 2.0f;
-glm::vec2       rS      = glm::vec2(_spJob->fov()) / glm::vec2(hS);
-glm::vec2       rA      = -rT;
-glm::vec2       hD      = glm::vec2(mVVT[0].x,mVVT[2].z) * 0.5f;
-float           zF      = _spJob->zFar();
-RenderGL::Camera  camera;
-glm::ivec2      idx(0);
-uint32_t        n(0);
+glm::ivec2        nH      = _spJob->numHogels();
+glm::ivec2        hS      = _spJob->hogelSize();
+glm::mat4         mVVT    = _spJob->viewVolumeTransform();
+glm::vec3         vC      = glm::vec3(mVVT[3]);
+glm::vec3         vT      = glm::vec3(mVVT[1]);
+glm::vec3         vP      = vC;
+glm::vec3         vD      = vC - vT;
+glm::vec3         vU      = vC - glm::vec3(mVVT[2]);
+glm::vec2         rT      = glm::vec2(_spJob->fov()) / 2.0f;
+glm::vec2         rS      = glm::vec2(_spJob->fov()) / glm::vec2(hS);
+glm::vec2         rA      = -rT;
+glm::vec2         hD      = glm::vec2(mVVT[0].x,mVVT[2].z) * 0.5f;
+float             zF      = _spJob->zFar();
+HogelDef::Camera  camera;
+glm::ivec2        idx(0);
+uint32_t          n(0);
 
   camera.setOrthographic(-hD.x,hD.x,-hD.y,hD.y,-zF,zF);
 

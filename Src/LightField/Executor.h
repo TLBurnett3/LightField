@@ -41,7 +41,7 @@
 // LightField
 #include "Core/Job.h"
 #include "Tasks/Base.h"
-#include "RenderGL/Camera.h"
+#include "HogelDef/Camera.h"
 #include "RenderGL/Shader.h"
 #include "RenderGL/Scene.h"
 //---------------------------------------------------------------------

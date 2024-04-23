@@ -42,7 +42,7 @@
 #include "RenderGL/Bound.h"
 #include "RenderGL/Texture.h"
 #include "RenderGL/Object.h"
-#include "RenderGL/Camera.h"
+#include "Core/Camera.h"
 #include "RenderGL/Shader.h"
 //---------------------------------------------------------------------
 
@@ -106,7 +106,7 @@ namespace Lf
 
         void print(std::ostream &s,std::string idt,bool detail = false);
 
-        void render(const Camera &camera,const Shader *pShader,const glm::mat4 &mT);
+        void render(const Core::Camera *pCamera,const Shader *pShader,const glm::mat4 &mT);
 
         Mesh(void);
         ~Mesh();

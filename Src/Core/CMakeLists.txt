@@ -8,6 +8,7 @@ include_directories(${LIGHTFIELD_SRC_DIR})
 
 set (HEADERS
   Export.h  
+  Camera.h
   Thread.h
   JSon.h
   Job.h

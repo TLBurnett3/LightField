@@ -357,7 +357,6 @@ void Model::walkMeshes(const struct aiScene *pAIScene)
 
 //---------------------------------------------------------------------
 // walkScene
-// September 12, 2011
 //---------------------------------------------------------------------
 void Model::walkScene(const struct aiScene *pAIScene,const glm::mat4 &mT,uint32_t f)
 {
@@ -409,9 +408,9 @@ Assimp::Importer  importer;
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void Model::render(const Camera &camera,const Shader *pShader,const glm::mat4 &mT)
+void Model::render(const Core::Camera *pCamera,const Shader *pShader,const glm::mat4 &mT)
 {
-  _pRoot->render(camera,pShader,mT);
+  _pRoot->render(pCamera,pShader,mT);
 }
 
 

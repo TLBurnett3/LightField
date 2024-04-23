@@ -40,7 +40,6 @@
 #include "RenderGL/Def.h"
 #include "LightField/Executor.h"
 #include "Core/Timer.h"
-#include "RenderGL/Camera.h"
 #include "Tasks/ProofImage.h"
 #include "Tasks/WriteAvi.h"
 #include "Tasks/WriteImg.h"

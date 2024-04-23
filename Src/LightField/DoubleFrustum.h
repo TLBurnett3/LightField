@@ -66,7 +66,7 @@ namespace Lf
       virtual void createTasks  (void);
       void         createHogelPlane(void);
 
-      void render(RenderGL::Camera &camera,Lf::HogelDef::Hogel *pH);
+      void render(HogelDef::Camera &camera,Lf::HogelDef::Hogel *pH);
 
     public:
       int   exec(void);

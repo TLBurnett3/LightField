@@ -40,7 +40,6 @@
 #include "RenderGL/Def.h"
 #include "LightField/DoubleFrustum.h"
 #include "Core/Timer.h"
-#include "RenderGL/Camera.h"
 #include "Tasks/ProofImage.h"
 #include "Tasks/WriteAvi.h"
 #include "Tasks/WriteImg.h"
@@ -190,7 +189,7 @@ glm::ivec2  hS    = _spJob->hogelSize();
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void DoubleFrustum::render(RenderGL::Camera &camera,Lf::HogelDef::Hogel *pH)
+void DoubleFrustum::render(HogelDef::Camera &camera,Lf::HogelDef::Hogel *pH)
 {
 float     zN    = _spJob->zNear();
 glm::mat4 mH    = _spJob->viewVolumeTransform() * pH->_mH;
@@ -211,8 +210,9 @@ glm::vec3 vT    = vD * zN;
 
     camera.backFrustum(vE + vT,-vD,vU);
 
+    _pShader->bindNormalScale(1.0f);
     _pShader->bindCameraPosition(vE);
-    _pScene->render(camera,_pShader,_spJob->sceneTransform());
+    _pScene->render(&camera,_pShader,_spJob->sceneTransform());
 
     glFlush();
   }
@@ -224,8 +224,9 @@ glm::vec3 vT    = vD * zN;
 
     camera.frontFrustum(vE - vT,vD,-vU);
 
+    _pShader->bindNormalScale(-1.0f);
     _pShader->bindCameraPosition(vE);
-    _pScene->render(camera,_pShader,_spJob->sceneTransform());
+    _pScene->render(&camera,_pShader,_spJob->sceneTransform());
   }   
 
   glFinish();
@@ -243,7 +244,7 @@ glm::ivec2        hS      = _spJob->hogelSize();
 glm::ivec2        idx(0);
 uint32_t          n(0);
 Core::Timer       tH;
-RenderGL::Camera  camera;
+HogelDef::Camera  camera;
 
   bindLight();
 
