@@ -8,7 +8,6 @@ include_directories(${LIGHTFIELD_SRC_DIR})
 
 set (HEADERS
   Def.h
-  Camera.h
   Object.h
   Bound.h
   Texture.h
@@ -46,5 +45,5 @@ target_link_libraries(${PROJECT_NAME} ${OPENCV_DEBUG_LIB} ${OPENCV_RELEASE_LIB})
 ##########################################################################################################################################
 # Installation
 install (TARGETS ${PROJECT_NAME})
-install (FILES   ${HEADERS}      DESTINATION include/LightField/Render)
+install (FILES   ${HEADERS}      DESTINATION include/LightField/RenderGL)
 ##########################################################################################################################################
