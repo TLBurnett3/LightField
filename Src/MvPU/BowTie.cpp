@@ -66,7 +66,7 @@ Lf::HogelDef::Camera  camera;
   std::cout << "The BowTie algorithm does not produce row statistics, please be patient...." << std::endl;
   std::cout << "Begin " << _spJob->algorithm() << " BowTie Rendering" << std::endl;
 
-  camera.setBowTieFrustum(fov); 
+  camera.setBowTiePerspective(fov,a); 
 
   _pShader->bindFrameBuffer(_pFrameBuffer);
   _pShader->bindViewport(glm::vec2(0),glm::vec2(hS));

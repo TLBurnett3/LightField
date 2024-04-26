@@ -64,7 +64,7 @@ namespace Lf
       protected:
  
       public:
-        void setBowTieFrustum(const float fov)
+        void setBowTiePerspective(const float fov,const float aR)
         {
         float tanHalfFovy = tan(glm::radians(fov) / 2.0f);
 
@@ -73,6 +73,8 @@ namespace Lf
 	        _mProj[1][1] = -1.0f / tanHalfFovy;
 	        _mProj[2][3] = -1.0f;
 	        _mProj[3][2] = -1.0f;
+
+          _aR    = aR;
         }
  
         void setBackFrustum(const glm::vec3 &vE,const glm::vec3 &vD,const glm::vec3 &vU)

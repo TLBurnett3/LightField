@@ -65,6 +65,7 @@ namespace Lf
         glm::vec2     _hP;      // the hogel pitch, or the distance, in pixels, between adjacent hogel centers
         glm::vec2     _radDim;  // the dimensions, in pixels, of the full radiance image (_nH * _hP)
         float         _fov;     // the field of view, in degrees, of each hogel's view frustum
+        float         _aR;      // Hogel aspect ratio
 
         glm::vec3     _vMinE;   // the minimum extent of the hogel plane in normalized hogel plane space ([-0.5,0.5] in each dimension)
         glm::vec3     _vMaxE;   // the maximum extent of the hogel plane in normalized hogel plane space ([-0.5,0.5] in each dimension)
@@ -116,9 +117,15 @@ namespace Lf
 
         glm::vec2 directionalResolution(void)
         { return _hS; }
+
+        float aspectRatio(void)
+        { return _aR; }
   
-        void setDirectionalResolution(glm::ivec2 &dR)
-        { _hS = dR; }
+        void setDirectionalResolution(glm::ivec2 &hS)
+        { _hS = hS; }
+
+        void setHogelSize(glm::ivec2 &hS)
+        { _hS = hS; }
 
         void setHogelPitch(glm::vec2 &hP)
         { _hP = hP; }
@@ -157,8 +164,7 @@ namespace Lf
         glm::mat4 radianceImageTransform  (const glm::mat4 &mT = glm::mat4(1));
         glm::mat4 radianceViewTransform   (const glm::mat4 &mT = glm::mat4(1));
 
-        int   create(const glm::ivec2 &nH,const glm::vec2 &dR,const glm::vec2 &hP);
-        void  setPerspective(const float &fov);
+        int   create(const glm::ivec2 &nH,const glm::vec2 &hS,const glm::vec2 &hP,const float fov);
 
         void print(void);
 

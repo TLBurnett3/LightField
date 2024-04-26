@@ -219,10 +219,12 @@ int Executor::createHogelPlane(void)
 int         rc    = 0;
 glm::ivec2  nH    = _spJob->numHogels();
 glm::ivec2  hS    = _spJob->hogelSize();
+float       fov   = _spJob->fov();
+
 
   _pHogelPlane = new Lf::HogelDef::Plane();
 
-  _pHogelPlane->create(nH,hS,hS);
+  _pHogelPlane->create(nH,hS,hS,fov);
 
   return rc;
 }

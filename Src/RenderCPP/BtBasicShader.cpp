@@ -69,7 +69,7 @@ glm::ivec2 idx;
       _pFrameBuffer->setCurrentFrameBuffer(hId);
       
       // back frustum
-      if (1 && (c < 0))
+      if (1 && (c <= 0))
       {
         BtBasicShader::loadVtxLst(_vtxLstA,pV0,pV1,pV2); 
 
@@ -84,7 +84,7 @@ glm::ivec2 idx;
             BtBasicShader::calculateCoordinates(pVtxLst,_crdLst,n,pHD);
 
             if (_cullFace)
-              keep = BtBasicShader::cullPolygon(_crdLst,n,BackFacing);
+              keep = Shader::cullPolygon(_crdLst,n);
 
             if (keep)
             {
@@ -111,7 +111,7 @@ glm::ivec2 idx;
             BtBasicShader::calculateCoordinates(pVtxLst,_crdLst,n,pHD);
 
             if (_cullFace)
-              keep = BtBasicShader::cullPolygon(_crdLst,n,FrontFacing);
+              keep = Shader::cullPolygon(_crdLst,n);
 
             if (keep)
             {

@@ -217,9 +217,6 @@ int rc = 0;
     _renderType = DoubleFrustum;
   else if (_renderer == "Oblique")
     _renderType = Oblique;
-  else
-    assert(0);
-
   {
 		JSon::parse(doc, "FieldOfView",          _fov);
 		JSon::parse(doc, "HogelSize",            _hogelSize);

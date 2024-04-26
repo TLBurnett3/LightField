@@ -96,6 +96,9 @@ namespace Lf
         const float zFar(void)
         { return _zFar; }
 
+        const float aspectRatio(void)
+        { return _aR; }
+
         const glm::quat orientation(void)
         { return glm::quat_cast(_mView); }
 

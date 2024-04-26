@@ -1,18 +1,18 @@
 {
   "JobName": "Triangles",
-  "Renderer": "DF",
+  "Renderer": "BT",
   "Algorithm": "Basic",
   "OutputPath": "/Tmp/Triangles",
   "FieldOfView": 90.0,
-  "HogelSize": [ 2048, 2048 ],
-  "NumHogels": [ 5, 5 ],
+  "HogelSize": [ 128, 128 ],
+  "NumHogels": [ 256, 256 ],
   "zNearFar": [ 0.001, 1.0 ],
   "MemSize": 12,
   "CullFace": true,
   "Tasks": {
-    "ProofImage": false,
-    "WriteAvi": false,
-    "WriteImg": true,
+    "ProofImage": true,
+    "WriteAvi": true,
+    "WriteImg": false,
     "ProofDepth": false
   },
   "ViewVolume": {

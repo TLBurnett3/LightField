@@ -69,7 +69,8 @@ Lf::Viewer::Executor  e;
   }
     
   std::cout << "LfViewer Initialization" << std::endl;
-  std::cout << "AVI Path: " << p << std::endl;
+  if (p)
+    std::cout << "AVI Path: " << p << std::endl;
   std::cout << "  Memory: " << gb << " gigabytes" << std::endl;
   std::cout << "     FoV: " << fov << std::endl;
 

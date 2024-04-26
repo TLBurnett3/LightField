@@ -6,8 +6,9 @@
   "FieldOfView": 30.0,
   "HogelSize": [ 128, 128 ],
   "NumHogels": [ 256, 256 ],
-  "zNearFar": [0.001,2.0],
+  "zNearFar": [ 0.001, 2.0 ],
   "MemSize": 12,
+  "CullFace": false,
   "Tasks": {
     "ProofImage": true,
     "WriteAvi": true,
@@ -16,11 +17,11 @@
   },
   "ViewVolume": {
     "Translate": [ 0.0, 0.0, 0.0 ],
-    "Scale": [ 1.5, 1.5, 1.5 ],
+    "Scale": [ 1.0, 1.0, 1.0 ],
     "Rotate": [ 0.0, 0.0, 0.0 ]
   },
   "Scene": {
-    "Translate": [ -0.1, 0.0, 0.0 ],
+    "Translate": [ 0.0, 0.0, 0.0 ],
     "Scale": [ 1.0, 1.0, 1.0 ],
     "Rotate": [ 0.0, 0.0, 0.0 ]
   },
@@ -34,7 +35,7 @@
     {
       "File": "Orchid.obj",
       "Transform": {
-        "Translate": [ 0.0, -1.0, 0.0 ],
+        "Translate": [ 0.0, 0.0, 0.0 ],
         "Scale": [ 1.0, 1.0, 1.0 ],
         "Rotate": [ 0.0, 0.0, 0.0 ]
       }

@@ -48,110 +48,29 @@ using namespace RenderCPP;
 //---------------------------------------------------------------------
 // clear
 //---------------------------------------------------------------------
-/*
 void BtIntMapShader::clear(void)
 {
   BtBasicShader::clear();
 
   {
-  glm::mat4 mV  = _pHogelPlane->radianceViewTransform(_mVol); // transforms points from HPD space to view space
-  static glm::vec4 hCorners[5] = {// x, y, z, w
-                                   {-1, 1, 1, 1},
-                                   { 1, 1, 1, 1},
-                                   { 1,-1 ,1, 1},
-                                   {-1,-1, 1, 1},
-                                   {-1, 1,-1, 1}};  // this spot gets converted to the bowtie origin
+  glm::vec4   vD = glm::vec4(0.0f,1.0f,0.0f,0.0f);
+  glm::vec3   vR = glm::normalize(glm::vec3(1.0f,0.0f,_pHogelPlane->aspectRatio()));
+  glm::mat4   mR = glm::rotate(_pHogelPlane->fov() * 0.5f,vR);
+  glm::vec3   vA = glm::normalize(mR * vD);
 
-    {
-    glm::mat4 mHPV  = _mP * mV;               // transforms points from view space to clip space 
-    glm::mat4 mHPVi = glm::inverse(mHPV);     // transforms points from clip space to HPD space
-
-      for (uint32_t i = 0;i < 5;i++)
-      {
-      glm::vec4  v = mHPVi * hCorners[i];
-
-        _frustumDirs[i] = glm::vec3(v / v.w);
-      }
-
-      _vN = glm::vec3(0);
-
-      _frustumDirs[4] = (_frustumDirs[0] + _frustumDirs[4]) * 0.5f;
-
-      _vC = _frustumDirs[4];
-
-      for (uint32_t i = 0;i < 4;i++)
-      {
-        _frustumDirs[i] -= _frustumDirs[4];
-     
-        _frustumDirs[i] = glm::normalize(_frustumDirs[i]);
-
-        _vN += _frustumDirs[i];
-      }
-
-      _vN = -glm::normalize(_vN);
-
-      _frustumDirs[4] -= _frustumDirs[4];
-    }
-  }
-}*/
-
-void BtIntMapShader::clear(void)
-{
-  BtBasicShader::clear();
-
-  {    
-  glm::mat4 mV    = _pHogelPlane->radianceViewTransform(_mVol); // transforms points from HPD space to view space
-  glm::mat4 mHPV  = _mP * mV;                                   // transforms points from view space to clip space 
-  glm::mat4 mHPVi = glm::inverse(mHPV); 
-
-     
-    //convert from clip space to HPD Space         x, y, z, w
-    _frustumDirs[0] = glm::vec3(mHPVi * glm::vec4(-1, 1, 1, 1));
-    _frustumDirs[1] = glm::vec3(mHPVi * glm::vec4( 1, 1, 1, 1));
-    _frustumDirs[2] = glm::vec3(mHPVi * glm::vec4( 1,-1, 1, 1));
-    _frustumDirs[3] = glm::vec3(mHPVi * glm::vec4(-1,-1, 1, 1));
-
-    // convert into direction vectors
-    _vC              = glm::vec3(0);
-    _frustumDirs[0] -= _vC;
-    _frustumDirs[1] -= _vC;
-    _frustumDirs[2] -= _vC;
-    _frustumDirs[3] -= _vC;
-
-    // normalize
-   _frustumDirs[0] = glm::normalize(_frustumDirs[0]);
-   _frustumDirs[1] = glm::normalize(_frustumDirs[1]);
-   _frustumDirs[2] = glm::normalize(_frustumDirs[2]);
-   _frustumDirs[3] = glm::normalize(_frustumDirs[3]);
-
-    _vN = glm::vec3(0);
-    _vN += _frustumDirs[0];
-    _vN += _frustumDirs[1];
-    _vN += _frustumDirs[2];
-    _vN += _frustumDirs[3];
-    _vN = glm::normalize(_vN);
+    _frustumDirs[0] = glm::vec3( vA.x,vA.y, vA.z);
+    _frustumDirs[1] = glm::vec3( vA.x,vA.y,-vA.z);
+    _frustumDirs[2] = glm::vec3(-vA.x,vA.y, vA.z);
+    _frustumDirs[3] = glm::vec3(-vA.x,vA.y,-vA.z);
+    _vN             = vD;
   }
 
-  // test for 90 fov
-  if (0)
-  {
-  glm::vec2   hA(45.0f);
-  glm::vec3   vD(0.0f,1.0f,0.0f);
-  glm::mat4   mR(1);
+ // printf("fD0   %f,%f,%f\n",_frustumDirs[0].x,_frustumDirs[0].y,_frustumDirs[0].z);
+ // printf("fD1   %f,%f,%f\n",_frustumDirs[1].x,_frustumDirs[1].y,_frustumDirs[1].z);
+ // printf("fD2   %f,%f,%f\n",_frustumDirs[2].x,_frustumDirs[2].y,_frustumDirs[2].z);
+ // printf("fD3   %f,%f,%f\n",_frustumDirs[3].x,_frustumDirs[3].y,_frustumDirs[3].z);
+ // printf("vN    %f,%f,%f\n",_vN.x,_vN.y,_vN.z);
 
-    mR = glm::rotate(mR,hA.y,glm::vec3(0.0f,1.0f,0.0f));
-    mR = glm::rotate(mR,hA.x,glm::vec3(1.0f,0.0f,0.0f));
-
-    vD = mR * glm::vec4(vD,1.0f);
-
-    _frustumDirs[0] = glm::vec3( vD.x,vD.y, vD.z);
-    _frustumDirs[1] = glm::vec3(-vD.x,vD.y, vD.z);
-    _frustumDirs[2] = glm::vec3( vD.x,vD.y,-vD.z);
-    _frustumDirs[3] = glm::vec3(-vD.x,vD.y,-vD.z);
-
-    _vC = glm::vec3(0);   
-    _vN = glm::vec3(0.0f,1.0f,0.0f);
-  }
 }
 
 

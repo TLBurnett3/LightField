@@ -1,7 +1,7 @@
 {
   "JobName": "DyingGaul",
   "Renderer": "BT",
-  "Algorithm": "IntMap",
+  "Algorithm": "Basic",
   "OutputPath": "/Tmp/DyingGaul",
   "FieldOfView": 90.0,
   "HogelSize": [ 128, 128 ],

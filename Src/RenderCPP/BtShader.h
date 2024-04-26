@@ -116,15 +116,15 @@ namespace Lf
 
         inline void loadVtxLst(Vtx3 *pVtx,const Vtx3 *pV0,const Vtx3 *pV1,const Vtx3 *pV2)
         {
-          (pVtx + 0)->_V = glm::vec4(pV0->_V,1);
+          (pVtx + 0)->_V = pV0->_V;
           (pVtx + 0)->_N = pV0->_N;      
           (pVtx + 0)->_T = pV0->_T;
 
-          (pVtx + 1)->_V = glm::vec4(pV1->_V,1);
+          (pVtx + 1)->_V = pV1->_V;
           (pVtx + 1)->_N = pV1->_N;      
           (pVtx + 1)->_T = pV1->_T;
 
-          (pVtx + 2)->_V = glm::vec4(pV2->_V,1);
+          (pVtx + 2)->_V = pV2->_V;
           (pVtx + 2)->_N = pV2->_N;      
           (pVtx + 2)->_T = pV2->_T;
         }
@@ -138,7 +138,7 @@ namespace Lf
           while (pVtx < pVtxEnd)
           {
             pCrds->_Vvs   =  pHD->_mMV * glm::vec4(pVtx->_V,1.0f);        
-            pCrds->_Ni    =  pVtx->_N;        
+            pCrds->_Ni    =  pHD->_mN  * pVtx->_N;        
             pCrds->_T     =  pVtx->_T;           
 
             pCrds->_Vcs   =  _mP * glm::vec4(pCrds->_Vvs,1);
@@ -151,38 +151,6 @@ namespace Lf
             pCrds++;
           }
         } 
-
-        //---------------------------------------------------------------------
-        // cullPolygon
-        // Shoelace algorithm
-        //---------------------------------------------------------------------       
-        inline bool cullPolygon(const Coords *pNDC,const uint32_t n,const int f)
-        {
-        bool      k = true;
-        float     a2 = 0;
-
-          for (uint32_t i = 0; i < n - 1; i++)
-          {
-            a2 += (pNDC + i + 0)->_vRas.x * (pNDC + i + 1)->_vRas.y;
-            a2 -= (pNDC + i + 1)->_vRas.x * (pNDC + i + 0)->_vRas.y;
-          }
-
-          a2 += (pNDC + n - 1)->_vRas.x * (pNDC + 0 + 0)->_vRas.y;
-          a2 -= (pNDC + 0 + 0)->_vRas.x * (pNDC + n - 1)->_vRas.y;
-
-          if (f == BackFacing)
-          {
-            if (a2 <= 0)
-              k = false;
-          }
-          else
-          {
-            if (a2 >= 0)
-              k = false;
-          }
-
-          return k;
-        }      
 
       public:
 

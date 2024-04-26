@@ -187,15 +187,18 @@ glm::mat4 mV  = glm::mat4(-vR.x,           vU.x,             -vD.x,           0,
 //---------------------------------------------------------------------
 // create
 //---------------------------------------------------------------------
-int Plane::create(const glm::ivec2 &nH,const glm::vec2 &dR,const glm::vec2 &hP)
+int Plane::create(const glm::ivec2 &nH,const glm::vec2 &hS,const glm::vec2 &hP,const float fov)
 {
 int       rc = 0;
 uint32_t  n  = nH.x * nH.y;
 
   _nH     = nH;
-  _hS     = dR;
+  _hS     = hS;
   _hP     = hP;
   _radDim = glm::vec2(nH) * hP;
+  _fov    = fov;
+
+  _aR     = (float)hS.x / (float)hS.y;
 
   {
   glm::vec2  hW  = hP * 0.5f;
@@ -248,27 +251,6 @@ void Plane::print(void)
 }
 
 
-/*
-
-//---------------------------------------------------------------------
-// setPerspective
-//---------------------------------------------------------------------
-void Plane::setPerspective(const float &fov) 
-{
-float tanHalfFovy = tan(glm::radians(fov) / 2.0f);
-
-  _fov = fov;
-
-	_mPbt = glm::mat4(0);
-	_mPbt[0][0] = 1.0f / tanHalfFovy;
-	_mPbt[1][1] = 1.0f / tanHalfFovy;
-	_mPbt[2][3] = -1.0f;
-	_mPbt[3][2] = -1.0f;
-
-  _mPdf = glm::perspective(glm::radians(fov),1.0f,0.001f,10000.0f);
-}
-*/
-
 
 //---------------------------------------------------------------------
 // Plane
@@ -279,6 +261,7 @@ Plane::Plane(void): _hglLst(),
                           _hP(0),
                           _radDim(0),
                           _fov(0),
+                          _aR(1),
                           _vMinE(0),
                           _vMaxE(0),
                           _vHWE(0)
