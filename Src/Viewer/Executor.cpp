@@ -397,7 +397,7 @@ cv::Mat           img;
   glm::vec2 C  = glm::vec2(180) - B - hA;
   glm::vec2 X  = glm::vec2(180) - C;
 
-    _vRMax = glm::vec2(90) - X;
+    _vRMax = (glm::vec2(90) - X);
     _vRInc = _vRMax / glm::vec2(nV >> 1);
   }
 

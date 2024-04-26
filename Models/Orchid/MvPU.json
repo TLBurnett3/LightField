@@ -1,9 +1,9 @@
 {
   "JobName": "Orchid",
   "Renderer": "BT",
-  "Algorithm": "Basic",
+  "Algorithm": "IntMap",
   "OutputPath": "/Tmp/Orchid",
-  "FieldOfView": 30.0,
+  "FieldOfView": 90.0,
   "HogelSize": [ 128, 128 ],
   "NumHogels": [ 256, 256 ],
   "zNearFar": [ 0.001, 2.0 ],
@@ -17,7 +17,7 @@
   },
   "ViewVolume": {
     "Translate": [ 0.0, 0.0, 0.0 ],
-    "Scale": [ 1.0, 1.0, 1.0 ],
+    "Scale": [ 1.5, 1.5, 1.5 ],
     "Rotate": [ 0.0, 0.0, 0.0 ]
   },
   "Scene": {

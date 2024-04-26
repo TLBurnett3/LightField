@@ -62,9 +62,6 @@ namespace Lf
       protected: 
         glm::mat4         _mTVoli;
 
-        glm::vec3         _vC;
-        glm::vec3         _vN;
-
         glm::vec3         _frustumDirs[4];
       public:
 

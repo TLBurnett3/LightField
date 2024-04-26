@@ -55,22 +55,19 @@ void BtIntMapShader::clear(void)
   {
   glm::vec4   vD = glm::vec4(0.0f,1.0f,0.0f,0.0f);
   glm::vec3   vR = glm::normalize(glm::vec3(1.0f,0.0f,_pHogelPlane->aspectRatio()));
-  glm::mat4   mR = glm::rotate(_pHogelPlane->fov() * 0.5f,vR);
+  glm::mat4   mR = glm::rotate(glm::radians(_pHogelPlane->fov() * 0.5f),vR);
   glm::vec3   vA = glm::normalize(mR * vD);
 
     _frustumDirs[0] = glm::vec3( vA.x,vA.y, vA.z);
     _frustumDirs[1] = glm::vec3( vA.x,vA.y,-vA.z);
     _frustumDirs[2] = glm::vec3(-vA.x,vA.y, vA.z);
     _frustumDirs[3] = glm::vec3(-vA.x,vA.y,-vA.z);
-    _vN             = vD;
   }
 
  // printf("fD0   %f,%f,%f\n",_frustumDirs[0].x,_frustumDirs[0].y,_frustumDirs[0].z);
  // printf("fD1   %f,%f,%f\n",_frustumDirs[1].x,_frustumDirs[1].y,_frustumDirs[1].z);
  // printf("fD2   %f,%f,%f\n",_frustumDirs[2].x,_frustumDirs[2].y,_frustumDirs[2].z);
  // printf("fD3   %f,%f,%f\n",_frustumDirs[3].x,_frustumDirs[3].y,_frustumDirs[3].z);
- // printf("vN    %f,%f,%f\n",_vN.x,_vN.y,_vN.z);
-
 }
 
 
@@ -79,7 +76,9 @@ void BtIntMapShader::clear(void)
 //---------------------------------------------------------------------
 void BtIntMapShader::determine(void)
 {
-  _mTVoli = glm::inverse(_mVol) * _mT;
+glm::mat4 mVoli = glm::inverse(_mVol);
+
+  _mTVoli = mVoli * _mT;
   _objN++;
 }
 
@@ -94,31 +93,24 @@ bool        s  = false;
 glm::vec3   v0 = _mTVoli * glm::vec4(pV0->_V,1);
 glm::vec3   v1 = _mTVoli * glm::vec4(pV1->_V,1);
 glm::vec3   v2 = _mTVoli * glm::vec4(pV2->_V,1);
-float       t0 = 1.0f;
-float       t1 = 1.0f;
-float       t2 = 1.0f;
+float       t0 = (v0.y > 0.0f) ? -1.0f : 1.0f;
+float       t1 = (v1.y > 0.0f) ? -1.0f : 1.0f;
+float       t2 = (v2.y > 0.0f) ? -1.0f : 1.0f;
 glm::vec2   iMax(-std::numeric_limits<float>::max());
 glm::vec2   iMin( std::numeric_limits<float>::max());
-
-  if (v0.y > 0.0f)
-    t0 = -t0;
-  if (v1.y > 0.0f)
-    t1 = -t1;
-  if (v1.y > 0.0f)
-    t1 = -t1;
+glm::vec3   vC(0);
+glm::vec3   vN(0,1,0);
 
   // for each frustum edge
   for (uint32_t i = 0;i < 4;i++)
   {
   float     d   = 0;
   glm::vec3 vD;
-  glm::vec3 vN;
 
     // create a ray at the vertex heading in the direction of the frustum point
     // intersect it against the clipper hogel plane
     vD = t0 * _frustumDirs[i];
-    vN = t0 * _vN;
-    if (glm::intersectRayPlane(v0,vD,_vC,vN,d))
+    if (glm::intersectRayPlane(v0,vD,vC,-t0 * vN,d))
     {
     glm::vec3   vI  = v0 + (vD * d);
     glm::vec2   vI2(vI.x,vI.z);
@@ -130,8 +122,7 @@ glm::vec2   iMin( std::numeric_limits<float>::max());
     }
     
     vD = t1 * _frustumDirs[i];
-    vN = t1 * _vN;
-    if (glm::intersectRayPlane(v1,vD,_vC,vN,d))
+    if (glm::intersectRayPlane(v1,vD,vC,-t1 * vN,d))
     {
     glm::vec3   vI  = v1 + (vD * d);
     glm::vec2   vI2(vI.x,vI.z);
@@ -142,9 +133,8 @@ glm::vec2   iMin( std::numeric_limits<float>::max());
       s = true;
     }
 
-    vD = t1 * _frustumDirs[i];
-    vN = t1 * _vN;
-    if (glm::intersectRayPlane(v2,vD,_vC,vN,d))
+    vD = t2 * _frustumDirs[i];
+    if (glm::intersectRayPlane(v2,vD,vC,-t2 * vN,d))
     {
     glm::vec3   vI  = v2 + (vD * d);
     glm::vec2   vI2(vI.x,vI.z);
@@ -156,7 +146,7 @@ glm::vec2   iMin( std::numeric_limits<float>::max());
     }
   }
 
-  if (s)  // this is always likely true.....
+  if (s)  // this is likely always true.....
   {  
   glm::ivec2 v0 = _pHogelPlane->hogelIndexFromNormalizedPlanePosition(iMin);
   glm::ivec2 v1 = _pHogelPlane->hogelIndexFromNormalizedPlanePosition(iMax);
@@ -206,8 +196,6 @@ glm::ivec2 iMax;
 //---------------------------------------------------------------------
 BtIntMapShader::BtIntMapShader(const char *pName) : BtBasicShader(pName),
                                                     _mTVoli(),
-                                                    _vC(),
-                                                    _vN(),
                                                     _frustumDirs()
 {
 }
