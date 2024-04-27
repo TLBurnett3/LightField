@@ -45,45 +45,6 @@ using namespace Core;
 //---------------------------------------------------------------------
 
 
-#if (0)
-//---------------------------------------------------------------------
-// parseLights
-//---------------------------------------------------------------------
-int Job::parseLights(JSon::Value &doc)
-{
-int               rc = 0;
-JSon::Value&  v = doc["Lights"];
-
-  if (!v.is_null() && v.is_object())
-  {
-  JSon::Value::size_type n = v.size();
-
-    for (JSon::Value::size_type i = 0; i < n; i++)
-    {
-    std::string lite = "Light_" + std::to_string(i);
-    Light       lt;
-    glm::mat4   mL;
-    JSonConfig::parseLight(v, lite.c_str(), mL);
-
-      //uncomment line below to print string representation
-      //of lights from hrd file
-      //std::cout << v[0].dump() << std::endl;
-      lt.setProperties(mL);
-  
-      _lightLst.push_back(lt);
-    }
-  }
-  else
-  {
-    std::cout << "Error parsing Lights" << std::endl;
-    rc = -1;
-  }
-
-  return rc;
-}
-#endif
-
-
 //---------------------------------------------------------------------
 // printMatrix
 //---------------------------------------------------------------------
@@ -166,7 +127,7 @@ JSon::Value &v = doc["Light"];
 		JSon::parse(v, "Specular",       _lightDef._specular,         false);
 		JSon::parse(v, "Position",       _lightDef._position,         false);
 
-		rc = 0;
+    _hasLight = true;
   }
 
   return rc;
@@ -300,20 +261,23 @@ void Job::print(std::ostream &o)
       o << "  Model Path[" << i << "]: " << _modelDefs[i]._mPath << std::endl;
   }
 
-  o << "Light Definition" << std::endl;
+  if (_hasLight)
+  {
+    o << "Light Definition" << std::endl;
 
-  o << "  Position: " << _lightDef._position.x << "  " 
-                      << _lightDef._position.y << "  " 
-                      << _lightDef._position.z << std::endl;
-  o << "  Ambient: "  << _lightDef._ambient.x << "  " 
-                      << _lightDef._ambient.y << "  " 
-                      << _lightDef._ambient.z << std::endl;
-  o << "  Diffuse: "  << _lightDef._diffuse.x << "  " 
-                      << _lightDef._diffuse.y << "  " 
-                      << _lightDef._diffuse.z << std::endl;
-  o << "  Specular: " << _lightDef._specular.x << "  " 
-                      << _lightDef._specular.y << "  " 
-                      << _lightDef._specular.z << std::endl;
+    o << "  Position: " << _lightDef._position.x << "  " 
+                        << _lightDef._position.y << "  " 
+                        << _lightDef._position.z << std::endl;
+    o << "  Ambient: "  << _lightDef._ambient.x << "  " 
+                        << _lightDef._ambient.y << "  " 
+                        << _lightDef._ambient.z << std::endl;
+    o << "  Diffuse: "  << _lightDef._diffuse.x << "  " 
+                        << _lightDef._diffuse.y << "  " 
+                        << _lightDef._diffuse.z << std::endl;
+    o << "  Specular: " << _lightDef._specular.x << "  " 
+                        << _lightDef._specular.y << "  " 
+                        << _lightDef._specular.z << std::endl;
+  }
 }
 
 
@@ -329,6 +293,7 @@ Job::Job(void) : _filePath(),
                  _algorithmType(Default),
                  _modelDefs(),   
                  _lightDef(),
+                 _hasLight(false),
                  _numHogels(0),
                  _hogelSize(0),
                  _hogelPitch(_hogelSize),

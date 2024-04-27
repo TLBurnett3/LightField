@@ -71,7 +71,17 @@ glm::ivec2        idx(0);
 
   _pShader->bindFrameBuffer(_pFrameBuffer);
   _pShader->bindViewport(glm::vec2(0),glm::vec2(hS));
+  _pShader->bindCullFace(_spJob->isCullFace());
   _pShader->bindProjection(camera.projection());
+
+  if (_spJob->hasLight())
+  {
+    _pShader->bindLight(_spJob->lightPosition(),
+                        _spJob->lightAmbient(),
+                        _spJob->lightDiffuse(),
+                        _spJob->lightSpecular(),
+                        _spJob->lightAttenuation());
+  }
 
   for (idx.y = 0;idx.y < nH.y;idx.y++)
   {  
@@ -148,20 +158,6 @@ int   rc = Executor::init(spJob);
   if (rc == 0)
   {
     _pShader      = new Lf::RenderCPP::Shader("Default");
-
-    _pShader->bindCullFace(_spJob->isCullFace());
-/*
-    if (!_spJob->lightLst().empty())
-    {
-      for (size_t i = 0;i < _spJob->lightLst().size();i++)
-      {
-        _pShader->bindLight(_spJob->lightLst()[i]._position,
-                            _spJob->lightLst()[i]._ambient,
-                            _spJob->lightLst()[i]._diffuse,
-                            _spJob->lightLst()[i]._specular,
-                            _spJob->lightLst()[i]._att);
-      }
-    }*/
   }
 
   return rc;

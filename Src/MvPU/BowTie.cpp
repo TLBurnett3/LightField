@@ -75,6 +75,15 @@ Lf::HogelDef::Camera  camera;
   _pShader->bindHogelPlane(_pHogelPlane);
   _pShader->bindCullFace(_spJob->isCullFace());
 
+  if (_spJob->hasLight())
+  {
+    _pShader->bindLight(_spJob->lightPosition(),
+                        _spJob->lightAmbient(),
+                        _spJob->lightDiffuse(),
+                        _spJob->lightSpecular(),
+                        _spJob->lightAttenuation());
+  }
+
   _pShader->clear();
 
   rTimer.start();
@@ -112,18 +121,6 @@ int   rc = Executor::init(spJob);
       _pShader      = new Lf::RenderCPP::BtBasicShader("BtBasic");
     else if (_spJob->algorithmType() == Lf::MvPU::Job::IntMap)
       _pShader      = new Lf::RenderCPP::BtIntMapShader("BtIntMap");
-
- /*  if (!_spJob->lightLst().empty())
-    {
-      for (size_t i = 0;i < _spJob->lightLst().size();i++)
-      {
-        _pShader->bindLight(_spJob->lightLst()[i]._position,
-                            _spJob->lightLst()[i]._ambient,
-                            _spJob->lightLst()[i]._diffuse,
-                            _spJob->lightLst()[i]._specular,
-                            _spJob->lightLst()[i]._att);
-      }
-    }*/
   }
 
   return rc;

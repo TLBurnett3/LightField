@@ -3,7 +3,7 @@
   "Renderer": "BT",
   "Algorithm": "IntMap",
   "OutputPath": "/Tmp/DyingGaul",
-  "FieldOfView": 90.0,
+  "FieldOfView": 30.0,
   "HogelSize": [ 128, 128 ],
   "NumHogels": [ 256, 256 ],
   "zNearFar": [ 0.001, 100.0 ],
@@ -24,7 +24,7 @@
     "Scale": [ 1.0, 1.0, 1.0 ],
     "Rotate": [ 100.0, 0.0, 180.0 ]
   },
-  "Light": {
+  "NoLight": {
     "Ambient": [ 0.2, 0.2, 0.2, 0.0 ],
     "Diffuse": [ 1.0, 1.0, 1.0, 0.0 ],
     "Specular": [ 0.0, 0.0, 0.0, 0.0 ],

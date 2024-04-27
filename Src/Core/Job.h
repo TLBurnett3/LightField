@@ -147,6 +147,7 @@ namespace Lf
 
         ModelDefs               _modelDefs;
         LightDef                _lightDef;
+        bool                    _hasLight;
 
         glm::ivec2              _numHogels;
         glm::ivec2              _hogelSize;             
@@ -246,6 +247,12 @@ namespace Lf
 
         const glm::vec3 lightPosition(void)
         { return _lightDef._position; }
+
+        const float lightAttenuation(void)
+        { return _lightDef._att; }
+
+        const bool  hasLight(void)
+        { return _hasLight; }
 
         EXPORT void print(std::ostream &o);
 
