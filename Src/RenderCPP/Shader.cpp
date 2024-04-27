@@ -80,7 +80,7 @@ void  Shader::processLightFragment(uint8_t *pC,const Coords *pC0,const Coords *p
 glm::vec3 vP  = (pC0->_Vvs * vBC.x) + (pC1->_Vvs * vBC.y) + (pC2->_Vvs * vBC.z);
 glm::vec3 vN  = (pC0->_Ni  * vBC.x) + (pC1->_Ni  * vBC.y) + (pC2->_Ni  * vBC.z);
 glm::vec2 vUV = (pC0->_T   * vBC.x) + (pC1->_T   * vBC.y) + (pC2->_T   * vBC.z);
-glm::vec3 vE  = glm::normalize(vP);
+glm::vec3 vE  = -glm::normalize(vP);
 glm::vec4 clr = glm::vec4(_pTxtObj->color(vUV));
 glm::vec4 aClr(0);
 glm::vec4 dClr(0);
@@ -91,12 +91,14 @@ glm::vec4 tClr(0);
 
   for (size_t i = 0;i < _lgtLst.size();i++)
   {
-  glm::vec3 vL  = glm::normalize(_lgtLst[i]._vPosition - vP);
-  glm::vec3 vR  = glm::reflect(vL,vN);
+  glm::vec3 vL    = -glm::normalize(_lgtLst[i]._vPosition - vP);
+  glm::vec3 vR    = glm::reflect(vL,vN);
+  float     lam   = glm::max(glm::dot(vN,vL),0.0f);
+  float     spec  = glm::pow(glm::max(glm::dot(vR,vE),0.0f),_pTxtObj->_s);
 
     aClr = clr * _lgtLst[i]._cAmbient;
-    dClr = clr * _lgtLst[i]._cDiffuse  * glm::max(glm::dot(vN,vL),0.0f);
-    sClr = clr * _lgtLst[i]._cSpecular * glm::pow(glm::max(glm::dot(vR,vE),0.0f),0.3f * _pTxtObj->_s);
+    dClr = clr * _lgtLst[i]._cDiffuse  * lam;
+    sClr = clr * _lgtLst[i]._cSpecular * spec;
 
     tClr += aClr + dClr + sClr;
   }
