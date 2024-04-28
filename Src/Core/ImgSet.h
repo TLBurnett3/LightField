@@ -22,91 +22,77 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
+// ImgSet.h
 // Thomas Burnett
-// Node.h
 
 #pragma once
 
+
 //---------------------------------------------------------------------
 // Includes
-#include <string>
-#include <vector>
-#include <ostream>
+// System
+#include <memory>
+#include <queue>
+#include <filesystem>
+
+// 3rdPartyLibs
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <glm/glm.hpp>
 
 // LightField
-#include "RenderGL/Mesh.h"
-#include "RenderGL/Bound.h"
-#include "Core/Camera.h"
+#include "Core/Export.h"
+#include "Core/Thread.h"
 //---------------------------------------------------------------------
-
 
 
 //---------------------------------------------------------------------
 // Classes
 namespace Lf
 {
-  namespace RenderGL
+  namespace Core
   {
-    class Node : public Bound
+    class ImgSet 
     {
-      friend class Model;
-
-      // Definitions
+      // Defines
       private:
       protected:
-        typedef   std::vector<Mesh *>      MeshLst;
-        typedef   std::vector<Node *>      NodeList;
+        typedef struct ImgData_Def
+        {
+          glm::ivec2  _iNum;
+          glm::vec2   _iLoc;
+          cv::Mat     _img;
+        } ImgData;
+
+        typedef std::vector<ImgData>  ISet;
+
       public:
-    
 
       // Members
       private:
       protected:
-        std::string   _sName;
+        ISet        _imgSet;
+        glm::ivec2  _nI;
+        glm::ivec2  _iS;
+        float       _aP;
 
-        glm::mat4     _mT;  // transform matrix
-
-        MeshLst       _meshLst;
-        NodeList      _nodeLst;
-      public:
-
+      public:   
 
       // Methods
       private:
       protected:
-        void printMatrix(std::ostream &s,std::string idt,const char *str,const glm::mat4 &m);
 
       public:
-        const glm::mat4 &transform(void) const
-        { return _mT; }
+        EXPORT int createPlenopticImage(cv::Mat &img,glm::ivec2 &nH,glm::ivec2 &hS);
 
-        void  setName(const char *name)
-        { _sName = name; }
+        EXPORT int fitSize(const glm::ivec2 &mS);
 
-        void  setTransformMatrix(glm::mat4 mT)
-        { _mT  = mT; }
-
-        void  addNode(Node *pN)
-        { _nodeLst.push_back(pN); }
-
-        void  addMesh(Mesh *pM)
-        { 
-          bound(pM->vMin(),pM->vMax());
-          _meshLst.push_back(pM); 
-        }
-
-  //      void cullFrustum(const glm::mat4 &mView,const Control &control);
-
-        void  print(std::ostream &s,std::string idt);
-
-        void  render(const Core::Camera *pCamera,const PhongShader *pShader,const glm::mat4 &mT);
-
-        Node(void);
-        ~Node();
+        EXPORT int load(const std::filesystem::path &dPath); 
+         
+        EXPORT ImgSet(void);
+        EXPORT ~ImgSet();
     };
   };
 };
 //---------------------------------------------------------------------
-
-
 

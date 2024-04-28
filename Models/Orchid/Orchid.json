@@ -4,7 +4,7 @@
   "OutputPath": "/Tmp/Orchid",
   "FieldOfView": 90.0,
   "HogelSize": [ 128, 128 ],
-  "NumHogels": [ 256, 256 ],
+  "NumHogels": [ 265, 265 ],
   "zNearFar": [0.001, 1.0],
   "MemSize": 12,
   "CullFace": true,

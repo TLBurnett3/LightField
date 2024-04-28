@@ -37,15 +37,11 @@
 #include <glm/ext.hpp>
 
 // LightField
-#include "RenderGL/Def.h"
-#include "LightField/Executor.h"
+#include "Apperture/Executor.h"
 #include "Core/Timer.h"
-#include "Tasks/ProofImage.h"
-#include "Tasks/WriteAvi.h"
-#include "Tasks/WriteImg.h"
-#include "Tasks/SliceNDice.h"
 
 using namespace Lf;
+using namespace Apperture;
 //---------------------------------------------------------------------
 
 
@@ -69,8 +65,14 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
 {
   if (action == GLFW_RELEASE)
   {
+  Apperture::Executor *pE = (Apperture::Executor *)glfwGetWindowUserPointer(pW);
+
     switch (key)
     {      
+      case GLFW_KEY_HOME:
+      case GLFW_KEY_BACKSPACE:
+        break;
+
       case GLFW_KEY_ESCAPE:
         glfwSetWindowShouldClose(pW,GL_TRUE);
         break;
@@ -83,23 +85,43 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
 
 
 //---------------------------------------------------------------------
-// findTask
+// exec
 //---------------------------------------------------------------------
-Task::Base    *Executor::findTask(const char *tName,TaskList &tLst)
+int Executor::exec(void) 
 {
-std::string         n     = tName;
-TaskList::iterator  ii    = tLst.begin();
-TaskList::iterator  iEnd  = tLst.end();
+int         rc      = 0;
+glm::vec2   vW      = glm::vec2(_wS) * 0.5f;
+glm::vec3   vP      = glm::vec3(0,1,0);
+glm::vec3   vD      = glm::vec3(0,-1,0);
+glm::vec3   vU      = glm::vec3(0,0,1);
+glm::mat4   mP      = glm::ortho(-vW.x,vW.x,-vW.y,vW.y,0.0f,2.0f);
+glm::mat4   mV      = glm::lookAt(vP,vP + vD,vU);
+glm::mat4   mM      = glm::mat4(1);
+glm::mat4   mMV     = mV * mM;
 
-  while (ii != iEnd)
+  glEnable(GL_TEXTURE_2D);
+  glActiveTexture(GL_TEXTURE0);
+
+  glClearColor(0.25f,0.25f,0.25f,0);
+  glViewport(0,0,_wS.x,_wS.y);
+
+  _pShader->use();
+  _pShader->bindMVP(mP * mMV);
+
+  while (!glfwWindowShouldClose(_pWindow))
   {
-    if (n == (*ii)->name())
-      return (*ii);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    ii++;
+    {
+      _tex.bind();
+      _vao.render();
+    }
+
+    glfwSwapBuffers(_pWindow);
+    glfwPollEvents();
   }
 
-  return 0;       
+  return rc;
 }
 
 
@@ -123,9 +145,7 @@ GLFWwindow *pW = 0;
   pW = glfwCreateWindow(wD.x,wD.y,pStr,0,pShared);
 
   glfwMakeContextCurrent(pW);
-
   glfwSwapInterval(fps);
-
   glfwShowWindow(pW);
 
   return pW;	
@@ -190,7 +210,6 @@ char        *pS = 0;
     std::cout <<  str.c_str() << std::endl;
   }
 
-
 #ifdef _glfw3_h_
   str = "GLFW Version: ";
   str += glfwGetVersionString();
@@ -202,143 +221,25 @@ char        *pS = 0;
 }
 
 
-//---------------------------------------------------------------------
-// taskWait
-//---------------------------------------------------------------------
-void Executor::taskWait(Task::Base *pT) 
-{
-  if (!pT->finished())
-  {
-  uint32_t i = 0;
-
-    std::cout << "Waiting on Task: " << pT->name();
-
-    do 
-    {        
-      i++;
-
-      if (i >= 10)
-      {
-        std::cout << ".";
-        i = 0;
-      }
-
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-    while (!pT->finished());
-
-    std::cout << std::endl;
-  }
-}
-
 
 //---------------------------------------------------------------------
-// taskSync
+// initGLFW
 //---------------------------------------------------------------------
-void Executor::taskSync(void) 
-{
-  {
-  TaskList::iterator        ii    = _imgTaskLst.begin();
-  TaskList::iterator        iEnd  = _imgTaskLst.end();
-    
-    while (ii != iEnd)
-    {
-      taskWait(*ii);
-
-      ii++;
-    }
-  }
-
-  {
-  TaskList::iterator        ii    = _dthTaskLst.begin();
-  TaskList::iterator        iEnd  = _dthTaskLst.end();
-
-    while (ii != iEnd)
-    {
-      taskWait(*ii);
-
-      ii++;
-    }
-  }
-}
-
-
-//---------------------------------------------------------------------
-// loadModels
-//---------------------------------------------------------------------
-int Executor::loadModels(std::filesystem::path &cPath)
+int Executor::initGLFW(void)
 {
 int rc = -1;
-
-  _pScene = new RenderGL::Scene();
-
-  if (_pScene)
-  {
-    rc =_pScene->init(cPath);
-
-    for (size_t i = 0;i < _spJob->numModels();i++)
-    {
-      if (_pScene->load(_spJob->modelPath(i),_spJob->modelTransform(i)) == 0)
-        std::cout << "Succesful Load: " << _spJob->modelPath(i) << std::endl;
-      else
-      {
-        std::cout << "Unsuccesful Load: " << _spJob->modelPath(i) << std::endl;
-        rc |= -1;
-      }
-    }   
-  }
-
-  return rc;
-}
-
-
-//---------------------------------------------------------------------
-// loadShaders
-//---------------------------------------------------------------------
-int Executor::loadShaders(std::filesystem::path &cPath)
-{
-std::filesystem::path  vShader(cPath);
-std::filesystem::path  fShader(cPath);
-int                    rc = 0;
-
-  vShader /= "Shaders/Phong.vtx";
-  fShader /= "Shaders/Phong.frg";
-
-  _pShader = new RenderGL::PhongShader("Phong");
- 
-  rc |= _pShader->addVertexShader(vShader);
-  rc |= _pShader->addFragmentShader(fShader);
-
-  if (rc == 0)
-    rc |= _pShader->compile();
-
-  if (rc == 0)
-    _pShader->use();
-
-  return rc;
-}
-
-
-//---------------------------------------------------------------------
-// init
-//---------------------------------------------------------------------
-int Executor::init(Core::SpJob &spJob) 
-{
-int   rc = -1;
-
-  _spJob = spJob;
 
   glfwSetErrorCallback(ErrorCallback);
 
   if (glfwInit())    
   {
-  glm::ivec2 wS = _spJob->hogelSize();
-
-    _pWindow = initWindow(wS,"Lightfield",0,0,true);
+    _pWindow = initWindow(_wS,"Lightfield Viewer",0,0,true);
 
     if (_pWindow)
     {
     std::filesystem::path cPath = std::filesystem::current_path();
+        
+      glfwSetWindowUserPointer(_pWindow,this);
 
       glfwSetKeyCallback          (_pWindow,Keyboard_Callback);
 
@@ -349,23 +250,8 @@ int   rc = -1;
 
       GLInfo();
 
-      {
-      std::filesystem::path outPath = _spJob->outputPath();
-
-        if (!outPath.empty() && !std::filesystem::exists(outPath))
-          std::filesystem::create_directory(outPath);
-      }
-
-      rc = loadModels(cPath);
-
-      if (rc == 0)
-        rc = loadShaders(cPath);
-
-      if (rc == 0)
-        createTasks();
+      rc = 0;
     }
-    else
-      std::cout << "Failed to create GLFW window" << std::endl;
   }
 
   return rc;
@@ -373,16 +259,70 @@ int   rc = -1;
 
 
 //---------------------------------------------------------------------
-// bindLight
+// initGraphics
 //---------------------------------------------------------------------
-void  Executor::bindLight(void) 
+int Executor::initGraphics(void)
 {
-  assert(_pShader);
+int  rc = 0;
 
-  _pShader->bindLightPosition(_spJob->lightPosition());
-  _pShader->bindLightAmbient (_spJob->lightAmbient());
-  _pShader->bindLightDiffuse (_spJob->lightDiffuse());
-  _pShader->bindLightSpecular(_spJob->lightSpecular());
+  _pShader = new RenderGL::BasicShader("Basic");
+  _pShader->addVertexShader  ("./Shaders/Default3D.vtx");
+  _pShader->addFragmentShader("./Shaders/Default3D.frg");
+  rc = _pShader->compile();  
+
+  if (rc == 0)
+  {
+  glm::ivec2          vS = _iS;
+  glm::ivec2          nV = _nI;
+  cv::Scalar          clr(255,221,244); // pink lace
+  int                 mode;
+  RenderGL::VtxVNTLst quad;
+
+    _wS.y = _wS.x * ((float)vS.y / (float)vS.x);
+
+    mode = quad.createQuadXZ(glm::vec3(0),glm::vec2(_wS));
+
+    _vao.upload(quad,mode);
+    _tex.upload(_img);
+
+    glfwSetWindowSize(_pWindow,_wS.x,_wS.y);
+  }
+  
+  return rc;
+}
+
+
+//---------------------------------------------------------------------
+// init
+//---------------------------------------------------------------------
+int Executor::init(const char *pDir) 
+{
+int rc  = 0;
+
+  rc = _imgSet.load(std::filesystem::path(pDir));
+
+  if (rc == 0)
+    rc = initGLFW();
+
+  if (rc == 0)
+  {
+  GLint mS = 0;
+
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE,&mS);
+
+    rc = _imgSet.fitSize(glm::ivec2(mS));
+  }
+
+  if (rc == 0)
+    rc = _imgSet.createPlenopticImage(_img,_nI,_iS);
+
+//  if (rc == 0)
+ //   cv::imwrite("Crapola.png",_img);
+
+  if (rc == 0)
+    rc = initGraphics();
+
+  return rc;
 }
 
 
@@ -391,64 +331,24 @@ void  Executor::bindLight(void)
 //---------------------------------------------------------------------
 void Executor::destroy(void) 
 {
-  {
-  TaskList::iterator        ii    = _imgTaskLst.begin();
-  TaskList::iterator        iEnd  = _imgTaskLst.end();
-    
-    while (ii != iEnd)
-    {
-      (*ii)->stop();
-      (*ii)->join();
-      ii++;
-    }
-  }
-
-  {
-  TaskList::iterator        ii    = _dthTaskLst.begin();
-  TaskList::iterator        iEnd  = _dthTaskLst.end();
-
-    while (ii != iEnd)
-    {
-      (*ii)->stop();
-      (*ii)->join();
-      ii++;
-    }
-  }
-
-  if (_pScene)
-    delete _pScene;
-
-  if (_pShader)
-    delete _pShader;
-
   if (_pWindow)
     glfwDestroyWindow(_pWindow);
 
   glfwTerminate();
-
-  while (!_imgTaskLst.empty())
-  {
-    delete _imgTaskLst.back();
-    _imgTaskLst.pop_back();
-  }
-
-  while (!_dthTaskLst.empty())
-  {
-    delete _dthTaskLst.back();
-    _dthTaskLst.pop_back();
-  }
 }
 
 
 //---------------------------------------------------------------------
 // Executor
 //---------------------------------------------------------------------
-Executor::Executor(void) : _spJob(),
-                           _pWindow(0),
-                           _pScene(0),
+Executor::Executor(void) : _pWindow(0),
+                           _wS(2048),
+                           _imgSet(),
+                           _nI(0),
+                           _iS(0),
                            _pShader(0),
-                           _imgTaskLst(),
-                           _dthTaskLst()
+                           _vao(),
+                           _tex()
 {
 }
 
@@ -458,6 +358,6 @@ Executor::Executor(void) : _spJob(),
 //---------------------------------------------------------------------
 Executor::~Executor()
 {
-
+  delete _pShader;
 }
 

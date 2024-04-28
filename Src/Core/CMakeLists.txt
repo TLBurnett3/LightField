@@ -14,16 +14,21 @@ set (HEADERS
   JSon.h
   Job.h
   Timer.h
+  ImgSet.h
   Template.h
 )
 
 set(SOURCE
   JSon.cpp
   Job.cpp
+  ImgSet.cpp
   Template.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCE} )
+
+target_link_libraries(${PROJECT_NAME} ${OPENCV_DEBUG_LIB} ${OPENCV_RELEASE_LIB})
+
 
 
 ##########################################################################################################################################

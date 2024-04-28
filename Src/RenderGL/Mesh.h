@@ -43,7 +43,7 @@
 #include "RenderGL/Texture.h"
 #include "RenderGL/Object.h"
 #include "Core/Camera.h"
-#include "RenderGL/Shader.h"
+#include "RenderGL/PhongShader.h"
 //---------------------------------------------------------------------
 
 
@@ -106,7 +106,7 @@ namespace Lf
 
         void print(std::ostream &s,std::string idt,bool detail = false);
 
-        void render(const Core::Camera *pCamera,const Shader *pShader,const glm::mat4 &mT);
+        void render(const Core::Camera *pCamera,const PhongShader *pShader,const glm::mat4 &mT);
 
         Mesh(void);
         ~Mesh();

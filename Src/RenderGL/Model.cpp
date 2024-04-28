@@ -122,11 +122,7 @@ Mesh *pMesh = 0;
   if (pAIMesh->mPrimitiveTypes == aiPrimitiveType_TRIANGLE)
   {
   IdxLst        idxLst;
-#ifndef _GLES2
   Object        *pRO = new VtxArrayObj();
-#else
-  tLib::RenderObject  *pRO = new tLib::VtxBufferObj();
-#endif
 
     pMesh  = new Mesh();
 
@@ -408,7 +404,7 @@ Assimp::Importer  importer;
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void Model::render(const Core::Camera *pCamera,const Shader *pShader,const glm::mat4 &mT)
+void Model::render(const Core::Camera *pCamera,const PhongShader *pShader,const glm::mat4 &mT)
 {
   _pRoot->render(pCamera,pShader,mT);
 }

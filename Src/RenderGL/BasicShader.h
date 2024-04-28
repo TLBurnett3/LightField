@@ -22,24 +22,20 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
+// BasicShader.h
 // Thomas Burnett
-// Node.h
+
 
 #pragma once
 
 //---------------------------------------------------------------------
 // Includes
-#include <string>
-#include <vector>
-#include <ostream>
+
+// 3rdPartyLibs
 
 // LightField
-#include "RenderGL/Mesh.h"
-#include "RenderGL/Bound.h"
-#include "Core/Camera.h"
+#include "RenderGL/Shader.h"
 //---------------------------------------------------------------------
-
-
 
 //---------------------------------------------------------------------
 // Classes
@@ -47,66 +43,38 @@ namespace Lf
 {
   namespace RenderGL
   {
-    class Node : public Bound
-    {
-      friend class Model;
-
-      // Definitions
+	  class BasicShader : public Shader
+	  {
+	    // Defines
       private:
       protected:
-        typedef   std::vector<Mesh *>      MeshLst;
-        typedef   std::vector<Node *>      NodeList;
       public:
-    
 
       // Members
       private:
-      protected:
-        std::string   _sName;
+      protected: 
+        GLint    _locMatMVP;
+        GLint    _locTexSampler;
 
-        glm::mat4     _mT;  // transform matrix
-
-        MeshLst       _meshLst;
-        NodeList      _nodeLst;
       public:
-
 
       // Methods
       private:
       protected:
-        void printMatrix(std::ostream &s,std::string idt,const char *str,const glm::mat4 &m);
 
       public:
-        const glm::mat4 &transform(void) const
-        { return _mT; }
+        EXPORT void setTextureSampler(const int t) const
+        { glUniform1i(_locTexSampler,t); }
 
-        void  setName(const char *name)
-        { _sName = name; }
+        EXPORT void bindMVP(const glm::mat4 &mT) const
+        { glUniformMatrix4fv(_locMatMVP,1,false,glm::value_ptr(mT)); }
 
-        void  setTransformMatrix(glm::mat4 mT)
-        { _mT  = mT; }
-
-        void  addNode(Node *pN)
-        { _nodeLst.push_back(pN); }
-
-        void  addMesh(Mesh *pM)
-        { 
-          bound(pM->vMin(),pM->vMax());
-          _meshLst.push_back(pM); 
-        }
-
-  //      void cullFrustum(const glm::mat4 &mView,const Control &control);
-
-        void  print(std::ostream &s,std::string idt);
-
-        void  render(const Core::Camera *pCamera,const PhongShader *pShader,const glm::mat4 &mT);
-
-        Node(void);
-        ~Node();
-    };
+        EXPORT virtual int compile(void);
+ 
+        EXPORT BasicShader(const char *pName);
+        EXPORT virtual ~BasicShader();
+	  };
   };
 };
+
 //---------------------------------------------------------------------
-
-
-

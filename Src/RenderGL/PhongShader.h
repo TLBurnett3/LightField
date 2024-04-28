@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Shader.h
+// PhongShader.h
 // Thomas Burnett
 
 
@@ -30,15 +30,11 @@
 
 //---------------------------------------------------------------------
 // Includes
-#include <string>
-#include <vector>
-#include <filesystem>
 
 // 3rdPartyLibs
 
 // LightField
-#include "RenderGL/Def.h"
-#include "Core/Export.h"
+#include "RenderGL/BasicShader.h"
 //---------------------------------------------------------------------
 
 //---------------------------------------------------------------------
@@ -47,7 +43,7 @@ namespace Lf
 {
   namespace RenderGL
   {
-	  class Shader
+	  class PhongShader : public BasicShader
 	  {
 	    // Defines
       private:
@@ -58,48 +54,65 @@ namespace Lf
       // Members
       private:
       protected: 
-        std::string       _sName;
+        float             _nS;
 
-        ShaderSrcLst      _vertexShaderLst;      
-        ShaderSrcLst      _geometryShaderLst;
-        ShaderSrcLst      _fragmentShaderLst;
+        GLint             _locMatMV;
+        GLint             _locMatN;
 
-        GLuint            _programShaderId;
-        GLuint            _vertexShaderId;
-        GLuint            _geometryShaderId;
-        GLuint            _fragmentShaderId;
+        GLint             _locLightPosition;
+        GLint             _locLightAmbient;
+        GLint             _locLightDiffuse;
+        GLint             _locLightSpecular;
+
+        GLint             _locCameraPosition;
 
       public:
 
       // Methods
       private:
       protected:
-        EXPORT int     addSourceFile(const std::filesystem::path &filePath,ShaderSrcLst &shaderSrcLst);
-        int     loadShaderSource(const GLuint sId,ShaderSrcLst &shaderSrcLst);
-        int     checkStatus(const char *pStr,const int check);
-        int     createShader(GLuint sId,const int sType,ShaderSrcLst &shaderSrcLst);
-        void    detachShaders(void);
-
       public:
-        GLint programId(void)
-        { return _programShaderId; }
+        EXPORT void bindNormalScale(const float s)
+        { _nS = (s >= 1.0f) ? 1.0f : -1.0f; }
 
-        void use(void)
-        { glUseProgram(_programShaderId); }
+        EXPORT void bindMV(const glm::mat4 &mT) const
+        { 
+        glm::mat4   mMVs  = glm::scale(mT,glm::vec3(_nS,_nS,_nS));
+        glm::mat3   mN    = glm::inverseTranspose(glm::mat3(mMVs));
 
-        EXPORT int addVertexShader(const std::filesystem::path &fName)
-        { return addSourceFile(fName,_vertexShaderLst); }
+          glUniformMatrix4fv(_locMatMV,1,false,glm::value_ptr(mT)); 
+          glUniformMatrix3fv(_locMatN,1, false,glm::value_ptr(mN)); 
+        }
 
-        EXPORT int addGeometryShader(const std::filesystem::path &fName)
-        { return addSourceFile(fName,_geometryShaderLst); }
+        EXPORT void bindLightAmbient(const glm::vec4 &cA) const
+        { 
+          glUniform4fv(_locLightAmbient,1,glm::value_ptr(cA)); 
+        }
 
-        EXPORT int addFragmentShader(const std::filesystem::path &fName)
-        { return addSourceFile(fName,_fragmentShaderLst); }
+        EXPORT void bindLightDiffuse(const glm::vec4 &cD) const
+        { 
+          glUniform4fv(_locLightDiffuse,1,glm::value_ptr(cD)); 
+        }
+
+        EXPORT void bindLightSpecular(const glm::vec4 &cS) const
+        { 
+          glUniform4fv(_locLightSpecular,1,glm::value_ptr(cS)); 
+        }
+
+        EXPORT void bindLightPosition(const glm::vec3 &vP) const
+        { 
+          glUniform3fv(_locLightPosition,1,glm::value_ptr(vP)); 
+        }
+
+        EXPORT void bindCameraPosition(const glm::vec3 &vP) const
+        { 
+          glUniform3fv(_locCameraPosition,1,glm::value_ptr(vP)); 
+        }
 
         EXPORT virtual int compile(void);
  
-        EXPORT Shader(const char *pName);
-        EXPORT virtual ~Shader();
+        EXPORT PhongShader(const char *pName);
+        EXPORT virtual ~PhongShader();
 	  };
   };
 };

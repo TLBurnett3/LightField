@@ -23,90 +23,50 @@
 //---------------------------------------------------------------------
 
 // Thomas Burnett
-// Node.h
-
-#pragma once
+// Main.cpp 
 
 //---------------------------------------------------------------------
 // Includes
 #include <string>
-#include <vector>
-#include <ostream>
+#include <iostream>
+
+// 3rd Party Libs
 
 // LightField
-#include "RenderGL/Mesh.h"
-#include "RenderGL/Bound.h"
-#include "Core/Camera.h"
+#include "Apperture/Executor.h"
 //---------------------------------------------------------------------
 
 
-
 //---------------------------------------------------------------------
-// Classes
-namespace Lf
+// main
+//---------------------------------------------------------------------
+int main(int argc,char *argv[])
 {
-  namespace RenderGL
+int                      rc  = 0;
+char                     *p  = 0;
+Lf::Apperture::Executor  e;
+
+  std::cout << "Usage: LfCar <path to .png files>\n";
+
+  if (argc > 1)
+    p = argv[1];
+  
+  std::cout << "LfCar Initialization" << std::endl;
+  if (p)
+    std::cout << "Png Path: " << p << std::endl;
+
+  if (p)
   {
-    class Node : public Bound
-    {
-      friend class Model;
+    rc = e.init(p);
 
-      // Definitions
-      private:
-      protected:
-        typedef   std::vector<Mesh *>      MeshLst;
-        typedef   std::vector<Node *>      NodeList;
-      public:
-    
+    if (rc == 0)
+      rc = e.exec();
 
-      // Members
-      private:
-      protected:
-        std::string   _sName;
+    e.destroy();
+  }
 
-        glm::mat4     _mT;  // transform matrix
+  std::cout << "LfCar Exit: RC " << rc << std::endl;
 
-        MeshLst       _meshLst;
-        NodeList      _nodeLst;
-      public:
-
-
-      // Methods
-      private:
-      protected:
-        void printMatrix(std::ostream &s,std::string idt,const char *str,const glm::mat4 &m);
-
-      public:
-        const glm::mat4 &transform(void) const
-        { return _mT; }
-
-        void  setName(const char *name)
-        { _sName = name; }
-
-        void  setTransformMatrix(glm::mat4 mT)
-        { _mT  = mT; }
-
-        void  addNode(Node *pN)
-        { _nodeLst.push_back(pN); }
-
-        void  addMesh(Mesh *pM)
-        { 
-          bound(pM->vMin(),pM->vMax());
-          _meshLst.push_back(pM); 
-        }
-
-  //      void cullFrustum(const glm::mat4 &mView,const Control &control);
-
-        void  print(std::ostream &s,std::string idt);
-
-        void  render(const Core::Camera *pCamera,const PhongShader *pShader,const glm::mat4 &mT);
-
-        Node(void);
-        ~Node();
-    };
-  };
-};
-//---------------------------------------------------------------------
-
-
+  return rc;
+}
 

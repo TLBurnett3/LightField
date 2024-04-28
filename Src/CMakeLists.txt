@@ -6,3 +6,5 @@ add_subdirectory(RenderCPP)
 add_subdirectory(LightField)
 add_subdirectory(MvPU)
 add_subdirectory(Viewer)
+add_subdirectory(Apperture)
+

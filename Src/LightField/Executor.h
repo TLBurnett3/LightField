@@ -42,7 +42,7 @@
 #include "Core/Job.h"
 #include "Tasks/Base.h"
 #include "HogelDef/Camera.h"
-#include "RenderGL/Shader.h"
+#include "RenderGL/PhongShader.h"
 #include "RenderGL/Scene.h"
 //---------------------------------------------------------------------
 
@@ -65,8 +65,8 @@ namespace Lf
       Lf::Core::SpJob _spJob;
       GLFWwindow      *_pWindow;
 
-      RenderGL::Scene  *_pScene;
-      RenderGL::Shader  *_pShader;
+      RenderGL::Scene        *_pScene;
+      RenderGL::PhongShader  *_pShader;
 
       TaskList        _imgTaskLst;
       TaskList        _dthTaskLst;

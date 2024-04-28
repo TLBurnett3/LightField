@@ -40,7 +40,7 @@
 #include "Core/Export.h"
 #include "RenderGL/Model.h"
 #include "HogelDef/Camera.h"
-#include "RenderGL/Shader.h"
+#include "RenderGL/PhongShader.h"
 //---------------------------------------------------------------------
 
 
@@ -108,7 +108,7 @@ namespace Lf
         }
 
         EXPORT void print(std::ostream &s);
-        EXPORT void render(const Core::Camera *pCamera,const Shader *pShader,const glm::mat4 &mT);
+        EXPORT void render(const Core::Camera *pCamera,const PhongShader *pShader,const glm::mat4 &mT);
 
         EXPORT int  init(const std::filesystem::path &cPath);
         EXPORT int  load(const std::filesystem::path &mPath,const glm::mat4 &mT);

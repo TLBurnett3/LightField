@@ -66,7 +66,7 @@ namespace Lf
       // Members
       private:
       protected:
-        std::string             _sName;
+        std::string           _sName;
         std::filesystem::path _mPath;
 
         TextureLst     _textureLst;
@@ -114,7 +114,7 @@ namespace Lf
 
         void  print(std::ostream &s,bool detail = false);
 
-        void  render(const Core::Camera *pCamera,const Shader *pShader,const glm::mat4 &mT);
+        void  render(const Core::Camera *pCamera,const PhongShader *pShader,const glm::mat4 &mT);
 
         Model(void);
         ~Model();

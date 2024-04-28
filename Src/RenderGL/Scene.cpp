@@ -60,7 +60,7 @@ size_t n  = _modelLst.size();
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void Scene::render(const Core::Camera *pCamera,const Shader *pShader,const glm::mat4 &mT)
+void Scene::render(const Core::Camera *pCamera,const PhongShader *pShader,const glm::mat4 &mT)
 {
 size_t n  = _modelLst.size();
 

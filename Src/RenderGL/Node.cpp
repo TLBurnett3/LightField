@@ -78,7 +78,7 @@ void Node::print(std::ostream &s,std::string idt)
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void Node::render(const Core::Camera *pCamera,const Shader *pShader,const glm::mat4 &mT)
+void Node::render(const Core::Camera *pCamera,const PhongShader *pShader,const glm::mat4 &mT)
 {
 bool      visible(true);
 

@@ -18,6 +18,9 @@ set (HEADERS
   VtxArrayObj.h
   VtxBufferObj.h
   Shader.h
+  Shader.h
+  BasicShader.h
+  PhongShader.h
   Scene.h
   )
 
@@ -30,6 +33,8 @@ set(SOURCE
   VtxArrayObj.cpp
   VtxBufferObj.cpp
   Shader.cpp
+  BasicShader.cpp
+  PhongShader.cpp
   Scene.cpp
   )
 

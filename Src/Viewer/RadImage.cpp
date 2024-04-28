@@ -68,7 +68,8 @@ char  buf[64];
           _hS = glm::ivec2(c.get(cv::CAP_PROP_FRAME_WIDTH),c.get(cv::CAP_PROP_FRAME_HEIGHT));
 
           while (c.isOpened())
-          {          cv::Mat img;
+          {          
+          cv::Mat img;
 
             c >> img;
 

@@ -237,14 +237,9 @@ int Shader::compile(void)
 {
 int rc = -1;
 
-  std::cout << "" << std::endl;
-  std::cout << "-----" << std::endl;
-  std::cout << "Compiling Shaders" << std::endl;
-  std::cout << _sName.c_str() << std::endl;
+  std::cout << "Compiling Shader:" << _sName << std::endl;
 
   detachShaders();
-
-  std::cout << "Creating Shader Program" << std::endl;
         
   if (!_programShaderId)
   {
@@ -313,93 +308,7 @@ int rc = -1;
       rc |= checkStatus("glValidateProgram",GL_VALIDATE_STATUS);
     }
 #endif
-
-    {
-    #ifdef _GLES2
-    GLint  vLoc = glGetAttribLocation(_programShaderId,"vVertex");  
-    GLint  nLoc = glGetAttribLocation(_programShaderId,"vNormal");  
-    GLint  tLoc = glGetAttribLocation(_programShaderId,"vTexCoord");  
-
-      std::cout << "Shader Attribute vVertex:   " << vLoc << std::endl;
-      std::cout << "Shader Attribute vNormal:   " << nLoc << std::endl;
-      std::cout << "Shader Attribute vTexCoord: " << tLoc << std::endl;
-
-      assert(vLoc == tLib::VertexAttribute);
-      assert(nLoc == tLib::NormalAttribute);
-      assert(tLoc == tLib::TexCoordAttribute);
-    #endif
-
-      _locMatMVP     = glGetUniformLocation(_programShaderId,"mMVP");     
-      if (_locMatMVP < 0)
-      {
-        std::cout << "Failed to locate MVPMatrix\n";
-        rc = -1;
-      }
-
-      _locMatMV     = glGetUniformLocation(_programShaderId,"mMV");     
-      if (_locMatMV < 0)
-      {
-       std::cout << "Failed to locate ModelView Matrix\n";
- //       rc = -1;
-      }
-
-      _locMatN     = glGetUniformLocation(_programShaderId,"mN");     
-      if (_locMatN < 0)
-      {
-        std::cout << "Failed to locate Normal Matrix\n";
- //       rc = -1;
-      }  
-
-      _locTexSampler     = glGetUniformLocation(_programShaderId,"texSampler");     
-      if (_locTexSampler < 0)
-      {
-        std::cout << "Failed to locate Tex Sampler\n";
-        rc = -1;
-      } 
-
-      _locLightPosition     = glGetUniformLocation(_programShaderId,"lightPosition");     
-      if (_locLightPosition < 0)
-      {
-        std::cout << "Failed to locate Light Position\n";
-        rc = -1;
-      } 
-
-      _locLightAmbient     = glGetUniformLocation(_programShaderId,"lightAmbient");     
-      if (_locLightAmbient < 0)
-      {
-        std::cout << "Failed to locate Ambient Light\n";
-        rc = -1;
-      } 
-
-      _locLightDiffuse     = glGetUniformLocation(_programShaderId,"lightDiffuse");     
-      if (_locLightDiffuse < 0)
-      {
-        std::cout << "Failed to locate Diffuse Light\n";
-        rc = -1;
-      } 
-
-      _locLightSpecular     = glGetUniformLocation(_programShaderId,"lightSpecular");     
-      if (_locLightSpecular < 0)
-      {
-        std::cout << "Failed to locate Specular Light\n";
-        rc = -1;
-      } 
-
-      _locCameraPosition     = glGetUniformLocation(_programShaderId,"cameraPosition");     
-      if (_locCameraPosition < 0)
-      {
-        std::cout << "Failed to locate Camera Position\n";
-        rc = -1;
-      } 
-    }
-
-    if (rc == 0)
-    {
-      glUseProgram(_programShaderId);
-    }      
   }
-
-  std::cout << "End Shader Program Creation" << std::endl;
 
   return rc;
 }
@@ -409,23 +318,14 @@ int rc = -1;
 //---------------------------------------------------------------------
 // Shader
 //---------------------------------------------------------------------
-Shader::Shader(void) : _sName("Unknown"),
-                       _vertexShaderLst(),
-                       _geometryShaderLst(),
-                       _fragmentShaderLst(),
-                       _programShaderId(0),
-                       _vertexShaderId(0),                                             
-                       _geometryShaderId(0),
-                       _fragmentShaderId(0),
-                       _locMatMVP(-1),
-                       _locMatMV(-1),
-                       _locMatN(-1),
-                       _locTexSampler(-1),
-                       _locLightPosition(-1),
-                       _locLightAmbient(-1),
-                       _locLightDiffuse(-1),
-                       _locLightSpecular(-1),
-                       _locCameraPosition(-1)
+Shader::Shader(const char *pName) : _sName(pName),
+                                    _vertexShaderLst(),
+                                    _geometryShaderLst(),
+                                    _fragmentShaderLst(),
+                                    _programShaderId(0),
+                                    _vertexShaderId(0),                                             
+                                    _geometryShaderId(0),
+                                    _fragmentShaderId(0)
 {
 }
 

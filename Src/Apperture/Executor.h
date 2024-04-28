@@ -22,91 +22,86 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
+// Executor.h
 // Thomas Burnett
-// Node.h
 
 #pragma once
 
+#include "RenderGL/Def.h"
+
 //---------------------------------------------------------------------
 // Includes
-#include <string>
+// System
+#include <filesystem>
 #include <vector>
-#include <ostream>
+
+// 3rdPartyLibs
+#include <GLFW/glfw3.h>
 
 // LightField
-#include "RenderGL/Mesh.h"
-#include "RenderGL/Bound.h"
-#include "Core/Camera.h"
+#include "Core/ImgSet.h"
+#include "RenderGL/VtxLst.h"
+#include "RenderGL/Texture.h"
+#include "RenderGL/VtxArrayObj.h"
+#include "RenderGL/BasicShader.h"
 //---------------------------------------------------------------------
-
 
 
 //---------------------------------------------------------------------
 // Classes
 namespace Lf
 {
-  namespace RenderGL
+  namespace Apperture
   {
-    class Node : public Bound
+    class Executor
     {
-      friend class Model;
-
-      // Definitions
+      // Defines
       private:
       protected:
-        typedef   std::vector<Mesh *>      MeshLst;
-        typedef   std::vector<Node *>      NodeList;
       public:
-    
 
       // Members
       private:
       protected:
-        std::string   _sName;
+        GLFWwindow                *_pWindow;
+        glm::ivec2                _wS;
+        
+        cv::Mat                   _img;
+        glm::ivec2                _nI;
+        glm::ivec2                _iS;
 
-        glm::mat4     _mT;  // transform matrix
+        RenderGL::BasicShader     *_pShader;
+        RenderGL::VtxArrayObj     _vao;
+        RenderGL::Texture         _tex;
 
-        MeshLst       _meshLst;
-        NodeList      _nodeLst;
-      public:
-
+      public:   
+        Core::ImgSet              _imgSet;
 
       // Methods
       private:
       protected:
-        void printMatrix(std::ostream &s,std::string idt,const char *str,const glm::mat4 &m);
+        float map(float x,float in_min,float in_max,float out_min,float out_max)
+        { return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min; }
+
+
+        void GLInfo(void);
+
+        int         initGLFW    (void);
+        int         initGraphics(void);
+        GLFWwindow  *initWindow (const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
+
+        void motionUpdate(GLFWwindow *pW);
 
       public:
-        const glm::mat4 &transform(void) const
-        { return _mT; }
 
-        void  setName(const char *name)
-        { _sName = name; }
+        int   init(const char *pDir);
+        int   exec(void);
+        void  destroy(void);
 
-        void  setTransformMatrix(glm::mat4 mT)
-        { _mT  = mT; }
-
-        void  addNode(Node *pN)
-        { _nodeLst.push_back(pN); }
-
-        void  addMesh(Mesh *pM)
-        { 
-          bound(pM->vMin(),pM->vMax());
-          _meshLst.push_back(pM); 
-        }
-
-  //      void cullFrustum(const glm::mat4 &mView,const Control &control);
-
-        void  print(std::ostream &s,std::string idt);
-
-        void  render(const Core::Camera *pCamera,const PhongShader *pShader,const glm::mat4 &mT);
-
-        Node(void);
-        ~Node();
+        Executor(void);
+        ~Executor();
     };
   };
 };
 //---------------------------------------------------------------------
-
-
 
