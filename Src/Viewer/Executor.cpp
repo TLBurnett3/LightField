@@ -176,8 +176,6 @@ glm::vec2   vA(_vA);
 
   glEnable(GL_CULL_FACE);
   glEnable(GL_TEXTURE_2D);
-  glActiveTexture(GL_TEXTURE0);
-  glDisable(GL_LIGHTING);
   glCullFace(GL_BACK);
   glClearColor(0.25f,0.25f,0.25f,0);
 
@@ -187,14 +185,11 @@ glm::vec2   vA(_vA);
 
     glViewport(0,0,_wS.x,_wS.y);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(glm::value_ptr(mP));
-
     mM = glm::rotate(mV,glm::radians(_vA.y),glm::vec3(1,0,0));    
     mM = glm::rotate(mM,glm::radians(_vA.x),glm::vec3(0,0,1));
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixf(glm::value_ptr(mM));
+    _pShader->use();
+    _pShader->bindMVP(mP * mM);
 
     if ((vA != _vA) || _pRadImage->isRunning())
     {
@@ -211,14 +206,7 @@ glm::vec2   vA(_vA);
     }
 
     _tex.bind();
-
-    glBegin(GL_TRIANGLE_STRIP);
-      for (size_t i = 0;i < _quad._vtxLst.size();i++)
-      {
-        glTexCoord2f(_quad._vtxLst[i]._T.x,_quad._vtxLst[i]._T.y);
-        glVertex3f(_quad._vtxLst[i]._V.x,_quad._vtxLst[i]._V.y,_quad._vtxLst[i]._V.z);
-      }
-    glEnd();
+    _vao.render();
 
     glfwSwapBuffers(_pWindow);
     glfwPollEvents();
@@ -373,32 +361,44 @@ int rc = -1;
 //---------------------------------------------------------------------
 int Executor::initGraphics(const float fov)
 {
-int               rc = 0;
-glm::ivec2        vS = _pRadImage->viewSize();
-glm::ivec2        nV = _pRadImage->numViews();
-cv::Mat           img;
+int                 rc = 0;
 
-  _fov = fov;
+  _pShader = new RenderGL::BasicShader("Basic");
+  _pShader->addVertexShader  ("./Shaders/Default3D.vtx");
+  _pShader->addFragmentShader("./Shaders/Default3D.frg");
+  rc = _pShader->compile();  
 
-  _dC = glm::max(vS.x,vS.y) * 1.25f;
-
-  _quad.createQuadXZ(glm::vec3(0),glm::vec2(vS));
-
-  _pRadImage->fetchView((nV >> 1),img);
-
-  _tex.upload(img);
-
-  // determine maximum rotation for correct viewing
+  if (rc == 0)
   {
-  glm::vec2 hH = vS >> 1;
-  float     hA = _fov * 0.5f;
-  glm::vec2 o  = glm::sin(glm::radians(hA)) * hH;
-  glm::vec2 B  = glm::degrees(glm::asin(o / glm::vec2(_dC)));
-  glm::vec2 C  = glm::vec2(180) - B - hA;
-  glm::vec2 X  = glm::vec2(180) - C;
+  glm::ivec2          vS = _pRadImage->viewSize();
+  glm::ivec2          nV = _pRadImage->numViews();
+  cv::Mat             img;
+  int                 mode;
+  RenderGL::VtxVNTLst quad;
 
-    _vRMax = (glm::vec2(90) - X);
-    _vRInc = _vRMax / glm::vec2(nV >> 1);
+    _fov = fov;
+
+    _dC = glm::max(vS.x,vS.y) * 1.25f;
+
+    mode = quad.createQuadXZ(glm::vec3(0),glm::vec2(vS));
+
+    _pRadImage->fetchView((nV >> 1),img);
+
+    _tex.upload(img);
+    _vao.upload(quad,mode);
+
+    // determine maximum rotation for correct viewing
+    {
+    glm::vec2 hH = vS >> 1;
+    float     hA = _fov * 0.5f;
+    glm::vec2 o  = glm::sin(glm::radians(hA)) * hH;
+    glm::vec2 B  = glm::degrees(glm::asin(o / glm::vec2(_dC)));
+    glm::vec2 C  = glm::vec2(180) - B - hA;
+    glm::vec2 X  = glm::vec2(180) - C;
+
+      _vRMax = (glm::vec2(90) - X);
+      _vRInc = _vRMax / glm::vec2(nV >> 1);
+    }
   }
 
   return rc;
@@ -464,7 +464,8 @@ Executor::Executor(void) : _pWindow(0),
                            _fov(90.0f),
                            _dC(0),
                            _vRMax(0),
-                           _quad(),
+                           _pShader(0),
+                           _vao(),
                            _tex()
 {
 }
@@ -475,5 +476,6 @@ Executor::Executor(void) : _pWindow(0),
 //---------------------------------------------------------------------
 Executor::~Executor()
 {
+  delete _pShader;
 }
 

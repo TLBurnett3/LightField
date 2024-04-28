@@ -42,6 +42,8 @@
 #include "Viewer/RadImage.h"
 #include "RenderGL/VtxLst.h"
 #include "RenderGL/Texture.h"
+#include "RenderGL/VtxArrayObj.h"
+#include "RenderGL/BasicShader.h"
 //---------------------------------------------------------------------
 
 
@@ -71,8 +73,9 @@ namespace Lf
         glm::vec2                 _vRMax;
         glm::vec2                 _vRInc;
 
-        RenderGL::VtxVNTLst         _quad;
-        RenderGL::Texture           _tex;
+        RenderGL::BasicShader     *_pShader;
+        RenderGL::VtxArrayObj     _vao;
+        RenderGL::Texture         _tex;
 
       public:   
 
