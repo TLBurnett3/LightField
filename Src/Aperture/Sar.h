@@ -57,6 +57,7 @@ namespace Lf
       private:
       protected:
         std::string   _sName;
+        float         _aP;
       public:   
 
       // Methods
@@ -66,6 +67,9 @@ namespace Lf
 
         std::string name(void)
         { return _sName; }
+
+        void setAperture(float a)
+        { _aP = a; }
 
         virtual void render(RenderGL::Texture &mctex,RenderGL::VtxArrayObj &vao) = 0;
   

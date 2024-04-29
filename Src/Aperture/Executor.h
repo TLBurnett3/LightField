@@ -89,6 +89,8 @@ namespace Lf
         SarLst                    _sarLst;
         uint32_t                  _sarIdx;
 
+        float                     _aP;
+
       public:   
 
       // Methods
@@ -96,7 +98,6 @@ namespace Lf
       protected:
         float map(float x,float in_min,float in_max,float out_min,float out_max)
         { return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min; }
-
 
         void GLInfo(void);
 
@@ -116,6 +117,10 @@ namespace Lf
 
           std::cout << "Switched to: " << _sarLst[_sarIdx]->name() << std::endl;
         }
+
+        void  incAperture(const float a)
+        { _aP = glm::clamp(_aP + a,0.0f,1.0f); }
+
             
         int   init(const char *pDir);
         int   exec(void);

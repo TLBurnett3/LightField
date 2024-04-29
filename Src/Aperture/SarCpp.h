@@ -56,19 +56,22 @@ namespace Lf
       private:
       protected:
       public:   
-        cv::Mat     _img;
-        glm::ivec2  _nI;
-        glm::ivec2  _iS;
-        float       _aP;
+        cv::Mat             _mcImg;
+
+        cv::Mat             _sImg;
+        RenderGL::Texture   _sTex;
+
+        glm::ivec2          _nI;
+        glm::ivec2          _iS;
 
       // Methods
       private:
       protected:
-      public:
+      public:   
 
         virtual void render(RenderGL::Texture &mctex,RenderGL::VtxArrayObj &vao);
 
-        virtual int init(const glm::ivec2 &nI,const glm::ivec2 &iS,const float aP);
+        virtual int init(cv::Mat &mcImg,const glm::ivec2 &nI,const glm::ivec2 &iS);
   
         SarCpp(void);
        ~SarCpp();

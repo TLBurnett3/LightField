@@ -88,7 +88,15 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
           pE->setSarIdx(skey);
         }
         break;
-  
+
+      case GLFW_KEY_PAGE_UP:
+        pE->incAperture(0.1);
+        break;
+
+      case GLFW_KEY_PAGE_DOWN:
+        pE->incAperture(-0.1);
+        break;
+
       case GLFW_KEY_HOME:
       case GLFW_KEY_BACKSPACE:
         break;
@@ -132,6 +140,7 @@ glm::mat4   mMV     = mV * mM;
   {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    _sarLst[_sarIdx]->setAperture(_aP);
     _sarLst[_sarIdx]->render(_mctex,_vao);
 
     glfwSwapBuffers(_pWindow);
@@ -333,7 +342,7 @@ int Executor::initSarCpp(void)
 int rc  = 0;
 SarCpp *pS = new SarCpp();
 
-  pS->init(_nI,_iS,_imgSet.apperture());
+  pS->init(_mcImg,_nI,_iS);
   _sarLst[SAR_CPP] = pS;
   
   return rc;
@@ -413,8 +422,8 @@ Executor::Executor(void) : _pWindow(0),
                            _vao(),
                            _mctex(),
                            _sarLst(),
-                           _sarIdx(SAR_NONE)
-
+                           _sarIdx(SAR_NONE),
+                           _aP(0)
 {
 }
 
