@@ -22,80 +22,90 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// ImgSet.h
+// SarCpp.cpp 
 // Thomas Burnett
-
-#pragma once
 
 
 //---------------------------------------------------------------------
 // Includes
 // System
-#include <memory>
-#include <queue>
-#include <filesystem>
 
 // 3rdPartyLibs
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <glm/glm.hpp>
 
 // LightField
-#include "Core/Export.h"
-#include "Core/Thread.h"
+#include "Aperture/SarCpp.h"
+
+using namespace Lf;
+using namespace Aperture;
 //---------------------------------------------------------------------
 
 
+
 //---------------------------------------------------------------------
-// Classes
-namespace Lf
+// render
+//---------------------------------------------------------------------
+void SarCpp::render(RenderGL::Texture &mctex,RenderGL::VtxArrayObj &vao)
 {
-  namespace Core
+cv::Scalar clr(0.0f,0.0f,0.0f);
+glm::ivec2 oI(0);
+glm::ivec2 bI(0);
+glm::ivec2 eI(0);
+glm::ivec2 iI(0);
+
+  for (oI.y = 0;oI.y < _iS.y;oI.y++)
   {
-    class ImgSet 
+    for (oI.x = 0;oI.x < _iS.x;oI.x++)
     {
-      // Defines
-      private:
-      protected:
-        typedef struct ImgData_Def
+    glm::vec2   fx = glm::vec2(oI) / glm::vec2(_iS);
+    glm::ivec2  aR = glm::vec2(_nI >> 1) * _aP;
+
+      for (iI.y = bI.y;iI.y < eI.y;iI.y++)
+      {
+        for (iI.x = bI.x;iI.x < eI.x;iI.x++)
         {
-          glm::ivec2  _iNum;
-          glm::vec2   _iLoc;
-          cv::Mat     _img;
-        } ImgData;
+        }
+      }
+    }
+  }
 
-        typedef std::vector<ImgData>  ISet;
+  _img.setTo(clr);
+}
 
-      public:
 
-      // Members
-      private:
-      protected:
-        ISet        _imgSet;
-        glm::ivec2  _nI;
-        glm::ivec2  _iS;
-        float       _aP;
-
-      public:   
-
-      // Methods
-      private:
-      protected:
-
-      public:
-        EXPORT float apperture(void)
-        { return _aP; }
-
-        EXPORT int createPlenopticImage(cv::Mat &img,glm::ivec2 &nH,glm::ivec2 &hS);
-
-        EXPORT int fitSize(const glm::ivec2 &mS);
-
-        EXPORT int load(const std::filesystem::path &dPath); 
-         
-        EXPORT ImgSet(void);
-        EXPORT ~ImgSet();
-    };
-  };
-};
 //---------------------------------------------------------------------
+// CppCodinite
+//---------------------------------------------------------------------
+int SarCpp::init(const glm::ivec2 &nI,const glm::ivec2 &iS,const float aP)
+{
+int   rc = 0;
+
+  _img.create(iS.y,iS.x,CV_32FC3);
+  _nI = nI;
+  _iS = iS;
+  _aP = aP;
+
+  return rc;
+}
+
+
+
+//---------------------------------------------------------------------
+// SarCpp
+//---------------------------------------------------------------------
+SarCpp::SarCpp(void) : Sar("SarCpp"),
+                         _img(),
+                         _nI(0),
+                         _iS(0),
+                         _aP(0)
+{
+}
+
+
+//---------------------------------------------------------------------
+// ~SarCpp
+//---------------------------------------------------------------------
+SarCpp::~SarCpp()
+{
+
+}
 

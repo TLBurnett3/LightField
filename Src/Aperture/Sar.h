@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// ImgSet.h
+// Sar.h
 // Thomas Burnett
 
 #pragma once
@@ -31,18 +31,12 @@
 //---------------------------------------------------------------------
 // Includes
 // System
-#include <memory>
-#include <queue>
-#include <filesystem>
 
 // 3rdPartyLibs
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <glm/glm.hpp>
 
 // LightField
-#include "Core/Export.h"
-#include "Core/Thread.h"
+#include "RenderGL/Texture.h"
+#include "RenderGL/VtxArrayObj.h"
 //---------------------------------------------------------------------
 
 
@@ -50,50 +44,33 @@
 // Classes
 namespace Lf
 {
-  namespace Core
+  namespace Aperture
   {
-    class ImgSet 
+    class Sar
     {
       // Defines
       private:
       protected:
-        typedef struct ImgData_Def
-        {
-          glm::ivec2  _iNum;
-          glm::vec2   _iLoc;
-          cv::Mat     _img;
-        } ImgData;
-
-        typedef std::vector<ImgData>  ISet;
-
       public:
 
       // Members
       private:
       protected:
-        ISet        _imgSet;
-        glm::ivec2  _nI;
-        glm::ivec2  _iS;
-        float       _aP;
-
+        std::string   _sName;
       public:   
 
       // Methods
       private:
       protected:
-
       public:
-        EXPORT float apperture(void)
-        { return _aP; }
 
-        EXPORT int createPlenopticImage(cv::Mat &img,glm::ivec2 &nH,glm::ivec2 &hS);
+        std::string name(void)
+        { return _sName; }
 
-        EXPORT int fitSize(const glm::ivec2 &mS);
-
-        EXPORT int load(const std::filesystem::path &dPath); 
-         
-        EXPORT ImgSet(void);
-        EXPORT ~ImgSet();
+        virtual void render(RenderGL::Texture &mctex,RenderGL::VtxArrayObj &vao) = 0;
+  
+        Sar(const char *pName);
+        virtual ~Sar();
     };
   };
 };

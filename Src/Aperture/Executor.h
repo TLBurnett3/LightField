@@ -44,6 +44,8 @@
 #include "RenderGL/Texture.h"
 #include "RenderGL/VtxArrayObj.h"
 #include "RenderGL/BasicShader.h"
+#include "Aperture/Sar.h"
+
 //---------------------------------------------------------------------
 
 
@@ -51,13 +53,21 @@
 // Classes
 namespace Lf
 {
-  namespace Apperture
+  namespace Aperture
   {
     class Executor
     {
       // Defines
       private:
       protected:
+        typedef std::vector<Sar *>  SarLst;
+
+        enum
+        {
+          SAR_NONE = 0,
+          SAR_CPP,
+          SAR_MAX
+        };
       public:
 
       // Members
@@ -65,17 +75,21 @@ namespace Lf
       protected:
         GLFWwindow                *_pWindow;
         glm::ivec2                _wS;
+
+        Core::ImgSet              _imgSet;
         
-        cv::Mat                   _img;
+        cv::Mat                   _mcImg;
         glm::ivec2                _nI;
         glm::ivec2                _iS;
 
         RenderGL::BasicShader     *_pShader;
         RenderGL::VtxArrayObj     _vao;
-        RenderGL::Texture         _tex;
+        RenderGL::Texture         _mctex;
+
+        SarLst                    _sarLst;
+        uint32_t                  _sarIdx;
 
       public:   
-        Core::ImgSet              _imgSet;
 
       // Methods
       private:
@@ -92,8 +106,17 @@ namespace Lf
 
         void motionUpdate(GLFWwindow *pW);
 
-      public:
+        int initSarNone (void);
+        int initSarCpp  (void);
 
+      public:
+        void  setSarIdx(const uint32_t i)
+        { 
+          _sarIdx = (i >= SAR_MAX) ? 0 : i;  
+
+          std::cout << "Switched to: " << _sarLst[_sarIdx]->name() << std::endl;
+        }
+            
         int   init(const char *pDir);
         int   exec(void);
         void  destroy(void);

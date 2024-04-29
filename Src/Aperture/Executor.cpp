@@ -37,11 +37,18 @@
 #include <glm/ext.hpp>
 
 // LightField
-#include "Apperture/Executor.h"
+#include "Aperture/Executor.h"
 #include "Core/Timer.h"
+#include "Aperture/SarNone.h"
+#include "Aperture/SarCpp.h"
 
 using namespace Lf;
-using namespace Apperture;
+using namespace Aperture;
+//---------------------------------------------------------------------
+
+
+//---------------------------------------------------------------------
+// https://graphics.stanford.edu/~vaibhav/pubs/thesis.pdf
 //---------------------------------------------------------------------
 
 
@@ -65,10 +72,23 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
 {
   if (action == GLFW_RELEASE)
   {
-  Apperture::Executor *pE = (Apperture::Executor *)glfwGetWindowUserPointer(pW);
+  Aperture::Executor *pE = (Aperture::Executor *)glfwGetWindowUserPointer(pW);
 
     switch (key)
-    {      
+    {    
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+        {
+        uint32_t skey = key - '0';
+        
+          pE->setSarIdx(skey);
+        }
+        break;
+  
       case GLFW_KEY_HOME:
       case GLFW_KEY_BACKSPACE:
         break;
@@ -112,10 +132,7 @@ glm::mat4   mMV     = mV * mM;
   {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    {
-      _tex.bind();
-      _vao.render();
-    }
+    _sarLst[_sarIdx]->render(_mctex,_vao);
 
     glfwSwapBuffers(_pWindow);
     glfwPollEvents();
@@ -283,10 +300,41 @@ int  rc = 0;
     mode = quad.createQuadXZ(glm::vec3(0),glm::vec2(_wS));
 
     _vao.upload(quad,mode);
-    _tex.upload(_img);
+    _mctex.upload(_mcImg);
 
     glfwSetWindowSize(_pWindow,_wS.x,_wS.y);
   }
+  
+  return rc;
+}
+
+
+
+//---------------------------------------------------------------------
+// initSarNone
+//---------------------------------------------------------------------
+int Executor::initSarNone(void)
+{
+int rc  = 0;
+SarNone *pS = new SarNone();
+
+  pS->init();
+  _sarLst[SAR_NONE] = pS;
+  
+  return rc;
+}
+
+
+//---------------------------------------------------------------------
+// initSarCpp
+//---------------------------------------------------------------------
+int Executor::initSarCpp(void)
+{
+int rc  = 0;
+SarCpp *pS = new SarCpp();
+
+  pS->init(_nI,_iS,_imgSet.apperture());
+  _sarLst[SAR_CPP] = pS;
   
   return rc;
 }
@@ -314,13 +362,21 @@ int rc  = 0;
   }
 
   if (rc == 0)
-    rc = _imgSet.createPlenopticImage(_img,_nI,_iS);
+    rc = _imgSet.createPlenopticImage(_mcImg,_nI,_iS);
 
-//  if (rc == 0)
- //   cv::imwrite("Crapola.png",_img);
+  if (rc == 0)
+    cv::imwrite("SarImage.png",_mcImg);
 
   if (rc == 0)
     rc = initGraphics();
+
+  _sarLst.resize(SAR_MAX);
+  
+  if (rc == 0)
+    rc = initSarNone();
+
+  if (rc == 0)
+    rc = initSarCpp();
 
   return rc;
 }
@@ -331,6 +387,12 @@ int rc  = 0;
 //---------------------------------------------------------------------
 void Executor::destroy(void) 
 {
+  while (!_sarLst.empty())
+  {
+    delete _sarLst.back();
+    _sarLst.pop_back();
+  }
+
   if (_pWindow)
     glfwDestroyWindow(_pWindow);
 
@@ -344,11 +406,15 @@ void Executor::destroy(void)
 Executor::Executor(void) : _pWindow(0),
                            _wS(2048),
                            _imgSet(),
+                           _mcImg(),                         
                            _nI(0),
                            _iS(0),
                            _pShader(0),
                            _vao(),
-                           _tex()
+                           _mctex(),
+                           _sarLst(),
+                           _sarIdx(SAR_NONE)
+
 {
 }
 

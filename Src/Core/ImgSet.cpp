@@ -212,7 +212,7 @@ glm::vec2   aMax(-FLT_MAX);
   _aP = glm::max(aMax.y - aMin.y,aMax.x - aMin.x);
 
   std::cout << "Num Images: " << _nI.y << "," << _nI.x << std::endl;
-  std::cout << " Apperture: " << _aP << std::endl;
+  std::cout << " Aperture: " << _aP << std::endl;
 
   return rc;
 }

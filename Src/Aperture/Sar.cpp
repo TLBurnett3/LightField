@@ -22,80 +22,37 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// ImgSet.h
+// Sar.cpp 
 // Thomas Burnett
-
-#pragma once
 
 
 //---------------------------------------------------------------------
 // Includes
 // System
-#include <memory>
-#include <queue>
-#include <filesystem>
 
 // 3rdPartyLibs
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <glm/glm.hpp>
 
 // LightField
-#include "Core/Export.h"
-#include "Core/Thread.h"
+#include "Aperture/Sar.h"
+
+using namespace Lf;
+using namespace Aperture;
 //---------------------------------------------------------------------
 
 
 //---------------------------------------------------------------------
-// Classes
-namespace Lf
+// Sar
+//---------------------------------------------------------------------
+Sar::Sar(const char *pName) : _sName(pName)
 {
-  namespace Core
-  {
-    class ImgSet 
-    {
-      // Defines
-      private:
-      protected:
-        typedef struct ImgData_Def
-        {
-          glm::ivec2  _iNum;
-          glm::vec2   _iLoc;
-          cv::Mat     _img;
-        } ImgData;
+}
 
-        typedef std::vector<ImgData>  ISet;
 
-      public:
-
-      // Members
-      private:
-      protected:
-        ISet        _imgSet;
-        glm::ivec2  _nI;
-        glm::ivec2  _iS;
-        float       _aP;
-
-      public:   
-
-      // Methods
-      private:
-      protected:
-
-      public:
-        EXPORT float apperture(void)
-        { return _aP; }
-
-        EXPORT int createPlenopticImage(cv::Mat &img,glm::ivec2 &nH,glm::ivec2 &hS);
-
-        EXPORT int fitSize(const glm::ivec2 &mS);
-
-        EXPORT int load(const std::filesystem::path &dPath); 
-         
-        EXPORT ImgSet(void);
-        EXPORT ~ImgSet();
-    };
-  };
-};
 //---------------------------------------------------------------------
+// ~Sar
+//---------------------------------------------------------------------
+Sar::~Sar()
+{
+
+}
 

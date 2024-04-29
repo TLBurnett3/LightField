@@ -1,7 +1,7 @@
 
 cmake_minimum_required (VERSION 3.6)
 
-project(Apperture)
+project(Aperture)
 
 include_directories(${CMAKE_INCLUDE_PATH})
 include_directories(${3RDPARTY_INC_DIR})
@@ -11,10 +11,16 @@ link_directories(${CMAKE_LIBRARY_PATH})
 
 set(HEADERS
   Executor.h
+  Sar.h 
+  SarNone.h   
+  SarCpp.h 
 )
 
 set(SOURCE
   Executor.cpp
+  Sar.cpp 
+  SarNone.cpp
+  SarCpp.cpp
   Main.cpp
 )
 

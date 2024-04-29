@@ -22,51 +22,61 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
+// SarNone.cpp 
 // Thomas Burnett
-// Main.cpp 
+
 
 //---------------------------------------------------------------------
 // Includes
-#include <string>
-#include <iostream>
+// System
 
-// 3rd Party Libs
+// 3rdPartyLibs
 
 // LightField
-#include "Apperture/Executor.h"
+#include "Aperture/SarNone.h"
+
+using namespace Lf;
+using namespace Aperture;
 //---------------------------------------------------------------------
 
 
+
 //---------------------------------------------------------------------
-// main
+// render
 //---------------------------------------------------------------------
-int main(int argc,char *argv[])
+void SarNone::render(RenderGL::Texture &mctex,RenderGL::VtxArrayObj &vao)
 {
-int                      rc  = 0;
-char                     *p  = 0;
-Lf::Apperture::Executor  e;
+  mctex.bind();
+  vao.render();
+}
 
-  std::cout << "Usage: LfCar <path to .png files>\n";
 
-  if (argc > 1)
-    p = argv[1];
-  
-  std::cout << "LfCar Initialization" << std::endl;
-  if (p)
-    std::cout << "Png Path: " << p << std::endl;
+//---------------------------------------------------------------------
+// SarNone
+//---------------------------------------------------------------------
+int SarNone::init(void)
+{
+int   rc = 0;
 
-  if (p)
-  {
-    rc = e.init(p);
-
-    if (rc == 0)
-      rc = e.exec();
-
-    e.destroy();
-  }
-
-  std::cout << "LfCar Exit: RC " << rc << std::endl;
 
   return rc;
+}
+
+
+
+//---------------------------------------------------------------------
+// SarNone
+//---------------------------------------------------------------------
+SarNone::SarNone(void) : Sar("SarNone")
+{
+}
+
+
+//---------------------------------------------------------------------
+// ~SarNone
+//---------------------------------------------------------------------
+SarNone::~SarNone()
+{
+
 }
 

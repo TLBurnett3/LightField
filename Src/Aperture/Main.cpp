@@ -22,80 +22,51 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// ImgSet.h
 // Thomas Burnett
-
-#pragma once
-
+// Main.cpp 
 
 //---------------------------------------------------------------------
 // Includes
-// System
-#include <memory>
-#include <queue>
-#include <filesystem>
+#include <string>
+#include <iostream>
 
-// 3rdPartyLibs
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <glm/glm.hpp>
+// 3rd Party Libs
 
 // LightField
-#include "Core/Export.h"
-#include "Core/Thread.h"
+#include "Aperture/Executor.h"
 //---------------------------------------------------------------------
 
 
 //---------------------------------------------------------------------
-// Classes
-namespace Lf
+// main
+//---------------------------------------------------------------------
+int main(int argc,char *argv[])
 {
-  namespace Core
+int                      rc  = 0;
+char                     *p  = 0;
+Lf::Aperture::Executor  e;
+
+  std::cout << "Usage: LfCar <path to .png files>\n";
+
+  if (argc > 1)
+    p = argv[1];
+  
+  std::cout << "LfCar Initialization" << std::endl;
+  if (p)
+    std::cout << "Png Path: " << p << std::endl;
+
+  if (p)
   {
-    class ImgSet 
-    {
-      // Defines
-      private:
-      protected:
-        typedef struct ImgData_Def
-        {
-          glm::ivec2  _iNum;
-          glm::vec2   _iLoc;
-          cv::Mat     _img;
-        } ImgData;
+    rc = e.init(p);
 
-        typedef std::vector<ImgData>  ISet;
+    if (rc == 0)
+      rc = e.exec();
 
-      public:
+    e.destroy();
+  }
 
-      // Members
-      private:
-      protected:
-        ISet        _imgSet;
-        glm::ivec2  _nI;
-        glm::ivec2  _iS;
-        float       _aP;
+  std::cout << "LfCar Exit: RC " << rc << std::endl;
 
-      public:   
-
-      // Methods
-      private:
-      protected:
-
-      public:
-        EXPORT float apperture(void)
-        { return _aP; }
-
-        EXPORT int createPlenopticImage(cv::Mat &img,glm::ivec2 &nH,glm::ivec2 &hS);
-
-        EXPORT int fitSize(const glm::ivec2 &mS);
-
-        EXPORT int load(const std::filesystem::path &dPath); 
-         
-        EXPORT ImgSet(void);
-        EXPORT ~ImgSet();
-    };
-  };
-};
-//---------------------------------------------------------------------
+  return rc;
+}
 
