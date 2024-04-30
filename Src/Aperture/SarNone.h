@@ -62,7 +62,7 @@ namespace Lf
       protected:
       public:
 
-        virtual void render(RenderGL::Texture &mctex,RenderGL::VtxArrayObj &vao);
+        virtual void render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
 
         virtual int init(void);
   

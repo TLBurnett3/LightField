@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Sar.h
+// SarCV.h
 // Thomas Burnett
 
 #pragma once
@@ -35,8 +35,8 @@
 // 3rdPartyLibs
 
 // LightField
-#include "RenderGL/Texture.h"
-#include "RenderGL/VtxArrayObj.h"
+#include "Aperture/Sar.h"
+#include "Core/ImgSet.h"
 //---------------------------------------------------------------------
 
 
@@ -46,45 +46,37 @@ namespace Lf
 {
   namespace Aperture
   {
-    class Sar
+    class SarCV : public Sar
     {
       // Defines
       private:
       protected:
-        typedef std::vector<glm::mat4>  MatrixLst;
-
+        typedef std::vector<cv::Mat>  ImgLst;
       public:
 
       // Members
       private:
       protected:
-        std::string     _sName;
-        float           _aP;
-        glm::ivec2      _iIdx;
-        const MatrixLst *_pMHLst;
       public:   
+        ImgLst              _imgLst;
+
+        cv::Mat             _dImg;
+        RenderGL::Texture   _dTex;
+
+        glm::ivec2          _nI;
+        glm::ivec2          _iS;
 
       // Methods
       private:
       protected:
-      public:
+      public:   
 
-        std::string name(void)
-        { return _sName; }
+        virtual void render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
 
-        void setAperture(float a)
-        { _aP = a; }
-
-        void setSubImageIdx(const glm::ivec2 &iIdx)
-        { _iIdx = iIdx; }
-
-        void setHomographies(const MatrixLst *pHMLst)
-        { _pMHLst = pHMLst; }
-
-        virtual void render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao) = 0;
+        virtual int init(Core::ImgSet &imgSet,const glm::ivec2 &nI,const glm::ivec2 &iS);
   
-        Sar(const char *pName);
-        virtual ~Sar();
+        SarCV(void);
+       ~SarCV();
     };
   };
 };

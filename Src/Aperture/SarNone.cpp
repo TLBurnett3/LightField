@@ -44,15 +44,15 @@ using namespace Aperture;
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void SarNone::render(RenderGL::Texture &mctex,RenderGL::VtxArrayObj &vao)
+void SarNone::render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao)
 {
-  mctex.bind();
+  mcTex.bind();
   vao.render();
 }
 
 
 //---------------------------------------------------------------------
-// SarNone
+// init
 //---------------------------------------------------------------------
 int SarNone::init(void)
 {

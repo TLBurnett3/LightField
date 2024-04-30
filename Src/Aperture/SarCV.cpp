@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// SarCpp.cpp 
+// SarCV.cpp 
 // Thomas Burnett
 
 
@@ -33,7 +33,7 @@
 // 3rdPartyLibs
 
 // LightField
-#include "Aperture/SarCpp.h"
+#include "Aperture/SarCV.h"
 
 using namespace Lf;
 using namespace Aperture;
@@ -43,61 +43,45 @@ using namespace Aperture;
 
 //---------------------------------------------------------------------
 // render
-// Tries to mirror the GLSL version
 //---------------------------------------------------------------------
-void SarCpp::render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao)
+void SarCV::render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao)
 {
-uchar      *pD  = _dImg.data;
-glm::vec2  nP   = (_iS * _nI) - 1;
-glm::ivec2 aR   = glm::vec2(_nI >> 1) * _aP;
-glm::ivec2 bI   = _iIdx - aR;
-glm::ivec2 eI   = _iIdx + aR;
-glm::ivec2 oI(0);
-glm::ivec2 iI(0);
+cv::Mat     tImg(_iS.y,_iS.x,CV_32FC3,cv::Scalar(0,0,0));
+cv::Mat     wImg(_iS.y,_iS.x,CV_32FC3);
+cv::Mat     mH  (2,3,CV_32FC1);
+glm::ivec2  aR   = glm::vec2(_nI >> 1) * _aP;
+glm::ivec2  bI   = _iIdx - aR;
+glm::ivec2  eI   = _iIdx + aR;
+glm::ivec2  iI(0);
+float       n(0);
 
   bI = glm::clamp(bI,glm::ivec2(0),_nI - 1);
   eI = glm::clamp(eI,glm::ivec2(0),_nI - 1);
 
-  for (oI.y = 0;oI.y < _iS.y;oI.y++)
+  for (iI.y = bI.y;iI.y <= eI.y;iI.y++)
   {
-    for (oI.x = 0;oI.x < _iS.x;oI.x++)
+    for (iI.x = bI.x;iI.x <= eI.x;iI.x++)
     {
-    glm::vec2   fx = oI;
-    glm::vec3   clr(0.0f,0.0f,0.0f);
-    float       n(0);
-    cv::Vec3b   c;
+    int              i    = (iI.y * _nI.x) + iI.x;
+    const glm::mat4  *pMH = &((*_pMHLst)[i]);
 
-      for (iI.y = bI.y;iI.y <= eI.y;iI.y++)
-      {
-        for (iI.x = bI.x;iI.x <= eI.x;iI.x++)
-        {
-        int         i   = (iI.y * _nI.x) + iI.x;
-        glm::vec2   dx  = glm::vec2(iI) / glm::vec2(_nI); 
-        glm::vec4   tfx =  (*_pMHLst)[i] * glm::vec4(fx,0,1);
-        glm::vec2   lfx = glm::vec2(tfx);    
+      // remember, GLM/OpenGL matrices are column major
+      ((float *)mH.data)[0] =  (*pMH)[0][0]; 
+      ((float *)mH.data)[1] =  (*pMH)[1][0]; 
+      ((float *)mH.data)[2] = -(*pMH)[3][0];
+      ((float *)mH.data)[3] =  (*pMH)[0][1];  
+      ((float *)mH.data)[4] =  (*pMH)[1][1]; 
+      ((float *)mH.data)[5] = -(*pMH)[3][1];
 
-          lfx /= glm::vec2(_iS);
-          lfx /= glm::vec2(_nI);
-          dx   = glm::clamp(dx + lfx,glm::vec2(0),glm::vec2(1));  
-          dx  *= nP;                     
-          
-          c = _mcImg.at<cv::Vec3b>((uint32_t)dx.y,(uint32_t)dx.x);
-
-          clr.r += c[0];
-          clr.g += c[1];
-          clr.b += c[2];
-          n++;
-        }
-      }
-
-      clr /= n;
-
-      *(pD + 0) = (uint8_t)clr.r;
-      *(pD + 1) = (uint8_t)clr.g;
-      *(pD + 2) = (uint8_t)clr.b;
-      pD += 3;
+      cv::warpAffine(_imgLst[i],wImg,mH,wImg.size());
+      tImg += wImg;
+      n++;
     }
   }
+
+  tImg /= n;
+
+  tImg.convertTo(_dImg,CV_8UC3);
   
   _dTex.upload(_dImg);
   _dTex.bind();
@@ -109,11 +93,18 @@ glm::ivec2 iI(0);
 //---------------------------------------------------------------------
 // init
 //---------------------------------------------------------------------
-int SarCpp::init(cv::Mat &mcImg,const glm::ivec2 &nI,const glm::ivec2 &iS)
+int SarCV::init(Core::ImgSet &imgSet,const glm::ivec2 &nI,const glm::ivec2 &iS)
 {
-int   rc = 0;
+int     rc  = 0;
+size_t  n   = imgSet.size();
+  
+  for (size_t i = 0;i < n;i++)
+  {
+  cv::Mat tmp;
 
-  _mcImg = mcImg;
+    imgSet.get(i)->_img.convertTo(tmp,CV_32FC3);
+    _imgLst.push_back(tmp);
+  }
 
   _dImg.create(iS.y,iS.x,CV_8UC3);
   _nI = nI;
@@ -125,10 +116,10 @@ int   rc = 0;
 
 
 //---------------------------------------------------------------------
-// SarCpp
+// SarCV
 //---------------------------------------------------------------------
-SarCpp::SarCpp(void) : Sar("SarCpp"),
-                         _mcImg(),
+SarCV::SarCV(void) : Sar("SarCV"),
+                         _imgLst(),
                          _dImg(),
                          _dTex(),
                          _nI(0),
@@ -138,15 +129,11 @@ SarCpp::SarCpp(void) : Sar("SarCpp"),
 
 
 //---------------------------------------------------------------------
-// ~SarCpp
+// ~SarCV
 //---------------------------------------------------------------------
-SarCpp::~SarCpp()
+SarCV::~SarCV()
 {
 
 }
-
-
-
-
 
 

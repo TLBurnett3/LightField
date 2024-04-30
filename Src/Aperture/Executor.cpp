@@ -41,6 +41,7 @@
 #include "Core/Timer.h"
 #include "Aperture/SarNone.h"
 #include "Aperture/SarCpp.h"
+#include "Aperture/SarCV.h"
 
 using namespace Lf;
 using namespace Aperture;
@@ -49,8 +50,18 @@ using namespace Aperture;
 
 //---------------------------------------------------------------------
 // https://graphics.stanford.edu/~vaibhav/pubs/thesis.pdf
+// http://lightfield.stanford.edu/
+// https://graphics.stanford.edu/papers/light/
+// http://lightfield.stanford.edu/acq.html#lego
 //---------------------------------------------------------------------
 
+
+//---------------------------------------------------------------------
+// Defines
+#define WX    0.25f
+#define DZ    1.000f
+#define AINC  0.1f
+//---------------------------------------------------------------------
 
 //---------------------------------------------------------------------
 // Logging_Callback
@@ -90,15 +101,39 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
         break;
 
       case GLFW_KEY_PAGE_UP:
-        pE->incAperture(0.1);
+        pE->incAperture(AINC);
         break;
 
       case GLFW_KEY_PAGE_DOWN:
-        pE->incAperture(-0.1);
+        pE->incAperture(-AINC);
+        break;
+
+      case GLFW_KEY_RIGHT:
+        pE->incSubImgIdx(glm::ivec2(-1,0));
+        break;
+
+      case GLFW_KEY_LEFT:
+        pE->incSubImgIdx(glm::ivec2(1,0));
+        break;
+
+      case GLFW_KEY_UP:
+        pE->incSubImgIdx(glm::ivec2(0,-1));
+        break;
+
+      case GLFW_KEY_DOWN:
+        pE->incSubImgIdx(glm::ivec2(0,1));
+        break;      
+
+     case GLFW_KEY_INSERT:
+        pE->incFocus(DZ);
+        break;
+
+      case GLFW_KEY_DELETE:
+        pE->incFocus(-DZ);
         break;
 
       case GLFW_KEY_HOME:
-      case GLFW_KEY_BACKSPACE:
+        pE->reset();
         break;
 
       case GLFW_KEY_ESCAPE:
@@ -111,6 +146,89 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
   }
 }
 
+//---------------------------------------------------------------------
+// updateWindowTitle
+//---------------------------------------------------------------------
+void Executor::updateWindowTitle(void) 
+{
+char buf[512];
+
+  sprintf(buf,"%s - (%d,%d) - Focus: %.2f - fps: %.2f",
+              _sarLst[_sarIdx]->name().c_str(),
+              _iS.y,_iS.x,
+              _focus,
+              _fps);
+
+  glfwSetWindowTitle(_pWindow,buf);
+}
+
+
+
+//---------------------------------------------------------------------
+// updateHomographies
+//---------------------------------------------------------------------
+void Executor::updateHomographies(void)
+{
+  for (size_t i = 0;i < _mHLst.size();i++)
+  {
+  glm::vec2 uv = _imgSet.get(i)->_uv;
+  glm::vec3 vT = glm::vec3(uv.x * _focus * 2.0f,uv.y * _focus * 2.0f,1.0f);
+
+    _mHLst[i] = glm::translate(glm::mat4(1),vT);
+  }
+
+  _bHLst = false;
+  _sarLst[_sarIdx]->setHomographies(&_mHLst);
+  resetFps();
+}
+
+
+//---------------------------------------------------------------------
+// renderMap
+//---------------------------------------------------------------------
+void Executor::renderMap(glm::mat4 &mP,glm::mat4 &mV,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao) 
+{
+float       s     = 0.20f;
+glm::vec2   wS    = glm::vec2(_wS);
+glm::vec2   wD    = wS * s;
+glm::vec2   wT    = wS - wD;
+glm::mat4   mM(1);
+
+  wT *= 0.5f;
+
+  mM = glm::translate(mM,glm::vec3(-wT.x,0.0f,wT.y));
+  mM = glm::scale(mM,glm::vec3(s));
+
+  _pMapShader->use();
+  _pMapShader->setTextureSampler(0);
+  _pMapShader->bindMVP(mP * mV * mM);
+  _pMapShader->bindImageIndex(_iIdx);
+  _pMapShader->bindNumImages(_nI);
+  _pMapShader->bindAperture(_aP);
+
+
+  mcTex.bind();
+  vao.render();
+}
+
+
+//---------------------------------------------------------------------
+// renderSar
+//---------------------------------------------------------------------
+void Executor::renderSar(glm::mat4 &mP,glm::mat4 &mV,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao) 
+{
+glm::mat4   mM      = glm::mat4(1);
+glm::mat4   mMV     = mV * mM;
+
+  _pShader->use();
+  _pShader->bindMVP(mP * mMV);
+  _pShader->setTextureSampler(0);
+
+  _sarLst[_sarIdx]->setSubImageIdx(_iIdx);
+  _sarLst[_sarIdx]->setAperture(_aP);
+  _sarLst[_sarIdx]->render(_mcTex,_vao);
+}
+
 
 //---------------------------------------------------------------------
 // exec
@@ -118,30 +236,37 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
 int Executor::exec(void) 
 {
 int         rc      = 0;
-glm::vec2   vW      = glm::vec2(_wS) * 0.5f;
-glm::vec3   vP      = glm::vec3(0,1,0);
-glm::vec3   vD      = glm::vec3(0,-1,0);
-glm::vec3   vU      = glm::vec3(0,0,1);
-glm::mat4   mP      = glm::ortho(-vW.x,vW.x,-vW.y,vW.y,0.0f,2.0f);
-glm::mat4   mV      = glm::lookAt(vP,vP + vD,vU);
-glm::mat4   mM      = glm::mat4(1);
-glm::mat4   mMV     = mV * mM;
+glm::vec4   clr     = glm::vec4(255,221,244,0) / 255;  // Pink Lace
 
   glEnable(GL_TEXTURE_2D);
   glActiveTexture(GL_TEXTURE0);
 
-  glClearColor(0.25f,0.25f,0.25f,0);
-  glViewport(0,0,_wS.x,_wS.y);
-
-  _pShader->use();
-  _pShader->bindMVP(mP * mMV);
+  glClearColor(clr.r,clr.g,clr.b,clr.a);
 
   while (!glfwWindowShouldClose(_pWindow))
   {
+  glm::vec2   vW      = glm::vec2(_wS) * 0.5f;
+  glm::vec3   vP      = glm::vec3(0,1,0);
+  glm::vec3   vD      = glm::vec3(0,-1,0);
+  glm::vec3   vU      = glm::vec3(0,0,1);
+  glm::mat4   mP      = glm::ortho(-vW.x,vW.x,-vW.y,vW.y,0.0f,2.0f);
+  glm::mat4   mV      = glm::lookAt(vP,vP + vD,vU);
+
+    glViewport(0,0,_wS.x,_wS.y);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    _sarLst[_sarIdx]->setAperture(_aP);
-    _sarLst[_sarIdx]->render(_mctex,_vao);
+    if (_bHLst)
+      updateHomographies();
+
+    renderSar(mP,mV,_mcTex,_vao);
+
+    if (_sarIdx > 0)
+      renderMap(mP,mV,_mcTex,_vao);
+ 
+    calcFps();
+
+    updateWindowTitle();
 
     glfwSwapBuffers(_pWindow);
     glfwPollEvents();
@@ -292,9 +417,12 @@ int Executor::initGraphics(void)
 int  rc = 0;
 
   _pShader = new RenderGL::BasicShader("Basic");
-  _pShader->addVertexShader  ("./Shaders/Default3D.vtx");
-  _pShader->addFragmentShader("./Shaders/Default3D.frg");
-  rc = _pShader->compile();  
+
+  rc |= _pShader->addVertexShader  ("./Shaders/Default3D.vtx");
+  rc |= _pShader->addFragmentShader("./Shaders/Default3D.frg");
+
+  if (rc == 0)
+    rc = _pShader->compile();  
 
   if (rc == 0)
   {
@@ -309,14 +437,33 @@ int  rc = 0;
     mode = quad.createQuadXZ(glm::vec3(0),glm::vec2(_wS));
 
     _vao.upload(quad,mode);
-    _mctex.upload(_mcImg);
+    _mcTex.upload(_mcImg);
 
     glfwSetWindowSize(_pWindow,_wS.x,_wS.y);
+
+    _iIdx = _nI >> 1;
   }
   
   return rc;
 }
 
+
+//---------------------------------------------------------------------
+// initHomographies
+//---------------------------------------------------------------------
+int Executor::initHomographies(void)
+{
+int rc = 0;
+
+  _mHLst.resize(_nI.x * _nI.y);
+
+  for (size_t i = 0;i < _mHLst.size();i++)
+  {
+    _mHLst[i] = glm::mat4(1);
+  }
+
+  return rc;
+}
 
 
 //---------------------------------------------------------------------
@@ -329,6 +476,8 @@ SarNone *pS = new SarNone();
 
   pS->init();
   _sarLst[SAR_NONE] = pS;
+
+  std::cout << "Created: " << pS->name() << std::endl;
   
   return rc;
 }
@@ -344,7 +493,45 @@ SarCpp *pS = new SarCpp();
 
   pS->init(_mcImg,_nI,_iS);
   _sarLst[SAR_CPP] = pS;
+
+  std::cout << "Created: " << pS->name() << std::endl;
   
+  return rc;
+}
+
+
+//---------------------------------------------------------------------
+// initSarCV
+//---------------------------------------------------------------------
+int Executor::initSarCV(void)
+{
+int rc  = 0;
+SarCV *pS = new SarCV();
+
+  pS->init(_imgSet,_nI,_iS);
+  _sarLst[SAR_CV] = pS;
+
+  std::cout << "Created: " << pS->name() << std::endl;
+  
+  return rc;
+}
+
+
+//---------------------------------------------------------------------
+// initMapShader
+//---------------------------------------------------------------------
+int Executor::initMapShader(void)
+{
+int rc  = 0;
+
+  _pMapShader = new MapShader("MapShader");
+
+  rc |= _pMapShader->addVertexShader  ("./Shaders/Default3D.vtx");
+  rc |= _pMapShader->addFragmentShader("./Shaders/MapAperture.frg");
+
+  if (rc == 0)
+    rc = _pMapShader->compile();  
+
   return rc;
 }
 
@@ -379,13 +566,22 @@ int rc  = 0;
   if (rc == 0)
     rc = initGraphics();
 
+  if (rc == 0)
+    rc = initMapShader();
+
   _sarLst.resize(SAR_MAX);
+
+  if (rc == 0)
+    rc = initHomographies();
   
   if (rc == 0)
     rc = initSarNone();
 
   if (rc == 0)
     rc = initSarCpp();
+
+  if (rc == 0)
+    rc = initSarCV();
 
   return rc;
 }
@@ -420,10 +616,18 @@ Executor::Executor(void) : _pWindow(0),
                            _iS(0),
                            _pShader(0),
                            _vao(),
-                           _mctex(),
+                           _mcTex(),
+                           _pMapShader(0),
                            _sarLst(),
                            _sarIdx(SAR_NONE),
-                           _aP(0)
+                           _aP(0),
+                           _iIdx(0),
+                           _focus(0),
+                           _mHLst(0),
+                           _bHLst(true),
+                           _timer(),
+                           _nC(0),
+                           _fps(0)
 {
 }
 
@@ -434,5 +638,6 @@ Executor::Executor(void) : _pWindow(0),
 Executor::~Executor()
 {
   delete _pShader;
+  delete _pMapShader;
 }
 

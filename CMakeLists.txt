@@ -8,7 +8,7 @@ project(LightField)
 # Variables
 
 set (LIGHTFIELD_VERSION_MAJOR      1)
-set (LIGHTFIELD_VERSION_MINOR      1)
+set (LIGHTFIELD_VERSION_MINOR      2)
 set (LIGHTFIELD_VERSION_PATCH      0)
 
 set (LIGHTFIELD_SRC_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/Src)

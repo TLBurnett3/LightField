@@ -40,12 +40,13 @@
 
 // LightField
 #include "Core/ImgSet.h"
+#include "Core/Timer.h"
 #include "RenderGL/VtxLst.h"
 #include "RenderGL/Texture.h"
 #include "RenderGL/VtxArrayObj.h"
 #include "RenderGL/BasicShader.h"
 #include "Aperture/Sar.h"
-
+#include "Aperture/MapShader.h"
 //---------------------------------------------------------------------
 
 
@@ -60,12 +61,14 @@ namespace Lf
       // Defines
       private:
       protected:
-        typedef std::vector<Sar *>  SarLst;
+        typedef std::vector<Sar *>      SarLst;
+        typedef std::vector<glm::mat4>  MatrixLst;
 
         enum
         {
           SAR_NONE = 0,
           SAR_CPP,
+          SAR_CV,
           SAR_MAX
         };
       public:
@@ -84,12 +87,23 @@ namespace Lf
 
         RenderGL::BasicShader     *_pShader;
         RenderGL::VtxArrayObj     _vao;
-        RenderGL::Texture         _mctex;
+        RenderGL::Texture         _mcTex;
+
+        MapShader                 *_pMapShader;
 
         SarLst                    _sarLst;
         uint32_t                  _sarIdx;
 
         float                     _aP;
+        glm::ivec2                _iIdx;
+        float                     _focus;
+
+        MatrixLst                 _mHLst;
+        bool                      _bHLst;
+
+        Core::Timer               _timer;
+        uint32_t                  _nC;
+        float                     _fps;
 
       public:   
 
@@ -99,6 +113,23 @@ namespace Lf
         float map(float x,float in_min,float in_max,float out_min,float out_max)
         { return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min; }
 
+        void calcFps(void)
+        { 
+        float s = (float)_timer.seconds();
+  
+          _nC++;        
+          _fps = (float)_nC / s;
+        }
+           
+        void resetFps(void)
+        { 
+          _timer.start();
+          _nC = 0;
+          _fps = 0;
+        }
+
+        void updateWindowTitle(void);
+
         void GLInfo(void);
 
         int         initGLFW    (void);
@@ -107,23 +138,62 @@ namespace Lf
 
         void motionUpdate(GLFWwindow *pW);
 
+        void  updateHomographies(void);
+
+        void  renderSar(glm::mat4 &mP,glm::mat4 &mV,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
+        void  renderMap(glm::mat4 &mP,glm::mat4 &mV,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao); 
+
+        int initHomographies(void);
+
+        int initMapShader(void);
+
         int initSarNone (void);
         int initSarCpp  (void);
+        int initSarCV   (void);
 
       public:
+         
         void  setSarIdx(const uint32_t i)
         { 
-          _sarIdx = (i >= SAR_MAX) ? 0 : i;  
+          _sarIdx = (i >= SAR_MAX) ? 0 : i; 
+          _bHLst  = true;
+          resetFps();
 
           std::cout << "Switched to: " << _sarLst[_sarIdx]->name() << std::endl;
         }
 
         void  incAperture(const float a)
-        { _aP = glm::clamp(_aP + a,0.0f,1.0f); }
+        { 
+          _aP = glm::clamp(_aP + a,0.0f,1.0f); 
+          resetFps();
+        }
 
-            
-        int   init(const char *pDir);
+        void  incFocus(const float f)
+        { 
+          _focus += f;
+          _bHLst = true;
+          resetFps();
+        }
+
+        void  incSubImgIdx(const glm::ivec2 &inc)
+        { 
+          _iIdx = glm::clamp(_iIdx +  inc,glm::ivec2(0),_nI -1); 
+          resetFps();
+        } 
+
+        void reset(void)
+        {
+          _focus = 0,
+          _aP    = 0;
+          _iIdx  = _nI >> 1;
+          _bHLst = true;
+
+          resetFps();
+        }  
+
         int   exec(void);
+
+        int   init(const char *pDir);
         void  destroy(void);
 
         Executor(void);

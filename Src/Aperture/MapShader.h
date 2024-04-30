@@ -22,23 +22,20 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Sar.h
+// MapShader.h
 // Thomas Burnett
+
 
 #pragma once
 
-
 //---------------------------------------------------------------------
 // Includes
-// System
 
 // 3rdPartyLibs
 
 // LightField
-#include "RenderGL/Texture.h"
-#include "RenderGL/VtxArrayObj.h"
+#include "RenderGL/BasicShader.h"
 //---------------------------------------------------------------------
-
 
 //---------------------------------------------------------------------
 // Classes
@@ -46,47 +43,53 @@ namespace Lf
 {
   namespace Aperture
   {
-    class Sar
-    {
-      // Defines
+	  class MapShader : public RenderGL::BasicShader
+	  {
+	    // Defines
       private:
       protected:
-        typedef std::vector<glm::mat4>  MatrixLst;
-
       public:
 
       // Members
       private:
-      protected:
-        std::string     _sName;
-        float           _aP;
-        glm::ivec2      _iIdx;
-        const MatrixLst *_pMHLst;
-      public:   
+      protected: 
+        GLint    _locImageIndex;
+        GLint    _locNumImages;
+        GLint    _locAperture;
+
+
+      public:
 
       // Methods
       private:
       protected:
+
       public:
+        EXPORT void bindImageIndex(const glm::ivec2 &idx) const
+        { 
+        glm::vec2 v = idx;
 
-        std::string name(void)
-        { return _sName; }
+          glUniform2f(_locImageIndex,v.x,v.y); 
+        }
 
-        void setAperture(float a)
-        { _aP = a; }
+        EXPORT void bindNumImages(const glm::ivec2 &nI) const
+        { 
+        glm::vec2 v = nI;
 
-        void setSubImageIdx(const glm::ivec2 &iIdx)
-        { _iIdx = iIdx; }
+          glUniform2f(_locNumImages,v.x,v.y); 
+        }
 
-        void setHomographies(const MatrixLst *pHMLst)
-        { _pMHLst = pHMLst; }
+        EXPORT void bindAperture(const float a) const
+        { 
+          glUniform1f(_locAperture,a); 
+        }
 
-        virtual void render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao) = 0;
-  
-        Sar(const char *pName);
-        virtual ~Sar();
-    };
+        EXPORT virtual int compile(void);
+ 
+        EXPORT MapShader(const char *pName);
+        EXPORT virtual ~MapShader();
+	  };
   };
 };
-//---------------------------------------------------------------------
 
+//---------------------------------------------------------------------

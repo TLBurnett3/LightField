@@ -57,6 +57,14 @@ int   rc = Shader::compile();
       std::cout << "Failed to locate MVPMatrix\n";
       rc = -1;
     }
+
+    _locTexSampler     = glGetUniformLocation(_programShaderId,"texSampler");     
+
+    if (_locTexSampler < 0)
+    {
+      std::cout << "Failed to locate TexSampler\n";
+      rc = -1;
+    }
   }
 
   return rc;

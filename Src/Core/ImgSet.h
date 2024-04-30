@@ -57,16 +57,17 @@ namespace Lf
       // Defines
       private:
       protected:
+
+      public:
         typedef struct ImgData_Def
         {
-          glm::ivec2  _iNum;
-          glm::vec2   _iLoc;
+          glm::ivec2  _idx;
+          glm::vec2   _pos;
+          glm::vec2   _uv;
           cv::Mat     _img;
         } ImgData;
 
         typedef std::vector<ImgData>  ISet;
-
-      public:
 
       // Members
       private:
@@ -85,6 +86,12 @@ namespace Lf
       public:
         EXPORT float apperture(void)
         { return _aP; }
+
+        EXPORT size_t size(void)
+        { return _imgSet.size(); }
+
+        EXPORT ImgData *get(const size_t i)
+        { return &_imgSet[i]; }
 
         EXPORT int createPlenopticImage(cv::Mat &img,glm::ivec2 &nH,glm::ivec2 &hS);
 

@@ -22,71 +22,75 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// Sar.h
+// MapShader.cpp
 // Thomas Burnett
-
-#pragma once
 
 
 //---------------------------------------------------------------------
 // Includes
 // System
+#include <assert.h>
+#include <fstream>
+#include <iostream>
 
-// 3rdPartyLibs
+// tLib
+#include "Aperture/MapShader.h"
 
-// LightField
-#include "RenderGL/Texture.h"
-#include "RenderGL/VtxArrayObj.h"
+using namespace Lf;
+using namespace Aperture;
 //---------------------------------------------------------------------
 
 
 //---------------------------------------------------------------------
-// Classes
-namespace Lf
+
+//---------------------------------------------------------------------
+int   MapShader::compile(void)
 {
-  namespace Aperture
+int   rc = BasicShader::compile();
+
+  if (rc == 0)
   {
-    class Sar
+
+    _locImageIndex     = glGetUniformLocation(_programShaderId,"iIdx");     
+
+    if (_locImageIndex < 0)
     {
-      // Defines
-      private:
-      protected:
-        typedef std::vector<glm::mat4>  MatrixLst;
+      std::cout << "Failed to locate iIdx\n";
+      rc = -1;
+    }
 
-      public:
+    _locNumImages     = glGetUniformLocation(_programShaderId,"nI");     
 
-      // Members
-      private:
-      protected:
-        std::string     _sName;
-        float           _aP;
-        glm::ivec2      _iIdx;
-        const MatrixLst *_pMHLst;
-      public:   
+    if (_locNumImages < 0)
+    {
+      std::cout << "Failed to locate nI\n";
+      rc = -1;
+    }
+/*
+    _locAperture     = glGetUniformLocation(_programShaderId,"aD");     
 
-      // Methods
-      private:
-      protected:
-      public:
+    if (_locAperture < 0)
+    {
+      std::cout << "Failed to locate aD\n";
+      rc = -1;
+    }*/
+  }
 
-        std::string name(void)
-        { return _sName; }
+  return rc;
+}
 
-        void setAperture(float a)
-        { _aP = a; }
 
-        void setSubImageIdx(const glm::ivec2 &iIdx)
-        { _iIdx = iIdx; }
-
-        void setHomographies(const MatrixLst *pHMLst)
-        { _pMHLst = pHMLst; }
-
-        virtual void render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao) = 0;
-  
-        Sar(const char *pName);
-        virtual ~Sar();
-    };
-  };
-};
 //---------------------------------------------------------------------
+// MapShader
+//---------------------------------------------------------------------
+MapShader::MapShader(const char *pName) : BasicShader(pName)
+{
+}
 
+
+//---------------------------------------------------------------------
+// ~MapShader
+//---------------------------------------------------------------------
+MapShader::~MapShader()
+{
+}

@@ -58,8 +58,8 @@ namespace Lf
       public:   
         cv::Mat             _mcImg;
 
-        cv::Mat             _sImg;
-        RenderGL::Texture   _sTex;
+        cv::Mat             _dImg;
+        RenderGL::Texture   _dTex;
 
         glm::ivec2          _nI;
         glm::ivec2          _iS;
@@ -69,7 +69,7 @@ namespace Lf
       protected:
       public:   
 
-        virtual void render(RenderGL::Texture &mctex,RenderGL::VtxArrayObj &vao);
+        virtual void render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
 
         virtual int init(cv::Mat &mcImg,const glm::ivec2 &nI,const glm::ivec2 &iS);
   

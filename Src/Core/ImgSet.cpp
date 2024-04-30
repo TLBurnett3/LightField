@@ -138,6 +138,7 @@ int ImgSet::load(const std::filesystem::path &dPath)
 int         rc = -1;
 glm::vec2   aMin( FLT_MAX);
 glm::vec2   aMax(-FLT_MAX);
+glm::vec2   avg(0);
 
   for (auto const &dE : std::filesystem::directory_iterator{dPath}) 
   {
@@ -169,22 +170,23 @@ glm::vec2   aMax(-FLT_MAX);
 
       if (i > 2)
       {
-        imgData._iNum.y = atoi(pT[1]);
-        imgData._iNum.x = atoi(pT[2]);
+        imgData._idx.y = atoi(pT[1]);
+        imgData._idx.x = atoi(pT[2]);
 
-        _nI = glm::max(_nI,imgData._iNum + 1);
+        _nI = glm::max(_nI,imgData._idx + 1);
 
-        std::cout << "  " << imgData._iNum.y << "," << imgData._iNum.x;
+        std::cout << "  " << imgData._idx.y << "," << imgData._idx.x;
 
         if (i > 4)
         {
-          imgData._iLoc.y = atof(pT[3]);
-          imgData._iLoc.x = atof(pT[4]);
+          imgData._pos.y = atof(pT[3]);
+          imgData._pos.x = atof(pT[4]);
 
-          aMin = glm::min(aMin,imgData._iLoc);
-          aMax = glm::max(aMax,imgData._iLoc);
+          aMin = glm::min(aMin,imgData._pos);
+          aMax = glm::max(aMax,imgData._pos);
+          avg += imgData._pos;
 
-          std::cout << "  " << imgData._iLoc.y << "," << imgData._iLoc.x;
+          std::cout << "  " << imgData._pos.y << "," << imgData._pos.x;
         }
       }
 
@@ -207,6 +209,20 @@ glm::vec2   aMax(-FLT_MAX);
         }
       } 
     } 
+  }
+
+  avg /= (float)_imgSet.size();
+
+  {
+  glm::vec2  uv = 0.9f / (aMax - aMin);
+  float      s  = (uv.x < uv.y ? uv.x : uv.y);
+
+    for (size_t i = 0;i < _imgSet.size();i++)
+    {
+      _imgSet[i]._uv = s * (_imgSet[i]._pos - avg);
+
+  //    std::cout << i << " " << _imgSet[i]._uv.x <<  "," << _imgSet[i]._uv.y << std::endl;
+    }
   }
 
   _aP = glm::max(aMax.y - aMin.y,aMax.x - aMin.x);
