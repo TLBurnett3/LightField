@@ -22,23 +22,20 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// SarCV.h
+// SarShader.h
 // Thomas Burnett
+
 
 #pragma once
 
-
 //---------------------------------------------------------------------
 // Includes
-// System
 
 // 3rdPartyLibs
 
 // LightField
-#include "Aperture/Sar.h"
-#include "Core/ImgSet.h"
+#include "RenderGL/BasicShader.h"
 //---------------------------------------------------------------------
-
 
 //---------------------------------------------------------------------
 // Classes
@@ -46,37 +43,69 @@ namespace Lf
 {
   namespace Aperture
   {
-    class SarCV : public Sar
-    {
-      // Defines
+	  class SarShader : public RenderGL::BasicShader
+	  {
+	    // Defines
       private:
       protected:
-        typedef std::vector<cv::Mat>  ImgLst;
+        enum
+        {
+          HOMOGRAPHIES_BINDING_POINT = 1
+        };
+
       public:
 
       // Members
       private:
-      protected:
-      public:   
-        ImgLst              _imgLst;
+      protected: 
+        GLint    _locImageIndex;
+        GLint    _locImageSize;
+        GLint    _locNumImages;
+        GLint    _locAperture;
+        GLint    _idxHomographies;
+        GLuint   _homographyBuffer;
 
-        cv::Mat             _dImg;
-        RenderGL::Texture   _dTex;
+      public:
 
       // Methods
       private:
       protected:
-      public:   
 
-        virtual void render(const glm::mat4 &mP,const glm::mat4 &mV,
-                            RenderGL::BasicShader *pS,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
+      public:
+        EXPORT void bindImageIndex(const glm::ivec2 &idx) const
+        { 
+          glUniform2i(_locImageIndex,idx.x,idx.y); 
+        }
 
-        virtual int init(Core::ImgSet &imgSet,const glm::ivec2 &nI,const glm::ivec2 &iS);
-  
-        SarCV(void);
-       ~SarCV();
-    };
+        EXPORT void bindImageSize(const glm::ivec2 &iS) const
+        { 
+          glUniform2i(_locImageSize,iS.x,iS.y); 
+        }
+
+        EXPORT void bindNumImages(const glm::ivec2 &nI) const
+        { 
+          glUniform2i(_locNumImages,nI.x,nI.y); 
+        }
+
+        EXPORT void bindAperture(const float a) const
+        { 
+          glUniform1f(_locAperture,a); 
+        }
+
+        EXPORT void bindHomographies(const std::vector<glm::mat4> *pMHLst) const
+        { 
+        size_t n = pMHLst->size();
+
+          glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4) * n,pMHLst->data(),GL_DYNAMIC_DRAW);
+          glBindBufferBase(GL_UNIFORM_BUFFER,HOMOGRAPHIES_BINDING_POINT,_homographyBuffer);
+        }
+
+        EXPORT virtual int compile(void);
+ 
+        EXPORT SarShader(const char *pName);
+        EXPORT virtual ~SarShader();
+	  };
   };
 };
-//---------------------------------------------------------------------
 
+//---------------------------------------------------------------------

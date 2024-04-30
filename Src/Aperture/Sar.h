@@ -37,6 +37,8 @@
 // LightField
 #include "RenderGL/Texture.h"
 #include "RenderGL/VtxArrayObj.h"
+#include "RenderGL/BasicShader.h"
+
 //---------------------------------------------------------------------
 
 
@@ -59,8 +61,13 @@ namespace Lf
       private:
       protected:
         std::string     _sName;
-        float           _aP;
+
+        glm::ivec2      _iS;
+        glm::ivec2      _nI;
+        glm::ivec2      _wS;
         glm::ivec2      _iIdx;
+        float           _aP;
+
         const MatrixLst *_pMHLst;
       public:   
 
@@ -72,16 +79,26 @@ namespace Lf
         std::string name(void)
         { return _sName; }
 
-        void setAperture(float a)
+        virtual void setAperture(float a)
         { _aP = a; }
 
-        void setSubImageIdx(const glm::ivec2 &iIdx)
+        virtual void setSubImageIdx(const glm::ivec2 &iIdx)
         { _iIdx = iIdx; }
 
-        void setHomographies(const MatrixLst *pHMLst)
+        virtual void setWindowSize(const glm::ivec2 &wS)
+        { _wS = wS; }
+
+        virtual void setSubImageSize(const glm::ivec2 &iS)
+        { _iS = iS; }
+
+        virtual void setNumImages(const glm::ivec2 &nI)
+        { _nI = nI; }
+
+        virtual void setHomographies(const MatrixLst *pHMLst)
         { _pMHLst = pHMLst; }
 
-        virtual void render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao) = 0;
+        virtual void render(const glm::mat4 &mP,const glm::mat4 &mV,
+                            RenderGL::BasicShader *pS,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao) = 0;
   
         Sar(const char *pName);
         virtual ~Sar();

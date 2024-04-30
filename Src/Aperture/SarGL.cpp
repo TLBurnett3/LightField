@@ -22,10 +22,8 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// SarCV.h
+// SarGL.cpp 
 // Thomas Burnett
-
-#pragma once
 
 
 //---------------------------------------------------------------------
@@ -35,48 +33,80 @@
 // 3rdPartyLibs
 
 // LightField
-#include "Aperture/Sar.h"
-#include "Core/ImgSet.h"
+#include "Aperture/SarGL.h"
+
+using namespace Lf;
+using namespace Aperture;
 //---------------------------------------------------------------------
 
 
+
 //---------------------------------------------------------------------
-// Classes
-namespace Lf
+// render
+//---------------------------------------------------------------------
+void SarGL::render(const glm::mat4 &mP,const glm::mat4 &mV,
+                   RenderGL::BasicShader *pS,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao)
 {
-  namespace Aperture
-  {
-    class SarCV : public Sar
-    {
-      // Defines
-      private:
-      protected:
-        typedef std::vector<cv::Mat>  ImgLst;
-      public:
+  _pShader->use();
+  _pShader->bindMVP(mP * mV);
+  _pShader->setTextureSampler(0);
+  _pShader->bindAperture(_aP);
+  _pShader->bindImageIndex(_iIdx);
 
-      // Members
-      private:
-      protected:
-      public:   
-        ImgLst              _imgLst;
+  if (_pMHLst)
+    _pShader->bindHomographies(_pMHLst);
 
-        cv::Mat             _dImg;
-        RenderGL::Texture   _dTex;
+  _pMHLst = 0;
 
-      // Methods
-      private:
-      protected:
-      public:   
+  mcTex.bind();
+  vao.render();
+}
 
-        virtual void render(const glm::mat4 &mP,const glm::mat4 &mV,
-                            RenderGL::BasicShader *pS,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
 
-        virtual int init(Core::ImgSet &imgSet,const glm::ivec2 &nI,const glm::ivec2 &iS);
-  
-        SarCV(void);
-       ~SarCV();
-    };
-  };
-};
 //---------------------------------------------------------------------
+// init
+//---------------------------------------------------------------------
+int SarGL::init(const glm::ivec2 &nI,const glm::ivec2 &iS)
+{
+int   rc = 0;
+
+  _pShader = new SarShader("SarGL");
+
+  _iS = iS;
+
+  rc |= _pShader->addVertexShader  ("./Shaders/Default3D.vtx");
+  rc |= _pShader->addFragmentShader("./Shaders/Aperture.frg");
+
+  if (rc == 0)
+    rc = _pShader->compile();  
+
+  if (rc == 0)
+  {
+    _pShader->use();
+    _pShader->bindImageSize(iS);
+    _pShader->bindNumImages(nI);
+  }
+
+  return rc;
+}
+
+
+
+//---------------------------------------------------------------------
+// SarGL
+//---------------------------------------------------------------------
+SarGL::SarGL(void) : Sar("SarGL"),
+                     _pShader(0)
+
+{
+}
+
+
+//---------------------------------------------------------------------
+// ~SarGL
+//---------------------------------------------------------------------
+SarGL::~SarGL()
+{
+  delete _pShader;
+}
 

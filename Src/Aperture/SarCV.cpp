@@ -44,7 +44,8 @@ using namespace Aperture;
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
-void SarCV::render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao)
+void SarCV::render(const glm::mat4 &mP,const glm::mat4 &mV,
+                   RenderGL::BasicShader *pS,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao)
 {
 cv::Mat     tImg(_iS.y,_iS.x,CV_32FC3,cv::Scalar(0,0,0));
 cv::Mat     wImg(_iS.y,_iS.x,CV_32FC3);
@@ -83,10 +84,17 @@ float       n(0);
 
   tImg.convertTo(_dImg,CV_8UC3);
   
-  _dTex.upload(_dImg);
-  _dTex.bind();
+ 
+  {
+    pS->use();
+    pS->bindMVP(mP * mV);
+    pS->setTextureSampler(0);
+  
+    _dTex.upload(_dImg);
+    _dTex.bind();
 
-  vao.render();
+    vao.render();
+  }
 }
 
 
@@ -121,9 +129,7 @@ size_t  n   = imgSet.size();
 SarCV::SarCV(void) : Sar("SarCV"),
                          _imgLst(),
                          _dImg(),
-                         _dTex(),
-                         _nI(0),
-                         _iS(0)
+                         _dTex()
 {
 }
 

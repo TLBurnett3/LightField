@@ -61,15 +61,13 @@ namespace Lf
         cv::Mat             _dImg;
         RenderGL::Texture   _dTex;
 
-        glm::ivec2          _nI;
-        glm::ivec2          _iS;
-
       // Methods
       private:
       protected:
       public:   
 
-        virtual void render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
+        virtual void render(const glm::mat4 &mP,const glm::mat4 &mV,
+                            RenderGL::BasicShader *pS,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
 
         virtual int init(cv::Mat &mcImg,const glm::ivec2 &nI,const glm::ivec2 &iS);
   

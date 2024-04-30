@@ -44,6 +44,9 @@ using namespace Aperture;
 // Sar
 //---------------------------------------------------------------------
 Sar::Sar(const char *pName) : _sName(pName),
+                              _iS(0),
+                              _nI(0),
+                              _wS(0),
                               _aP(0),
                               _iIdx(0),
                               _pMHLst(0)

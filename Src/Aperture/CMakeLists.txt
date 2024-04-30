@@ -14,8 +14,10 @@ set(HEADERS
   Sar.h 
   SarNone.h   
   SarCpp.h
-  MapShader.h
+  SarGL.h
   SarCV.h
+  MapShader.h
+  SarShader.h
 )
 
 set(SOURCE
@@ -24,7 +26,9 @@ set(SOURCE
   SarNone.cpp
   SarCpp.cpp
   SarCV.cpp
+  SarGL.cpp
   MapShader.cpp
+  SarShader.cpp
   Main.cpp
 )
 

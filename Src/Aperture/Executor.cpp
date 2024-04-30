@@ -42,6 +42,7 @@
 #include "Aperture/SarNone.h"
 #include "Aperture/SarCpp.h"
 #include "Aperture/SarCV.h"
+#include "Aperture/SarGL.h"
 
 using namespace Lf;
 using namespace Aperture;
@@ -206,7 +207,6 @@ glm::mat4   mM(1);
   _pMapShader->bindNumImages(_nI);
   _pMapShader->bindAperture(_aP);
 
-
   mcTex.bind();
   vao.render();
 }
@@ -217,16 +217,9 @@ glm::mat4   mM(1);
 //---------------------------------------------------------------------
 void Executor::renderSar(glm::mat4 &mP,glm::mat4 &mV,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao) 
 {
-glm::mat4   mM      = glm::mat4(1);
-glm::mat4   mMV     = mV * mM;
-
-  _pShader->use();
-  _pShader->bindMVP(mP * mMV);
-  _pShader->setTextureSampler(0);
-
   _sarLst[_sarIdx]->setSubImageIdx(_iIdx);
   _sarLst[_sarIdx]->setAperture(_aP);
-  _sarLst[_sarIdx]->render(_mcTex,_vao);
+  _sarLst[_sarIdx]->render(mP,mV,_pShader,_mcTex,_vao);
 }
 
 
@@ -471,7 +464,7 @@ int rc = 0;
 //---------------------------------------------------------------------
 int Executor::initSarNone(void)
 {
-int rc  = 0;
+int     rc  = 0;
 SarNone *pS = new SarNone();
 
   pS->init();
@@ -488,7 +481,7 @@ SarNone *pS = new SarNone();
 //---------------------------------------------------------------------
 int Executor::initSarCpp(void)
 {
-int rc  = 0;
+int    rc  = 0;
 SarCpp *pS = new SarCpp();
 
   pS->init(_mcImg,_nI,_iS);
@@ -505,11 +498,28 @@ SarCpp *pS = new SarCpp();
 //---------------------------------------------------------------------
 int Executor::initSarCV(void)
 {
-int rc  = 0;
+int   rc  = 0;
 SarCV *pS = new SarCV();
 
   pS->init(_imgSet,_nI,_iS);
   _sarLst[SAR_CV] = pS;
+
+  std::cout << "Created: " << pS->name() << std::endl;
+  
+  return rc;
+}
+
+
+//---------------------------------------------------------------------
+// initSarGL
+//---------------------------------------------------------------------
+int Executor::initSarGL(void)
+{
+int   rc  = 0;
+SarGL *pS = new SarGL();
+
+  pS->init(_nI,_iS);
+  _sarLst[SAR_GL] = pS;
 
   std::cout << "Created: " << pS->name() << std::endl;
   
@@ -582,6 +592,9 @@ int rc  = 0;
 
   if (rc == 0)
     rc = initSarCV();
+
+  if (rc == 0)
+    rc = initSarGL();
 
   return rc;
 }

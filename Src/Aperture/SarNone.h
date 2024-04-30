@@ -62,7 +62,8 @@ namespace Lf
       protected:
       public:
 
-        virtual void render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
+        virtual void render(const glm::mat4 &mP,const glm::mat4 &mV,
+                            RenderGL::BasicShader *pS,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
 
         virtual int init(void);
   

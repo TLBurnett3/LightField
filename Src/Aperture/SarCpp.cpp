@@ -45,7 +45,8 @@ using namespace Aperture;
 // render
 // Tries to mirror the GLSL version
 //---------------------------------------------------------------------
-void SarCpp::render(RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao)
+void SarCpp::render(const glm::mat4 &mP,const glm::mat4 &mV,
+                    RenderGL::BasicShader *pS,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao)
 {
 uchar      *pD  = _dImg.data;
 glm::vec2  nP   = (_iS * _nI) - 1;
@@ -98,11 +99,17 @@ glm::ivec2 iI(0);
       pD += 3;
     }
   }
-  
-  _dTex.upload(_dImg);
-  _dTex.bind();
 
-  vao.render();
+  {
+    pS->use();
+    pS->bindMVP(mP * mV);
+    pS->setTextureSampler(0);
+  
+    _dTex.upload(_dImg);
+    _dTex.bind();
+
+    vao.render();
+  }
 }
 
 
@@ -130,9 +137,7 @@ int   rc = 0;
 SarCpp::SarCpp(void) : Sar("SarCpp"),
                          _mcImg(),
                          _dImg(),
-                         _dTex(),
-                         _nI(0),
-                         _iS(0)
+                         _dTex()
 {
 }
 

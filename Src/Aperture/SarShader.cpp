@@ -22,18 +22,19 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// SarNone.cpp 
+// SarShader.cpp
 // Thomas Burnett
 
 
 //---------------------------------------------------------------------
 // Includes
 // System
+#include <assert.h>
+#include <fstream>
+#include <iostream>
 
-// 3rdPartyLibs
-
-// LightField
-#include "Aperture/SarNone.h"
+// tLib
+#include "Aperture/SarShader.h"
 
 using namespace Lf;
 using namespace Aperture;
@@ -42,46 +43,78 @@ using namespace Aperture;
 
 
 //---------------------------------------------------------------------
-// render
+// compile
 //---------------------------------------------------------------------
-void SarNone::render(const glm::mat4 &mP,const glm::mat4 &mV,
-                     RenderGL::BasicShader *pS,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao)
+int   SarShader::compile(void)
 {
-  pS->use();
-  pS->bindMVP(mP * mV);
-  pS->setTextureSampler(0);
+int   rc = BasicShader::compile();
 
-  mcTex.bind();
-  vao.render();
-}
+  if (rc == 0)
+  {
+    _locImageIndex     = glGetUniformLocation(_programShaderId,"iIdx");     
 
+    if (_locImageIndex < 0)
+    {
+      std::cout << "Failed to locate iIdx\n";
+      rc = -1;
+    }
 
-//---------------------------------------------------------------------
-// init
-//---------------------------------------------------------------------
-int SarNone::init(void)
-{
-int   rc = 0;
+    _locNumImages     = glGetUniformLocation(_programShaderId,"nI");     
 
+    if (_locNumImages < 0)
+    {
+      std::cout << "Failed to locate nI\n";
+      rc = -1;
+    }
+
+    _locAperture     = glGetUniformLocation(_programShaderId,"aD");     
+
+    if (_locAperture < 0)
+    {
+      std::cout << "Failed to locate aD\n";
+      rc = -1;
+    }
+
+    _locImageSize     = glGetUniformLocation(_programShaderId,"iS");     
+
+    if (_locImageSize < 0)
+    {
+      std::cout << "Failed to locate iS\n";
+      rc = -1;
+    }
+
+    _idxHomographies  = glGetUniformBlockIndex(_programShaderId,"Homographies"); 
+
+    glUniformBlockBinding(_programShaderId,_idxHomographies,HOMOGRAPHIES_BINDING_POINT);
+
+    if (_homographyBuffer == 0)
+    {
+      glGenBuffers(1,&_homographyBuffer);
+      glBindBuffer(GL_UNIFORM_BUFFER,_homographyBuffer);
+    }  
+  }
 
   return rc;
 }
 
 
-
 //---------------------------------------------------------------------
-// SarNone
+// SarShader
 //---------------------------------------------------------------------
-SarNone::SarNone(void) : Sar("SarNone")
+SarShader::SarShader(const char *pName) : BasicShader(pName),
+                                          _locImageIndex(-1),
+                                          _locImageSize(-1),
+                                          _locNumImages(-1),
+                                          _locAperture(-1),
+                                          _idxHomographies(-1),
+                                          _homographyBuffer(0)
 {
 }
 
 
 //---------------------------------------------------------------------
-// ~SarNone
+// ~SarShader
 //---------------------------------------------------------------------
-SarNone::~SarNone()
+SarShader::~SarShader()
 {
-
 }
-

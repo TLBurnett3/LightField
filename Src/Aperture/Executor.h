@@ -69,6 +69,7 @@ namespace Lf
           SAR_NONE = 0,
           SAR_CPP,
           SAR_CV,
+          SAR_GL,
           SAR_MAX
         };
       public:
@@ -150,6 +151,7 @@ namespace Lf
         int initSarNone (void);
         int initSarCpp  (void);
         int initSarCV   (void);
+        int initSarGL   (void);
 
       public:
          

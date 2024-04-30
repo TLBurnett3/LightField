@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// SarCV.h
+// SarGL.h
 // Thomas Burnett
 
 #pragma once
@@ -36,7 +36,7 @@
 
 // LightField
 #include "Aperture/Sar.h"
-#include "Core/ImgSet.h"
+#include "Aperture/SarShader.h"
 //---------------------------------------------------------------------
 
 
@@ -46,35 +46,32 @@ namespace Lf
 {
   namespace Aperture
   {
-    class SarCV : public Sar
+    class SarGL : public Sar
     {
       // Defines
       private:
       protected:
-        typedef std::vector<cv::Mat>  ImgLst;
       public:
 
       // Members
       private:
       protected:
+        SarShader   *_pShader;
+        
       public:   
-        ImgLst              _imgLst;
-
-        cv::Mat             _dImg;
-        RenderGL::Texture   _dTex;
 
       // Methods
       private:
       protected:
-      public:   
+      public:
 
         virtual void render(const glm::mat4 &mP,const glm::mat4 &mV,
                             RenderGL::BasicShader *pS,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
 
-        virtual int init(Core::ImgSet &imgSet,const glm::ivec2 &nI,const glm::ivec2 &iS);
+        virtual int init(const glm::ivec2 &nI,const glm::ivec2 &iS);
   
-        SarCV(void);
-       ~SarCV();
+        SarGL(void);
+       ~SarGL();
     };
   };
 };
