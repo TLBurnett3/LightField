@@ -1,0 +1,43 @@
+{
+  "JobName": "Triangles",
+  "Renderer": "DF",
+  "OutputPath": "/Tmp/Triangles",
+  "FieldOfView": 90.0,
+  "HogelSize": [ 1000, 1000 ],
+  "NumHogels": [ 5, 5 ],
+  "zNearFar": [ 0.001, 2.0 ],
+  "MemSize": 12,
+  "CullFace": false,
+  "Tasks": {
+    "ProofImage": true,
+    "WriteAvi": false,
+    "WriteImg": true,
+    "ProofDepth": false
+  },
+  "ViewVolume": {
+    "Translate": [ 0.0, 0.0, 0.0 ],
+    "Scale": [ 1.0, 1.0, 1.0 ],
+    "Rotate": [ 0.0, 0.0, 0.0 ]
+  },
+  "Scene": {
+    "Translate": [ 0.0, 0.0, 0.0 ],
+    "Scale": [ 1.0, 1.0, 1.0 ],
+    "Rotate": [ 0.0, 0.0, 0.0 ]
+  },
+  "NoLight": {
+    "Ambient": [ 0.2, 0.2, 0.2, 0.0 ],
+    "Diffuse": [ 1.0, 1.0, 1.0, 0.0 ],
+    "Specular": [ 0.0, 0.0, 0.0, 0.0 ],
+    "Position": [ 10.0, 10.0, 10.0, 1.0 ]
+  },
+  "Models": [
+    {
+      "File": "Triangles.obj",
+      "Transform": {
+        "Translate": [ 0.0, 0.0, 0.0 ],
+        "Scale": [ 1.0, 1.0, 1.0 ],
+        "Rotate": [ 0.0, 0.0, 0.0 ]
+      }
+    }
+  ]
+}
