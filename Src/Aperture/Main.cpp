@@ -60,6 +60,9 @@ Lf::Aperture::Executor  e;
     rc = e.init(p);
 
     if (rc == 0)
+      e.instructions();
+
+    if (rc == 0)
       rc = e.exec();
 
     e.destroy();

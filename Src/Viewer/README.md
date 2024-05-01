@@ -2,7 +2,7 @@
 
 Viewer is a light-field radiance image viewer that uses a directory of hogel .avi files for input.
 
-Usage: LfViewer <path to hogel .avi directory> -gb # -fov #
+Usage: Viewer <path to hogel .avi directory> -gb # -fov #
 
 Viewer loads as much of the radiance image into memory as defined by the command line -gb parameter.  The -gb parameter defines the maximum amount of memory that should be used by Viewer to storage the radiance image in main memory.  The -fov paramater defines the field of view of hogels.
 

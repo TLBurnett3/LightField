@@ -59,7 +59,6 @@ using namespace Aperture;
 
 //---------------------------------------------------------------------
 // Defines
-#define WX    0.25f
 #define DZ    1.000f
 #define AINC  0.1f
 //---------------------------------------------------------------------
@@ -74,6 +73,35 @@ static void Logging_Callback(const char *p)
 static void ErrorCallback(int error,const char * p)
 {
   std::cout << error << ": " << p << std::endl;
+}
+
+
+
+
+//---------------------------------------------------------------------
+// CursorPosition_Callback
+//---------------------------------------------------------------------
+static void CursorPosition_Callback(GLFWwindow *pW,double xPos,double yPos)
+{
+Aperture::Executor *pE = (Aperture::Executor *)glfwGetWindowUserPointer(pW);
+
+  pE->mouseMotion(glm::fvec2(xPos,yPos));
+}
+
+
+//---------------------------------------------------------------------
+// MouseButton_Callback
+//---------------------------------------------------------------------
+static void MouseButton_Callback(GLFWwindow *pW,int button,int action,int mods)
+{
+  if (button == 0)
+  {
+  Aperture::Executor *pE = (Aperture::Executor *)glfwGetWindowUserPointer(pW);
+  glm::dvec2         vMp;
+
+    glfwGetCursorPos(pW,&vMp.x,&vMp.y);   
+    pE->mouseButton(glm::fvec2(vMp),action);
+  }
 }
 
 
@@ -118,11 +146,11 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
         break;
 
       case GLFW_KEY_UP:
-        pE->incSubImgIdx(glm::ivec2(0,-1));
+        pE->incSubImgIdx(glm::ivec2(0,1));
         break;
 
       case GLFW_KEY_DOWN:
-        pE->incSubImgIdx(glm::ivec2(0,1));
+        pE->incSubImgIdx(glm::ivec2(0,-1));
         break;      
 
      case GLFW_KEY_INSERT:
@@ -137,6 +165,10 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
         pE->reset();
         break;
 
+      case GLFW_KEY_END:
+        pE->writeImage();
+        break;
+
       case GLFW_KEY_ESCAPE:
         glfwSetWindowShouldClose(pW,GL_TRUE);
         break;
@@ -148,16 +180,90 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
 }
 
 //---------------------------------------------------------------------
+// mouseMotion
+//---------------------------------------------------------------------
+void Executor::mouseMotion(glm::fvec2 &vMp)
+{
+  if ((_sarIdx > SAR_NONE) && _bMouseMotion)
+  {
+  float       s     = 0.20f;
+  glm::vec2   wS    = glm::vec2(_wS);
+  glm::vec2   wD    = wS * s;
+  glm::vec2   wT    = glm::vec2(wS.x - wD.x,wD.y);
+
+    if ((vMp.x > wT.x) && (vMp.y < wD.y))
+    {
+    glm::vec2 vM = glm::vec2(vMp.x- wT.x,vMp.y);
+
+      _vMe  = glm::vec2(1) - (vM / wD);
+
+      _aP   = glm::distance(_vMe,_vMs) * 2.0f;
+      _aP   = glm::clamp(_aP,0.0f,1.0f);
+    }
+  }
+}
+
+//---------------------------------------------------------------------
+// mouseButton
+//---------------------------------------------------------------------
+void Executor::mouseButton(glm::fvec2 &vMp,int action)
+{
+  if (_sarIdx > SAR_NONE)
+  {
+  float       s     = 0.20f;
+  glm::vec2   wS    = glm::vec2(_wS);
+  glm::vec2   wD    = wS * s;
+  glm::vec2   wT    = glm::vec2(wS.x - wD.x,wD.y);
+
+    if ((vMp.x > wT.x) && (vMp.y < wD.y))
+    {
+    glm::vec2 vM = glm::vec2(vMp.x- wT.x,vMp.y);
+
+      if (action == GLFW_PRESS)
+      {
+        _vMs = glm::vec2(1) - (vM / wD);
+        _vMe = _vMs;
+
+        _iIdx = _vMs * glm::fvec2(_nI);
+
+        _bMouseMotion = true;
+      }
+    }
+
+    if (action == GLFW_RELEASE)
+    {
+      if (_bMouseMotion)
+      {
+      glm::vec2 vM = glm::vec2(vMp.x- wT.x,vMp.y);
+
+        _vMe  = glm::vec2(1) - (vM / wD);
+
+        _aP   = glm::distance(_vMe,_vMs) * 2.0f;
+        _aP   = glm::clamp(_aP,0.0f,1.0f);
+      }
+
+      _bMouseMotion = false;
+    }
+  }
+  else
+    _bMouseMotion = false;
+}
+
+
+//---------------------------------------------------------------------
 // updateWindowTitle
 //---------------------------------------------------------------------
 void Executor::updateWindowTitle(void) 
 {
 char buf[512];
 
-  sprintf(buf,"%s - (%d,%d) - Focus: %.2f - fps: %.2f",
+  sprintf(buf,"%s - (%d,%d) - (%d,%d) - Aperture: %.2f - Focus: %.2f - Idx: (%d,%d) - fps: %.2f",
               _sarLst[_sarIdx]->name().c_str(),
+              _nI.y,_nI.x,
               _iS.y,_iS.x,
+              _aP,
               _focus,
+              _iIdx.x,_iIdx.y,
               _fps);
 
   glfwSetWindowTitle(_pWindow,buf);
@@ -224,6 +330,32 @@ void Executor::renderSar(glm::mat4 &mP,glm::mat4 &mV,RenderGL::Texture &mcTex,Re
 
 
 //---------------------------------------------------------------------
+// writeImage
+//---------------------------------------------------------------------
+void Executor::writeImage(void) 
+{
+cv::Mat         img(_wS.y,_wS.x,CV_8UC3);
+static uint32_t n(0);
+std::string     fName = _sarLst[_sarIdx]->name();
+
+  fName += "_";
+  fName += std::to_string(n);
+  fName += ".png";
+
+  glReadBuffer(GL_BACK);
+  glReadPixels(0,0,(GLsizei)_wS.x,(GLsizei)_wS.y,GL_BGR,GL_UNSIGNED_BYTE,img.data); 
+    
+  cv::flip(img,img,0);
+
+  cv::imwrite(fName.c_str(),img);
+
+  std::cout << "Saved: " << fName << std::endl;
+
+  n++;
+}
+
+
+//---------------------------------------------------------------------
 // exec
 //---------------------------------------------------------------------
 int Executor::exec(void) 
@@ -235,6 +367,7 @@ glm::vec4   clr     = glm::vec4(255,221,244,0) / 255;  // Pink Lace
   glActiveTexture(GL_TEXTURE0);
 
   glClearColor(clr.r,clr.g,clr.b,clr.a);
+  setSarIdx(SAR_NONE);
 
   while (!glfwWindowShouldClose(_pWindow))
   {
@@ -386,6 +519,8 @@ int rc = -1;
       glfwSetWindowUserPointer(_pWindow,this);
 
       glfwSetKeyCallback          (_pWindow,Keyboard_Callback);
+      glfwSetMouseButtonCallback  (_pWindow,MouseButton_Callback);
+      glfwSetCursorPosCallback    (_pWindow,CursorPosition_Callback); 
 
 #ifdef _WIN32
       glewExperimental = GL_TRUE;
@@ -546,6 +681,46 @@ int rc  = 0;
 }
 
 
+
+//---------------------------------------------------------------------
+// instructions
+//---------------------------------------------------------------------
+void Executor::instructions(void) 
+{
+  std::cout << std::endl;
+  std::cout << "Aperture Instructions" << std::endl;
+  std::cout << "---------------------" << std::endl;
+
+  std::cout << "Input .png files need to of the form: name_y_x_v_u.png"                                  << std::endl;
+  std::cout << "The .png files should be rectified and cropped"                                            << std::endl;
+  std::cout << "See the New Stanford Light Field Archive (https://graphics.stanford.edu/data/LF/lfs.html)" << std::endl;
+  std::cout << "   for details and example datasets"                                                       << std::endl;
+  std::cout << "Key" << std::endl;
+
+  std::cout << "Insert      - Move focal plane back"                << std::endl;
+  std::cout << "Delete      - Move focal plane forward"             << std::endl;
+  std::cout << "PageUp      - Increase aperture"                    << std::endl;
+  std::cout << "PageDown    - Decrease aperture"                    << std::endl;
+  std::cout << "Home        - Reset"                                << std::endl;
+  std::cout << "End         - Save screenshot/framebuffer"          << std::endl;
+  std::cout << "Left Arrow  - Decrease horizontal subimage index"   << std::endl;
+  std::cout << "Right Arrow - Increase horizontal subimage index"   << std::endl;
+  std::cout << "Up Arrow    - Decrease vertical subimage index"     << std::endl;
+  std::cout << "Down Arrow  - Increase vertical subimage index"     << std::endl;
+  std::cout << "Esc         - Quit"                                 << std::endl;
+  std::cout << std::endl;
+
+  std::cout << "Or left mouse click and drag the mini light-field image in the upper right corner of the window"  << std::endl;
+  std::cout << std::endl;
+
+  std::cout << "0           - SarNone: No synthetic aperture rendering, view full lightfield image"  << std::endl;
+  std::cout << "1           - SarCpp:  Synthetic aperture rendering in C++"                          << std::endl;
+  std::cout << "2           - SarCV:   Synthetic aperture rendering using OpenCV"                    << std::endl;
+  std::cout << "3           - SarGL:   Synthetic aperture rendering using OpenGL GLSL"               << std::endl;
+  std::cout << std::endl;
+}
+
+
 //---------------------------------------------------------------------
 // init
 //---------------------------------------------------------------------
@@ -640,7 +815,10 @@ Executor::Executor(void) : _pWindow(0),
                            _bHLst(true),
                            _timer(),
                            _nC(0),
-                           _fps(0)
+                           _fps(0),
+                           _bMouseMotion(false),
+                           _vMs(),
+                           _vMe()
 {
 }
 

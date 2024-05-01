@@ -106,6 +106,10 @@ namespace Lf
         uint32_t                  _nC;
         float                     _fps;
 
+        bool                      _bMouseMotion;
+        glm::fvec2                _vMs;
+        glm::fvec2                _vMe;
+
       public:   
 
       // Methods
@@ -136,8 +140,6 @@ namespace Lf
         int         initGLFW    (void);
         int         initGraphics(void);
         GLFWwindow  *initWindow (const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
-
-        void motionUpdate(GLFWwindow *pW);
 
         void  updateHomographies(void);
 
@@ -193,7 +195,14 @@ namespace Lf
           resetFps();
         }  
 
+        void  mouseMotion(glm::fvec2 &vMp);
+        void  mouseButton(glm::fvec2 &vMp,int action);
+
+        void  writeImage(void); 
+  
         int   exec(void);
+
+        void  instructions(void);
 
         int   init(const char *pDir);
         void  destroy(void);
