@@ -307,7 +307,7 @@ glm::mat4   mM(1);
   mM = glm::scale(mM,glm::vec3(s));
 
   _pMapShader->use();
-  _pMapShader->setTextureSampler(0);
+  _pMapShader->bindTextureSampler(0);
   _pMapShader->bindMVP(mP * mV * mM);
   _pMapShader->bindImageIndex(_iIdx);
   _pMapShader->bindNumImages(_nI);

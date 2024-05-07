@@ -49,7 +49,7 @@ void SarGL::render(const glm::mat4 &mP,const glm::mat4 &mV,
 {
   _pShader->use();
   _pShader->bindMVP(mP * mV);
-  _pShader->setTextureSampler(0);
+  _pShader->bindTextureSampler(0);
   _pShader->bindAperture(_aP);
   _pShader->bindImageIndex(_iIdx);
 

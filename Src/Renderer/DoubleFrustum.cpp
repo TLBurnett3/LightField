@@ -202,7 +202,7 @@ glm::vec3 vT    = vD * zN;
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   _pShader->use();
-  _pShader->setTextureSampler(0);
+  _pShader->bindTextureSampler(0);
 
   // back frustum, away from viewer into the display
   if (1)

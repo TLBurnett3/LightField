@@ -49,7 +49,7 @@ void SarNone::render(const glm::mat4 &mP,const glm::mat4 &mV,
 {
   pS->use();
   pS->bindMVP(mP * mV);
-  pS->setTextureSampler(0);
+  pS->bindTextureSampler(0);
 
   mcTex.bind();
   vao.render();

@@ -66,14 +66,14 @@ int   rc = BasicShader::compile();
       std::cout << "Failed to locate nI\n";
       rc = -1;
     }
-/*
+
     _locAperture     = glGetUniformLocation(_programShaderId,"aD");     
 
     if (_locAperture < 0)
     {
       std::cout << "Failed to locate aD\n";
       rc = -1;
-    }*/
+    }
   }
 
   return rc;
@@ -83,7 +83,10 @@ int   rc = BasicShader::compile();
 //---------------------------------------------------------------------
 // MapShader
 //---------------------------------------------------------------------
-MapShader::MapShader(const char *pName) : BasicShader(pName)
+MapShader::MapShader(const char *pName) : BasicShader(pName),
+                                          _locImageIndex(-1),
+                                          _locNumImages(-1),
+                                          _locAperture(-1)
 {
 }
 

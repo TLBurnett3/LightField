@@ -88,7 +88,7 @@ float       n(0);
   {
     pS->use();
     pS->bindMVP(mP * mV);
-    pS->setTextureSampler(0);
+    pS->bindTextureSampler(0);
   
     _dTex.upload(_dImg);
     _dTex.bind();

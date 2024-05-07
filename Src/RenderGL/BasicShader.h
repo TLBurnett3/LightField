@@ -63,7 +63,7 @@ namespace Lf
       protected:
 
       public:
-        EXPORT void setTextureSampler(const int t) const
+        EXPORT void bindTextureSampler(const int t) const
         { glUniform1i(_locTexSampler,t); }
 
         EXPORT void bindMVP(const glm::mat4 &mT) const
