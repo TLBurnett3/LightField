@@ -1,7 +1,7 @@
 
 set (OpenCV_DIR ${3RDPARTY_BASE_DIR})
 
-find_package(OpenCV	REQUIRED)
+find_package(OpenCV)
 
 set(OpenCV_VERSION_S    490)
 

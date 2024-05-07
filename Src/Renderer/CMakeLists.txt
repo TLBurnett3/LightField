@@ -1,7 +1,7 @@
 
 cmake_minimum_required (VERSION 3.6)
 
-project(LightField)
+project(Renderer)
 
 include_directories(${CMAKE_INCLUDE_PATH})
 include_directories(${3RDPARTY_INC_DIR})

@@ -38,7 +38,7 @@
 
 // LightField
 #include "RenderGL/Def.h"
-#include "LightField/Executor.h"
+#include "Renderer/Executor.h"
 #include "Core/Timer.h"
 #include "Tasks/ProofImage.h"
 #include "Tasks/WriteAvi.h"

@@ -33,9 +33,9 @@
 // 3rd Party Libs
 
 // LightField
-#include "LightField/Executor.h"
-#include "LightField/DoubleFrustum.h"
-#include "LightField/Oblique.h"
+#include "Renderer/Executor.h"
+#include "Renderer/DoubleFrustum.h"
+#include "Renderer/Oblique.h"
 //---------------------------------------------------------------------
 
 

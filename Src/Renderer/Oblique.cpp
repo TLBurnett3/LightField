@@ -38,7 +38,7 @@
 
 // LightField
 #include "RenderGL/Def.h"
-#include "LightField/Oblique.h"
+#include "Renderer/Oblique.h"
 #include "Core/Timer.h"
 #include "HogelDef/Camera.h"
 #include "Tasks/ProofImage.h"

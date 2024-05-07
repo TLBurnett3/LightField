@@ -35,14 +35,14 @@ endif (WIN32)
 set (CMAKE_DEBUG_POSTFIX      d)
 set (CMAKE_CXX_STANDARD       17)
 
-set (CMAKE_MODULE_PATH        ${CMAKE_INSTALL_PREFIX}
-                              ${CMAKE_INSTALL_PREFIX}/cmake
-                              ${CMAKE_INSTALL_PREFIX}/lib/cmake
+set (CMAKE_MODULE_PATH        ${3RDPARTY_BASE_DIR}
+                              ${3RDPARTY_BASE_DIR}/cmake
+                              ${3RDPARTY_BASE_DIR}/lib/cmake
                               )
 
-set (CMAKE_PREFIX_PATH        ${CMAKE_INSTALL_PREFIX}
-                              ${CMAKE_INSTALL_PREFIX}/cmake
-                              ${CMAKE_INSTALL_PREFIX}/lib/cmake
+set (CMAKE_PREFIX_PATH        ${3RDPARTY_BASE_DIR}
+                              ${3RDPARTY_BASE_DIR}/cmake
+                              ${3RDPARTY_BASE_DIR}/lib/cmake
                               )
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY			         ${CMAKE_BINARY_DIR}/bin)

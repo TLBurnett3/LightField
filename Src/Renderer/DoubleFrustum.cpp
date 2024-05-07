@@ -38,7 +38,7 @@
 
 // LightField
 #include "RenderGL/Def.h"
-#include "LightField/DoubleFrustum.h"
+#include "Renderer/DoubleFrustum.h"
 #include "Core/Timer.h"
 #include "Tasks/ProofImage.h"
 #include "Tasks/WriteAvi.h"
