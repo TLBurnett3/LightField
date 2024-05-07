@@ -285,7 +285,7 @@ void Executor::updateHomographies(void)
   }
 
   _bHLst = false;
-  _sarLst[_sarIdx]->setHomographies(&_mHLst);
+  _sarLst[_sarIdx]->bindHomographies(&_mHLst);
   resetFps();
 }
 
@@ -323,8 +323,8 @@ glm::mat4   mM(1);
 //---------------------------------------------------------------------
 void Executor::renderSar(glm::mat4 &mP,glm::mat4 &mV,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao) 
 {
-  _sarLst[_sarIdx]->setSubImageIdx(_iIdx);
-  _sarLst[_sarIdx]->setAperture(_aP);
+  _sarLst[_sarIdx]->bindSubImageIdx(_iIdx);
+  _sarLst[_sarIdx]->bindAperture(_aP);
   _sarLst[_sarIdx]->render(mP,mV,_pShader,_mcTex,_vao);
 }
 

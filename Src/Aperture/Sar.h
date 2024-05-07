@@ -79,22 +79,22 @@ namespace Lf
         std::string name(void)
         { return _sName; }
 
-        virtual void setAperture(float a)
-        { _aP = a; }
-
-        virtual void setSubImageIdx(const glm::ivec2 &iIdx)
-        { _iIdx = iIdx; }
-
         virtual void setWindowSize(const glm::ivec2 &wS)
         { _wS = wS; }
 
-        virtual void setSubImageSize(const glm::ivec2 &iS)
+        virtual void bindAperture(float a)
+        { _aP = a; }
+
+        virtual void bindSubImageIdx(const glm::ivec2 &iIdx)
+        { _iIdx = iIdx; }
+
+        virtual void bindSubImageSize(const glm::ivec2 &iS)
         { _iS = iS; }
 
-        virtual void setNumImages(const glm::ivec2 &nI)
+        virtual void bindNumImages(const glm::ivec2 &nI)
         { _nI = nI; }
 
-        virtual void setHomographies(const MatrixLst *pHMLst)
+        virtual void bindHomographies(const MatrixLst *pHMLst)
         { _pMHLst = pHMLst; }
 
         virtual void render(const glm::mat4 &mP,const glm::mat4 &mV,
