@@ -69,7 +69,7 @@ Lf::HogelDef::Camera  camera;
   camera.setBowTiePerspective(fov,a); 
 
   _pShader->bindFrameBuffer(_pFrameBuffer);
-  _pShader->bindViewport(glm::vec2(0),glm::vec2(hS));
+  _pShader->bindViewport(glm::vec2(0.0f),glm::vec2(hS));
   _pShader->bindProjection(camera.projection());
   _pShader->bindVolume(mVol);
   _pShader->bindHogelPlane(_pHogelPlane);

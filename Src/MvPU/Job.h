@@ -74,7 +74,7 @@ namespace Lf
       private:
       protected:
       public:
-        EXPORT virtual int Job::parseDocument(Core::JSon::Value &doc);
+        EXPORT virtual int parseDocument(Core::JSon::Value &doc);
 
         EXPORT Job(void);
         EXPORT virtual ~Job();

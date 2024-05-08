@@ -30,6 +30,7 @@
 // Includes
 // System
 #include <assert.h>
+#include <stdio.h>
 
 //3rdPartyLibs
 
@@ -80,31 +81,31 @@ char  buf[256];
 
 const char  *p  = "Triangles";
  
-  sprintf_s(buf,"%20s: %-12s","Mesh",_mName.c_str());
+  sprintf(buf,"%20s: %-12s","Mesh",_mName.c_str());
   s << idt << buf << std::endl;
 
-  sprintf_s(buf,"%22s %-12s: %-10d","",p,_numFaces);
+  sprintf(buf,"%22s %-12s: %-10d","",p,_numFaces);
   s << idt << buf << std::endl;
 
-  sprintf_s(buf,"%22s %-12s: %-10d","","Vertices",_numVertices);
+  sprintf(buf,"%22s %-12s: %-10d","","Vertices",_numVertices);
   s << idt << buf << std::endl;
 
-  sprintf_s(buf,"%22s %-12s: %-10d","","Normals",_numNormals);
+  sprintf(buf,"%22s %-12s: %-10d","","Normals",_numNormals);
   s << idt << buf << std::endl;
 
-  sprintf_s(buf,"%22s %-12s: %-10d","","TexCoords",_numTexCoords);
+  sprintf(buf,"%22s %-12s: %-10d","","TexCoords",_numTexCoords);
   s << idt << buf << std::endl;
 
-  sprintf_s(buf,"%22s %-12s: (%f,%f,%f)","","vMin",vMin().x,vMin().y,vMin().z);
+  sprintf(buf,"%22s %-12s: (%f,%f,%f)","","vMin",vMin().x,vMin().y,vMin().z);
   s << idt << buf << std::endl;
 
-  sprintf_s(buf,"%22s %-12s: (%f,%f,%f)","","vMax",vMax().x,vMax().y,vMax().z);
+  sprintf(buf,"%22s %-12s: (%f,%f,%f)","","vMax",vMax().x,vMax().y,vMax().z);
   s << idt << buf << std::endl;
 
-  sprintf_s(buf,"%22s %-12s: (%f,%f,%f)","","vCen",cen().x,cen().y,cen().z);
+  sprintf(buf,"%22s %-12s: (%f,%f,%f)","","vCen",cen().x,cen().y,cen().z);
   s << idt << buf << std::endl;
 
-  sprintf_s(buf,"%22s %-12s: %f","","Radius",radius());
+  sprintf(buf,"%22s %-12s: %f","","Radius",radius());
   s << idt << buf << std::endl;
 
  // if (detail)

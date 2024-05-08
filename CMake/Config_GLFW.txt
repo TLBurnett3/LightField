@@ -15,7 +15,7 @@ if (WIN32)
 endif (WIN32)
 
 if (UNIX)
-  set (GLFW3_LIBRARY                         glfw3)
+  set (GLFW3_RELEASE_LIBRARY                         glfw3)
 endif (UNIX)
 
 message("")

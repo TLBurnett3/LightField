@@ -44,18 +44,18 @@
 //---------------------------------------------------------------------
 int main(int argc,char *argv[])
 {
-int             rc    = 0;
-char            *p    = "Cfg/Default.json";
-Lf::Core::SpJob spJob = std::make_shared<Lf::Core::Job>();
+int                   rc    = 0;
+Lf::Core::SpJob       spJob = std::make_shared<Lf::Core::Job>();
+std::filesystem::path fPath("Cfg/Default.json");
 
   if (argc > 1)
-    p = argv[1];
+    fPath = std::filesystem::path(argv[1]);
     
   std::cout << "LightField Initialization\n";
 
-  std::cout << "Parsing job file: " << p << std::endl;
+  std::cout << "Parsing job file: " << fPath << std::endl;
 
-  rc = spJob->parse(std::filesystem::path(p));
+  rc = spJob->parse(fPath);
 
   spJob->print(std::cout);
 

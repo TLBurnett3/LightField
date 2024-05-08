@@ -1,20 +1,24 @@
 
 if (WIN32)
-  message("           GLEW Variables")
-
   #find_package(glew REQUIRED)
 
   set( GLEW_LIBRARIES                               ${3RDPARTY_LIB_DIR}/glew32.lib)
   set (GLEW_INCLUDE_DIR                             ${3RDPARTY_INC_DIR})
 
-  message("           GLEW_INCLUDE_DIR:     "      ${GLEW_INCLUDE_DIR})
-  message("             GLEW_LIBRARIES:     "      ${GLEW_LIBRARIES})
-  message("")
-
   install (FILES      ${3RDPARTY_BIN_DIR}/glew32.dll      CONFIGURATIONS Debug   DESTINATION bin)
   install (FILES      ${3RDPARTY_BIN_DIR}/glew32.dll      CONFIGURATIONS Release DESTINATION bin)
 
 endif(WIN32)
+
+if (UNIX)
+ # set( GLEW_LIBRARIES                               ${3RDPARTY_LIB_DIR}/glew.lib)
+  set (GLEW_INCLUDE_DIR                             /usr/include)
+endif (UNIX)
+
+message("           GLEW Variables")
+message("           GLEW_INCLUDE_DIR:     "      ${GLEW_INCLUDE_DIR})
+message("             GLEW_LIBRARIES:     "      ${GLEW_LIBRARIES})
+message("")
 
 message("OpenGL Variables")
 

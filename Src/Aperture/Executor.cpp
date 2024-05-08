@@ -75,9 +75,6 @@ static void ErrorCallback(int error,const char * p)
   std::cout << error << ": " << p << std::endl;
 }
 
-
-
-
 //---------------------------------------------------------------------
 // CursorPosition_Callback
 //---------------------------------------------------------------------
@@ -87,7 +84,6 @@ Aperture::Executor *pE = (Aperture::Executor *)glfwGetWindowUserPointer(pW);
 
   pE->mouseMotion(glm::fvec2(xPos,yPos));
 }
-
 
 //---------------------------------------------------------------------
 // MouseButton_Callback
@@ -182,7 +178,7 @@ static void Keyboard_Callback(GLFWwindow *pW,int key,int scancode,int action,int
 //---------------------------------------------------------------------
 // mouseMotion
 //---------------------------------------------------------------------
-void Executor::mouseMotion(glm::fvec2 &vMp)
+void Executor::mouseMotion(const glm::fvec2 &vMp)
 {
   if ((_sarIdx > SAR_NONE) && _bMouseMotion)
   {
@@ -206,7 +202,7 @@ void Executor::mouseMotion(glm::fvec2 &vMp)
 //---------------------------------------------------------------------
 // mouseButton
 //---------------------------------------------------------------------
-void Executor::mouseButton(glm::fvec2 &vMp,int action)
+void Executor::mouseButton(const glm::fvec2 &vMp,const int action)
 {
   if (_sarIdx > SAR_NONE)
   {
@@ -481,7 +477,7 @@ char        *pS = 0;
 
     str = "Depth Buffer Bits: ";
     glGetIntegerv(GL_DEPTH_BITS, &b);
-    sprintf_s(buf,"%d",b);
+    sprintf(buf,"%d",b);
     str += buf;
 
     std::cout <<  str.c_str() << std::endl;

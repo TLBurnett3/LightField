@@ -13,6 +13,7 @@
 // Includes
 // System
 #include <memory>
+#include <cstring>
 
 // 3rdPartyLibs
 #include <glm/glm.hpp>

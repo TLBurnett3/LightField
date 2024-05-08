@@ -7,6 +7,7 @@
 // Includes
 // System
 #include <filesystem>
+#include <stdio.h>
 
 // 3rdPartyLibs
 
@@ -29,7 +30,7 @@ int                     fourcc = cv::VideoWriter::fourcc('M','P','4','3');
 cv::Size                sz(img.cols,img.rows);
 char                    buf[16];
 
-  sprintf_s(buf,"_%d.avi",idx.y);
+  sprintf(buf,"_%d.avi",idx.y);
   
   fPath /= _fName;
   fPath += buf;

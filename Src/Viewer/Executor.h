@@ -85,7 +85,7 @@ namespace Lf
         float map(float x,float in_min,float in_max,float out_min,float out_max)
         { return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min; }
 
-        GLFWwindow *Executor::initWindow(const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
+        GLFWwindow *initWindow(const glm::ivec2 wD,const char *pStr,GLFWwindow *pShared,int fps,bool visible);
 
         void GLInfo(void);
 

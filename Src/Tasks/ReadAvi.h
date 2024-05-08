@@ -37,7 +37,6 @@
 // 3rd Party Libs
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <filesystem>
 
 // Lightfield
 #include "Core/Export.h"

@@ -30,6 +30,7 @@
 // System
 #include <assert.h>
 #include <iostream>
+#include <stdio.h>
 
 // 3rd Party Libs
 #include <glm/gtc/matrix_transform.hpp>
@@ -136,7 +137,7 @@ Mesh *pMesh = 0;
       static uint32_t  iMesh = 0;
       char        buf[32];
 
-        sprintf_s(buf,"%d",iMesh);
+        sprintf(buf,"%d",iMesh);
 
         name  = "Mesh_";
         name += buf; 
@@ -238,7 +239,6 @@ glm::mat4 mT      = glm::mat4(pAINode->mTransformation.a1,pAINode->mTransformati
       pNode->_nodeLst.push_back(pN);
     }
   }
-
 
   return pNode;
 }
@@ -343,7 +343,7 @@ void Model::printVec3(std::ostream &s,std::string idt,const char *name,const glm
 {
 char  buf[128];
 
-  sprintf_s(buf,"%20s: %f %f %f",name,v.x,v.y,v.z);
+  sprintf(buf,"%20s: %f %f %f",name,v.x,v.y,v.z);
   s << idt << buf << std::endl;
 }
 

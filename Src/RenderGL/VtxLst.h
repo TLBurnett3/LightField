@@ -151,8 +151,8 @@ namespace Lf
         EXPORT void  add(const glm::vec3 &v,const glm::vec3 &n,const glm::vec2 &t)
         { add(VtxVNT(v,n,t)); }
 
-        EXPORT int createQuadXY(const glm::vec3 &vP,glm::vec2 &vS);
-        EXPORT int createQuadXZ(const glm::vec3 &vP,glm::vec2 &vS);
+        EXPORT int createQuadXY(const glm::vec3 &vP,const glm::vec2 &vS);
+        EXPORT int createQuadXZ(const glm::vec3 &vP,const glm::vec2 &vS);
 
         EXPORT VtxVNTLst(void) : VtxLst(),
                                 _vtxLst()

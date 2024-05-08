@@ -195,8 +195,8 @@ namespace Lf
           resetFps();
         }  
 
-        void  mouseMotion(glm::fvec2 &vMp);
-        void  mouseButton(glm::fvec2 &vMp,int action);
+        void  mouseMotion(const glm::fvec2 &vMp);
+        void  mouseButton(const glm::fvec2 &vMp,const int action);
 
         void  writeImage(void); 
   

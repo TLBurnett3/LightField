@@ -34,6 +34,8 @@
 #include <memory>
 #include <queue>
 #include <filesystem>
+#include <mutex>
+#include <condition_variable>
 
 // 3rdPartyLibs
 #include <opencv2/highgui/highgui.hpp>

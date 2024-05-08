@@ -116,7 +116,7 @@ cv::Mat               *pProofDth(0);
       std::filesystem::path   fPath  = aviPath;
       char                    buf[32];
 
-        sprintf_s(buf,"HogelRow_%d.avi",idx.y);
+        sprintf(buf,"HogelRow_%d.avi",idx.y);
         fPath /= buf;
 
         pVideoWriter = new cv::VideoWriter();
@@ -160,7 +160,7 @@ cv::Mat               *pProofDth(0);
         std::filesystem::path   fPath  = pngPath;
         char                    buf[64];
 
-          sprintf_s(buf,"Hogel_%dx%d.png",idx.y,idx.x);
+          sprintf(buf,"Hogel_%dx%d.png",idx.y,idx.x);
           fPath /= buf;
 
           cv::imwrite(fPath.string(),rgb);

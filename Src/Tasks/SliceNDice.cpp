@@ -29,6 +29,7 @@
 // Includes
 // System
 #include <iostream>
+#include <stdio.h>
 
 // 3rdPartyLibs
 
@@ -76,7 +77,7 @@ int                     fourcc = cv::VideoWriter::fourcc('M','P','4','3');
 
   char buf[16];
 
-    sprintf_s(buf,"_%zd.avi",_yS + y);
+    sprintf(buf,"_%zd.avi",_yS + y);
 
     filePath /= _fName;
     filePath += buf;

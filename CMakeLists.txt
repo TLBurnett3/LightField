@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
 
-set (CMAKE_GENERATOR_PLATFORM x64)
 
 project(LightField)
 
@@ -16,21 +15,16 @@ set (LIGHTFIELD_MODEL_DIR      ${CMAKE_CURRENT_SOURCE_DIR}/Models)
 set (LIGHTFIELD_SHADER_DIR     ${CMAKE_CURRENT_SOURCE_DIR}/Shaders)
 
 if (WIN32)
-set (3RDPARTY_BASE_DIR          /3rdPartyLibs)
+  set (CMAKE_GENERATOR_PLATFORM   x64)
+  set (CMAKE_INSTALL_PREFIX       /TLB3)
+  set (3RDPARTY_BASE_DIR          /3rdPartyLibs)
 else (WIN32)
-set (3RDPARTY_BASE_DIR          /usr/local)
+  set (3RDPARTY_BASE_DIR          /usr/local)
 endif (WIN32)
-
 
 set (3RDPARTY_INC_DIR          ${3RDPARTY_BASE_DIR}/include)
 set (3RDPARTY_BIN_DIR          ${3RDPARTY_BASE_DIR}/bin)
 set (3RDPARTY_LIB_DIR          ${3RDPARTY_BASE_DIR}/lib)
-
-
-if (WIN32)
-  set (CMAKE_INSTALL_PREFIX   /TLB3)
-endif (WIN32)
-
 
 set (CMAKE_DEBUG_POSTFIX      d)
 set (CMAKE_CXX_STANDARD       17)
@@ -56,6 +50,9 @@ if (UNIX)
   set(CMAKE_CXX_FLAGS                       "-fPIC")
   set(CMAKE_CXX_FLAGS_DEBUG                 "-g")
   set(CMAKE_CXX_FLAGS_RELEASE               "-O3")  
+  set(CMAKE_CXX_STANDARD_LIBRARIES          "-lX11 -lGL -lGLU -lGLEW -ldl -lpthread")
+  include_directories(/usr/local/include)
+  include_directories(/usr/include)
 endif (UNIX)
 
 ##############################################################################################
@@ -112,7 +109,7 @@ install (FILES          ${LIGHTFIELD_SHADER_DIR}/Phong.frg   CONFIGURATIONS Rele
 
 set (CPACK_PACKAGE_NAME                       "LightField")
 set (CPACK_PACKAGE_VENDOR                     "TLBurnettIII")
-set (CPACK_PACKAGE_DESCRIPTION_SUMMARY        "LightField Radiance Image Rendering and Tools")
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY        "LightField Display and Camera Rendering and Tools")
 set (CPACK_PACKAGE_VERSION_MAJOR              ${LIGHTFIELD_VERSION_MAJOR})
 set (CPACK_PACKAGE_VERSION_MINOR              ${LIGHTFIELD_VERSION_MINOR})
 set (CPACK_PACKAGE_VERSION_PATCH              ${LIGHTFIELD_VERSION_PATCH})

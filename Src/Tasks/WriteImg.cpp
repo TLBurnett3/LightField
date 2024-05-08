@@ -30,6 +30,7 @@
 // Includes
 // System
 #include <filesystem>
+#include <stdio.h>
 
 // 3rdPartyLibs
 
@@ -55,7 +56,7 @@ std::filesystem::path   fPath = _dPath;
 cv::Mat                 iImg;
 char                    buf[256];
 
-  sprintf_s(buf,_fName.c_str(),idx.y,idx.x);
+  sprintf(buf,_fName.c_str(),idx.y,idx.x);
 
   fPath /= buf;
   fPath += ".";

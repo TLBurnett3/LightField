@@ -198,7 +198,7 @@ namespace Lf
         EXPORT void bindDepthScale(const float dS)
         { _depthScale = dS; }
 
-        EXPORT void bindViewport(glm::vec2 &vP,const glm::vec2 &hS)
+        EXPORT void bindViewport(const glm::vec2 &vP,const glm::vec2 &hS)
         { 
           _vVpPos = vP;
           _vVpDim = hS;

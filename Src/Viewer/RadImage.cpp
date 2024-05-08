@@ -55,7 +55,7 @@ char  buf[64];
   {
   std::filesystem::path fPath = dPath;
 
-    sprintf_s(buf,"HogelRow_%d.avi",_nH.y);
+    sprintf(buf,"HogelRow_%d.avi",_nH.y);
     fPath /= buf;
 
     {
@@ -154,7 +154,7 @@ glm::ivec2 hInc = _nH / _vS;
   std::filesystem::path fPath = _dPath;
   char  buf[64];
 
-    sprintf_s(buf,"HogelRow_%d.avi",idx.y);
+    sprintf(buf,"HogelRow_%d.avi",idx.y);
     fPath /= buf;
 
     {

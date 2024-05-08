@@ -35,11 +35,12 @@
 //#define GLEW_STATIC
 #include <GL/glew.h>
 #else
-//#include <OpenGL/GL.h>
-#define __gl_h_
-#define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
-#include <OpenGL/gl3.h>
-#include <OpenGL/gl3ext.h>
+#include <GL/glew.h>
+//#include <GL/gl.h>
+//#define __gl_h_
+//#define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
+//#include <OpenGL/gl3.h>
+//#include <OpenGL/gl3ext.h>
 #endif
 
 // 3rdPartyLibs

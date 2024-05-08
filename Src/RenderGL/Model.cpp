@@ -29,6 +29,7 @@
 // Includes
 // System
 #include <assert.h>
+#include <stdio.h>
 #include <iostream>
 
 // 3rd Party Libs
@@ -139,7 +140,7 @@ Mesh *pMesh = 0;
       static uint32_t  iMesh = 0;
       char        buf[32];
 
-        sprintf_s(buf,"%d",iMesh);
+        sprintf(buf,"%d",iMesh);
 
         name  = "Mesh_";
         name += buf; 
@@ -417,7 +418,7 @@ void Model::printVec3(std::ostream &s,std::string idt,const char *name,const glm
 {
 char  buf[128];
 
-  sprintf_s(buf,"%20s: %f %f %f",name,v.x,v.y,v.z);
+  sprintf(buf,"%20s: %f %f %f",name,v.x,v.y,v.z);
   s << idt << buf << std::endl;
 }
 

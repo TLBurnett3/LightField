@@ -300,7 +300,7 @@ char        *pS = 0;
 
     str = "Depth Buffer Bits: ";
     glGetIntegerv(GL_DEPTH_BITS, &b);
-    sprintf_s(buf,"%d",b);
+    sprintf(buf,"%d",b);
     str += buf;
 
     std::cout <<  str.c_str() << std::endl;

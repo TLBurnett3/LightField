@@ -45,3 +45,7 @@ if (WIN32)
 #  file (COPY      ${OPENCV_RELEASE_DLL}        DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIR_RELEASE})
 
 endif(WIN32)
+
+if (UNIX)
+  set(OPENCV_RELEASE_LIB   ${OpenCV_LIBS})
+endif (UNIX)

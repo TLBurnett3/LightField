@@ -42,7 +42,7 @@ using namespace RenderGL;
 //---------------------------------------------------------------------
 // createQuadXY
 //---------------------------------------------------------------------
-int  VtxVNTLst::createQuadXY(const glm::vec3 &vP,glm::vec2 &vS)
+int  VtxVNTLst::createQuadXY(const glm::vec3 &vP,const glm::vec2 &vS)
 {
 glm::vec2 hD = glm::vec2(vS) * 0.5f;
 glm::vec3 vX = glm::vec3(1,0,0) * hD.x;
@@ -63,7 +63,7 @@ glm::vec3 vZ = glm::vec3(0,0,1);
 //---------------------------------------------------------------------
 // createQuadXZ
 //---------------------------------------------------------------------
-int  VtxVNTLst::createQuadXZ(const glm::vec3 &vP,glm::vec2 &vS)
+int  VtxVNTLst::createQuadXZ(const glm::vec3 &vP,const glm::vec2 &vS)
 {
 glm::vec2 hD = glm::vec2(vS) * 0.5f;
 glm::vec3 vX = glm::vec3(1,0,0) * hD.x;
