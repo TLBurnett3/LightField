@@ -16,7 +16,7 @@ The Oblique Slice and Dice algorithm renders directions using sheared orthograph
 
 
 ## Build using CMake
-Building this project is a two-step process.  First, Group1 and Group6 of [3rdPartyLib](https://github.com/TLBurnett3/3rdPartyLibs) are required to be built and installed on the development/build platform.  Second, using CMake a platform specific make solution must be built and executed to create a build solution.  Currently, only Windows has been tested.
+Building this project is a two-step process.  First, Group1 and Group6 of [3rdPartyLib](https://github.com/TLBurnett3/3rdPartyLibs) are required to be built and installed on the development/build platform.  Second, using CMake a platform specific make solution must be built and executed to create a build solution. 
 
 ## Running Lightfield
 The Lightfield executable requires a JSon file for defining the execution parameters.  A few examples are included within the model directories: 
