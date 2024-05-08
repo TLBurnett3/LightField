@@ -1,7 +1,7 @@
 {
   "JobName": "Orchid",
   "Renderer": "DF",
-  "OutputPath": "/Tmp/Orchid",
+  "OutputPath": "./Tmp/Orchid",
   "FieldOfView": 90.0,
   "HogelSize": [ 128, 128 ],
   "NumHogels": [ 265, 265 ],

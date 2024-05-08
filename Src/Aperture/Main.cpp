@@ -46,12 +46,12 @@ int                      rc  = 0;
 char                     *p  = 0;
 Lf::Aperture::Executor  e;
 
-  std::cout << "Usage: LfCar <path to .png files>\n";
+  std::cout << "Usage: Aperture <path to .png files>\n";
 
   if (argc > 1)
     p = argv[1];
   
-  std::cout << "LfCar Initialization" << std::endl;
+  std::cout << "Aperture Initialization" << std::endl;
   if (p)
     std::cout << "Png Path: " << p << std::endl;
 
@@ -68,7 +68,7 @@ Lf::Aperture::Executor  e;
     e.destroy();
   }
 
-  std::cout << "LfCar Exit: RC " << rc << std::endl;
+  std::cout << "Aperture Exit: RC " << rc << std::endl;
 
   return rc;
 }

@@ -136,99 +136,103 @@ uint32_t   s   = 0;
 int ImgSet::load(const std::filesystem::path &dPath) 
 {
 int         rc = -1;
-glm::vec2   aMin( FLT_MAX);
-glm::vec2   aMax(-FLT_MAX);
-glm::vec2   avg(0);
 
-  for (auto const &dE : std::filesystem::directory_iterator{dPath}) 
+  if (std::filesystem::exists(dPath))
   {
-  std::filesystem::path fPath = dE.path();
-  std::filesystem::path fname = fPath.filename();
+  glm::vec2   aMin( FLT_MAX);
+  glm::vec2   aMax(-FLT_MAX);
+  glm::vec2   avg(0);
+
+    for (auto const &dE : std::filesystem::directory_iterator{dPath}) 
+    {
+    std::filesystem::path fPath = dE.path();
+    std::filesystem::path fname = fPath.filename();
   
-    std::cout << "Loading: " << fPath.filename();
+      std::cout << "Loading: " << fPath.filename();
+
+      {
+      const char  *pD = "_\n\0";
+      char        *p  = 0;
+      uint32_t    i   = 0;
+      ImgData     imgData;
+      char        *pT[10];
+      char        buf[512+1];
+
+        strncpy(buf,fname.string().c_str(),512);
+
+        p = strtok(buf,pD);
+
+        do 
+        {
+          pT[i] = p;
+          i++;
+
+          p = strtok(0,pD);
+        }
+        while ((p != 0) && (i < 10));
+
+        if (i > 2)
+        {
+          imgData._idx.y = atoi(pT[1]);
+          imgData._idx.x = atoi(pT[2]);
+
+          _nI = glm::max(_nI,imgData._idx + 1);
+
+          std::cout << "  " << imgData._idx.y << "," << imgData._idx.x;
+
+          if (i > 4)
+          {
+            imgData._pos.y = atof(pT[3]);
+            imgData._pos.x = atof(pT[4]);
+
+            aMin = glm::min(aMin,imgData._pos);
+            aMax = glm::max(aMax,imgData._pos);
+            avg += imgData._pos;
+
+            std::cout << "  " << imgData._pos.y << "," << imgData._pos.x;
+          }
+        }
+
+        imgData._img = cv::imread(fPath.string());
+
+        if (!imgData._img.empty())
+        {
+        glm::ivec2 iS(imgData._img.cols,imgData._img.rows);
+
+          if (_imgSet.empty())
+            _iS = iS;
+
+          std::cout << "  " << imgData._img.rows << "," << imgData._img.cols;
+
+          if (_iS == iS)
+          {
+            std::cout << "  Success" << std::endl;
+            _imgSet.emplace_back(imgData);
+            rc = 0;
+          }
+        } 
+      }   
+    }
+
+    avg /= (float)_imgSet.size();
 
     {
-    const char  *pD = "_\n\0";
-    char        *p  = 0;
-    uint32_t    i   = 0;
-    ImgData     imgData;
-    char        *pT[10];
-    char        buf[512+1];
+    glm::vec2  uv = 0.9f / (aMax - aMin);
+    float      s  = (uv.x < uv.y ? uv.x : uv.y);
 
-      strncpy(buf,fname.string().c_str(),512);
-
-      p = strtok(buf,pD);
-
-      do 
+      for (size_t i = 0;i < _imgSet.size();i++)
       {
-        pT[i] = p;
-        i++;
-
-        p = strtok(0,pD);
-      }
-      while ((p != 0) && (i < 10));
-
-      if (i > 2)
-      {
-        imgData._idx.y = atoi(pT[1]);
-        imgData._idx.x = atoi(pT[2]);
-
-        _nI = glm::max(_nI,imgData._idx + 1);
-
-        std::cout << "  " << imgData._idx.y << "," << imgData._idx.x;
-
-        if (i > 4)
-        {
-          imgData._pos.y = atof(pT[3]);
-          imgData._pos.x = atof(pT[4]);
-
-          aMin = glm::min(aMin,imgData._pos);
-          aMax = glm::max(aMax,imgData._pos);
-          avg += imgData._pos;
-
-          std::cout << "  " << imgData._pos.y << "," << imgData._pos.x;
-        }
-      }
-
-      imgData._img = cv::imread(fPath.string());
-
-      if (!imgData._img.empty())
-      {
-      glm::ivec2 iS(imgData._img.cols,imgData._img.rows);
-
-        if (_imgSet.empty())
-          _iS = iS;
-
-        std::cout << "  " << imgData._img.rows << "," << imgData._img.cols;
-
-        if (_iS == iS)
-        {
-          std::cout << "  Success" << std::endl;
-          _imgSet.emplace_back(imgData);
-          rc = 0;
-        }
-      } 
-    } 
-  }
-
-  avg /= (float)_imgSet.size();
-
-  {
-  glm::vec2  uv = 0.9f / (aMax - aMin);
-  float      s  = (uv.x < uv.y ? uv.x : uv.y);
-
-    for (size_t i = 0;i < _imgSet.size();i++)
-    {
-      _imgSet[i]._uv = s * (_imgSet[i]._pos - avg);
+        _imgSet[i]._uv = s * (_imgSet[i]._pos - avg);
 
   //    std::cout << i << " " << _imgSet[i]._uv.x <<  "," << _imgSet[i]._uv.y << std::endl;
+      }
     }
+
+    _aP = glm::max(aMax.y - aMin.y,aMax.x - aMin.x);
+
+    std::cout << "Num Images: " << _nI.y << "," << _nI.x << std::endl;
+    std::cout << " Aperture: " << _aP << std::endl;
   }
-
-  _aP = glm::max(aMax.y - aMin.y,aMax.x - aMin.x);
-
-  std::cout << "Num Images: " << _nI.y << "," << _nI.x << std::endl;
-  std::cout << " Aperture: " << _aP << std::endl;
 
   return rc;
 }

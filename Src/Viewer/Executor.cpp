@@ -340,11 +340,8 @@ int rc = -1;
       glfwSetMouseButtonCallback  (_pWindow,MouseButton_Callback);
       glfwSetCursorPosCallback    (_pWindow,MouseMotion_Callback);
 
-
-#ifdef _WIN32
       glewExperimental = GL_TRUE;
       glewInit();
-#endif   
 
       GLInfo();
 

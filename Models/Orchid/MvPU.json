@@ -2,7 +2,7 @@
   "JobName": "Orchid",
   "Renderer": "BT",
   "Algorithm": "IntMap",
-  "OutputPath": "/Tmp/Orchid",
+  "OutputPath": "./Tmp/Orchid",
   "FieldOfView": 90.0,
   "HogelSize": [ 128, 128 ],
   "NumHogels": [ 256, 256 ],

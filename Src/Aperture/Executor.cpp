@@ -506,7 +506,7 @@ int rc = -1;
 
   if (glfwInit())    
   {
-    _pWindow = initWindow(_wS,"Lightfield Viewer",0,0,true);
+    _pWindow = initWindow(_wS,"Aperture",0,0,true);
 
     if (_pWindow)
     {
@@ -518,10 +518,8 @@ int rc = -1;
       glfwSetMouseButtonCallback  (_pWindow,MouseButton_Callback);
       glfwSetCursorPosCallback    (_pWindow,CursorPosition_Callback); 
 
-#ifdef _WIN32
       glewExperimental = GL_TRUE;
       glewInit();
-#endif   
 
       GLInfo();
 

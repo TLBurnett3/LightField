@@ -342,10 +342,8 @@ int   rc = -1;
 
       glfwSetKeyCallback          (_pWindow,Keyboard_Callback);
 
-#ifdef _WIN32
       glewExperimental = GL_TRUE;
       glewInit();
-#endif   
 
       GLInfo();
 
