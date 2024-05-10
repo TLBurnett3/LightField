@@ -14,14 +14,12 @@ set (HEADERS
   JSon.h
   Job.h
   Timer.h
-  ImgSet.h
   Template.h
 )
 
 set(SOURCE
   JSon.cpp
   Job.cpp
-  ImgSet.cpp
   Template.cpp
 )
 

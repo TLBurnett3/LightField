@@ -72,8 +72,6 @@ int   rc = 0;
 
   _pShader = new SarShader("SarGL");
 
-  _iS = iS;
-
   rc |= _pShader->addVertexShader  ("./Shaders/Default3D.vtx");
   rc |= _pShader->addFragmentShader("./Shaders/Aperture.frg");
 
@@ -97,7 +95,6 @@ int   rc = 0;
 //---------------------------------------------------------------------
 SarGL::SarGL(void) : Sar("SarGL"),
                      _pShader(0)
-
 {
 }
 

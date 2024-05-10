@@ -39,8 +39,8 @@
 #include <GLFW/glfw3.h>
 
 // LightField
-#include "Core/ImgSet.h"
 #include "Core/Timer.h"
+#include "RadImg/MultCamImageSet.h"
 #include "RenderGL/VtxLst.h"
 #include "RenderGL/Texture.h"
 #include "RenderGL/VtxArrayObj.h"
@@ -80,11 +80,8 @@ namespace Lf
         GLFWwindow                *_pWindow;
         glm::ivec2                _wS;
 
-        Core::ImgSet              _imgSet;
-        
-        cv::Mat                   _mcImg;
-        glm::ivec2                _nI;
-        glm::ivec2                _iS;
+        RadImg::SpMultCamImageSet _spMCImgSet;
+        RadImg::SpMultCamImage    _spMCImg;
 
         RenderGL::BasicShader     *_pShader;
         RenderGL::VtxArrayObj     _vao;
@@ -181,7 +178,7 @@ namespace Lf
 
         void  incSubImgIdx(const glm::ivec2 &inc)
         { 
-          _iIdx = glm::clamp(_iIdx +  inc,glm::ivec2(0),_nI -1); 
+          _iIdx = glm::clamp(_iIdx +  inc,glm::ivec2(0),_spMCImgSet->numImages() -1); 
           resetFps();
         } 
 
@@ -189,7 +186,7 @@ namespace Lf
         {
           _focus = 0,
           _aP    = 0;
-          _iIdx  = _nI >> 1;
+          _iIdx  = _spMCImgSet->numImages() >> 1;
           _bHLst = true;
 
           resetFps();

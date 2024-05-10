@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// SarCpp.h
+// MultCamImage.h
 // Thomas Burnett
 
 #pragma once
@@ -35,8 +35,7 @@
 // 3rdPartyLibs
 
 // LightField
-#include "Aperture/Sar.h"
-#include "RadImg/MultCamImage.h"
+#include "RadImg/Image.h"
 //---------------------------------------------------------------------
 
 
@@ -44,9 +43,9 @@
 // Classes
 namespace Lf
 {
-  namespace Aperture
+  namespace RadImg
   {
-    class SarCpp : public Sar
+    class MultCamImage : public Image
     {
       // Defines
       private:
@@ -57,25 +56,20 @@ namespace Lf
       private:
       protected:
       public:   
-        RadImg::SpMultCamImage    _spMCImg;
-
-        cv::Mat             _dImg;
-        RenderGL::Texture   _dTex;
 
       // Methods
       private:
       protected:
-      public:   
 
-        virtual void render(const glm::mat4 &mP,const glm::mat4 &mV,
-                            RenderGL::BasicShader *pS,
-                            RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
+      public:
+             
+        EXPORT MultCamImage(void);
+        EXPORT virtual ~MultCamImage();
 
-        virtual int init(RadImg::SpMultCamImage &spMCImg);
-  
-        SarCpp(void);
-       ~SarCpp();
+      friend class MultCamImageSet;
     };
+
+    typedef std::shared_ptr<MultCamImage>   SpMultCamImage;
   };
 };
 //---------------------------------------------------------------------

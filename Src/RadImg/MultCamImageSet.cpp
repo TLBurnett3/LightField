@@ -22,63 +22,93 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// SarCV.h
+// MultCamImageSet.cpp 
 // Thomas Burnett
-
-#pragma once
 
 
 //---------------------------------------------------------------------
 // Includes
 // System
+#include <iostream>
 
 // 3rdPartyLibs
 
 // LightField
-#include "Aperture/Sar.h"
 #include "RadImg/MultCamImageSet.h"
+
+using namespace Lf;
+using namespace RadImg;
 //---------------------------------------------------------------------
 
 
 //---------------------------------------------------------------------
-// Classes
-namespace Lf
+// createPlenopticImage 
+// Thomas Burnett
+// November  16, 2013
+//---------------------------------------------------------------------
+int MultCamImageSet::create(MultCamImage &mci)
 {
-  namespace Aperture
+int         rc = -1;
+glm::ivec2  sz = _nI * _iS;
+glm::ivec2  iIdx;
+glm::ivec2  nIdx;
+
+  mci._img.create(sz.y,sz.x,CV_8UC3);
+
+  if (!mci._img.empty())
   {
-    class SarCV : public Sar
-    {
-      // Defines
-      private:
-      protected:
-      public:
+  unsigned  char  *pD = mci._img.data;
+  unsigned  char  *pS = 0;
 
-      // Members
-      private:
-      protected:
-      public:   
-        RadImg::SpMultCamImageSet    _spMCImgSet;
+    std::cout << "Slicing Multi-Camera Image:  " <<  sz.y << "," << sz.x << std::endl;
 
-        cv::Mat             _wImg;
-        cv::Mat             _tImg;
-        cv::Mat             _dImg;
+    mci._iS = _iS;
+    mci._nI = _nI;
 
-        RenderGL::Texture   _dTex;
+    for (nIdx.y = 0;nIdx.y < _nI.y;nIdx.y++)
+    {  
+      for (iIdx.y = 0;iIdx.y < _iS.y;iIdx.y++)
+      {
+        for (nIdx.x = 0;nIdx.x < _nI.x;nIdx.x++)
+        {
+          for (iIdx.x = 0;iIdx.x < _iS.x;iIdx.x++)
+          {  
+            pS =  _subImageLst[(nIdx.y * _nI.x) + nIdx.x]._img.data;
+            pS += iIdx.y * _iS.x * 3;
+            pS += iIdx.x * 3;
 
-      // Methods
-      private:
-      protected:
-      public:   
+            *(pD + 0) = *(pS + 0);
+            *(pD + 1) = *(pS + 1);
+            *(pD + 2) = *(pS + 2);
 
-        virtual void render(const glm::mat4 &mP,const glm::mat4 &mV,
-                            RenderGL::BasicShader *pS,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
+            pD += 3;
+          }
+        }
+      }
+    }
 
-        virtual int init(RadImg::SpMultCamImageSet &spMCImgSet);
-  
-        SarCV(void);
-       ~SarCV();
-    };
-  };
-};
+    rc = 0;
+  }
+  else
+    std::cout << "Multi-Camera image too large: " << _iS.y << "," << _iS.x << std::endl;
+
+  return rc;
+}
+
+
 //---------------------------------------------------------------------
+// MultCamImageSet
+//---------------------------------------------------------------------
+MultCamImageSet::MultCamImageSet(void) :  ImageSet()
+{
+}
+
+
+//---------------------------------------------------------------------
+// ~MultCamImageSet
+//---------------------------------------------------------------------
+MultCamImageSet::~MultCamImageSet()
+{
+
+}
 

@@ -22,61 +22,39 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// SarCpp.h
+// PlenOptImage.cpp 
 // Thomas Burnett
-
-#pragma once
 
 
 //---------------------------------------------------------------------
 // Includes
 // System
+#include <iostream>
 
 // 3rdPartyLibs
 
 // LightField
-#include "Aperture/Sar.h"
-#include "RadImg/MultCamImage.h"
+#include "RadImg/PlenOptImage.h"
+
+using namespace Lf;
+using namespace RadImg;
 //---------------------------------------------------------------------
 
 
+
 //---------------------------------------------------------------------
-// Classes
-namespace Lf
+// PlenOptImage
+//---------------------------------------------------------------------
+PlenOptImage::PlenOptImage(void) :  Image()
 {
-  namespace Aperture
-  {
-    class SarCpp : public Sar
-    {
-      // Defines
-      private:
-      protected:
-      public:
+}
 
-      // Members
-      private:
-      protected:
-      public:   
-        RadImg::SpMultCamImage    _spMCImg;
 
-        cv::Mat             _dImg;
-        RenderGL::Texture   _dTex;
-
-      // Methods
-      private:
-      protected:
-      public:   
-
-        virtual void render(const glm::mat4 &mP,const glm::mat4 &mV,
-                            RenderGL::BasicShader *pS,
-                            RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
-
-        virtual int init(RadImg::SpMultCamImage &spMCImg);
-  
-        SarCpp(void);
-       ~SarCpp();
-    };
-  };
-};
 //---------------------------------------------------------------------
+// ~PlenOptImage
+//---------------------------------------------------------------------
+PlenOptImage::~PlenOptImage()
+{
+
+}
 

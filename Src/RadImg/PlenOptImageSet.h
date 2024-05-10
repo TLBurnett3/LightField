@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// SarCpp.h
+// PlenOptImageSet.h
 // Thomas Burnett
 
 #pragma once
@@ -35,8 +35,7 @@
 // 3rdPartyLibs
 
 // LightField
-#include "Aperture/Sar.h"
-#include "RadImg/MultCamImage.h"
+#include "RadImg/ImageSet.h"
 //---------------------------------------------------------------------
 
 
@@ -44,38 +43,59 @@
 // Classes
 namespace Lf
 {
-  namespace Aperture
+  namespace RadImg
   {
-    class SarCpp : public Sar
+    class PlenOptImageSet 
     {
       // Defines
       private:
       protected:
       public:
+        typedef struct ImgData_Def
+        {
+          glm::ivec2  _idx;
+          glm::vec2   _pos;
+          glm::vec2   _uv;
+          cv::Mat     _img;
+        } ImgData;
+
+        typedef std::vector<ImgData>  ISet;
 
       // Members
       private:
       protected:
-      public:   
-        RadImg::SpMultCamImage    _spMCImg;
+        ISet        _imgSet;
+        glm::ivec2  _nI;
+        glm::ivec2  _iS;
+        float       _aP;
 
-        cv::Mat             _dImg;
-        RenderGL::Texture   _dTex;
+      public:   
 
       // Methods
       private:
       protected:
-      public:   
 
-        virtual void render(const glm::mat4 &mP,const glm::mat4 &mV,
-                            RenderGL::BasicShader *pS,
-                            RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
+      public:
+        EXPORT float apperture(void)
+        { return _aP; }
 
-        virtual int init(RadImg::SpMultCamImage &spMCImg);
-  
-        SarCpp(void);
-       ~SarCpp();
+        EXPORT size_t size(void)
+        { return _imgSet.size(); }
+
+        EXPORT ImgData *get(const size_t i)
+        { return &_imgSet[i]; }
+
+        EXPORT int createPlenopticImage(cv::Mat &img,glm::ivec2 &nH,glm::ivec2 &hS);
+
+        EXPORT int fitSize(const glm::ivec2 &mS);
+
+        EXPORT int load(const std::filesystem::path &dPath); 
+         
+        EXPORT PlenOptImageSet(void);
+        EXPORT ~PlenOptImageSet();
     };
+
+    typedef std::shared_ptr<PlenOptImageSet>   SpPlenOptImageSet;
   };
 };
 //---------------------------------------------------------------------

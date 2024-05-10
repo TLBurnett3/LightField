@@ -96,8 +96,8 @@ namespace Lf
 
 
         EXPORT virtual void upload (const uint8_t *pI,
-                             const uint16_t w,const uint16_t h,const uint16_t bpp,
-                             const GLint f = 0);
+                                    const uint16_t w,const uint16_t h,const uint16_t bpp,
+                                    const GLint f = 0);
  
         EXPORT void upload(cv::Mat &img);
 

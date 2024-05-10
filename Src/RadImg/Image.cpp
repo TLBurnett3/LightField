@@ -22,87 +22,42 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// ImgSet.h
+// Image.cpp 
 // Thomas Burnett
-
-#pragma once
 
 
 //---------------------------------------------------------------------
 // Includes
 // System
-#include <memory>
-#include <queue>
-#include <filesystem>
 
 // 3rdPartyLibs
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <glm/glm.hpp>
 
 // LightField
-#include "Core/Export.h"
-#include "Core/Thread.h"
+#include "RadImg/Image.h"
+
+using namespace Lf;
+using namespace RadImg;
 //---------------------------------------------------------------------
 
 
+
+
 //---------------------------------------------------------------------
-// Classes
-namespace Lf
+// Image
+//---------------------------------------------------------------------
+Image::Image(void) :  _img(),
+                      _nI(0),
+                      _iS(0),
+                      _coordLst()
 {
-  namespace Core
-  {
-    class ImgSet 
-    {
-      // Defines
-      private:
-      protected:
+}
 
-      public:
-        typedef struct ImgData_Def
-        {
-          glm::ivec2  _idx;
-          glm::vec2   _pos;
-          glm::vec2   _uv;
-          cv::Mat     _img;
-        } ImgData;
 
-        typedef std::vector<ImgData>  ISet;
-
-      // Members
-      private:
-      protected:
-        ISet        _imgSet;
-        glm::ivec2  _nI;
-        glm::ivec2  _iS;
-        float       _aP;
-
-      public:   
-
-      // Methods
-      private:
-      protected:
-
-      public:
-        EXPORT float apperture(void)
-        { return _aP; }
-
-        EXPORT size_t size(void)
-        { return _imgSet.size(); }
-
-        EXPORT ImgData *get(const size_t i)
-        { return &_imgSet[i]; }
-
-        EXPORT int createPlenopticImage(cv::Mat &img,glm::ivec2 &nH,glm::ivec2 &hS);
-
-        EXPORT int fitSize(const glm::ivec2 &mS);
-
-        EXPORT int load(const std::filesystem::path &dPath); 
-         
-        EXPORT ImgSet(void);
-        EXPORT ~ImgSet();
-    };
-  };
-};
 //---------------------------------------------------------------------
+// ~Image
+//---------------------------------------------------------------------
+Image::~Image()
+{
+
+}
 

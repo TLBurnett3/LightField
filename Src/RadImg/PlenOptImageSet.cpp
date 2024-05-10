@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// ImgSet.cpp 
+// PlenOptImageSet.cpp 
 // Thomas Burnett
 
 
@@ -34,10 +34,10 @@
 // 3rdPartyLibs
 
 // LightField
-#include "Core/ImgSet.h"
+#include "RadImg/PlenOptImageSet.h"
 
 using namespace Lf;
-using namespace Core;
+using namespace RadImg;
 //---------------------------------------------------------------------
 
 
@@ -47,7 +47,7 @@ using namespace Core;
 // Thomas Burnett
 // November  16, 2013
 //---------------------------------------------------------------------
-int ImgSet::createPlenopticImage(cv::Mat &img,glm::ivec2 &nI,glm::ivec2 &iS)
+int PlenOptImageSet::createPlenopticImage(cv::Mat &img,glm::ivec2 &nI,glm::ivec2 &iS)
 {
 int         rc = -1;
 glm::ivec2  sz = _nI * _iS;
@@ -100,7 +100,7 @@ glm::ivec2  nIdx;
 //---------------------------------------------------------------------
 // fitSize
 //---------------------------------------------------------------------
-int ImgSet::fitSize(const glm::ivec2 &mS) 
+int PlenOptImageSet::fitSize(const glm::ivec2 &mS) 
 {
 int        rc  = 0;
 glm::ivec2 iS  = _iS;
@@ -133,7 +133,7 @@ uint32_t   s   = 0;
 //---------------------------------------------------------------------
 // load
 //---------------------------------------------------------------------
-int ImgSet::load(const std::filesystem::path &dPath) 
+int PlenOptImageSet::load(const std::filesystem::path &dPath) 
 {
 int         rc = -1;
 
@@ -239,9 +239,9 @@ int         rc = -1;
 
 
 //---------------------------------------------------------------------
-// ImgSet
+// PlenOptImageSet
 //---------------------------------------------------------------------
-ImgSet::ImgSet(void) :  _imgSet(),
+PlenOptImageSet::PlenOptImageSet(void) :  _imgSet(),
                         _nI(0),
                         _iS(0),
                         _aP(0)
@@ -250,9 +250,9 @@ ImgSet::ImgSet(void) :  _imgSet(),
 
 
 //---------------------------------------------------------------------
-// ~ImgSet
+// ~PlenOptImageSet
 //---------------------------------------------------------------------
-ImgSet::~ImgSet()
+PlenOptImageSet::~PlenOptImageSet()
 {
 
 }

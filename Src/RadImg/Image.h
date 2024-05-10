@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// SarCpp.h
+// Image.h
 // Thomas Burnett
 
 #pragma once
@@ -31,12 +31,17 @@
 //---------------------------------------------------------------------
 // Includes
 // System
+#include <memory>
+#include <filesystem>
+#include <iostream>
 
 // 3rdPartyLibs
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <glm/glm.hpp>
 
 // LightField
-#include "Aperture/Sar.h"
-#include "RadImg/MultCamImage.h"
+#include "Core/Export.h"
 //---------------------------------------------------------------------
 
 
@@ -44,38 +49,63 @@
 // Classes
 namespace Lf
 {
-  namespace Aperture
+  namespace RadImg
   {
-    class SarCpp : public Sar
+    typedef struct Coords_Def
+    {
+      glm::vec2 _pos;
+      glm::vec2 _uv;
+    } Coords;
+
+    typedef std::vector<Coords> CoordLst;
+
+    class Image 
     {
       // Defines
       private:
       protected:
       public:
-
+  
       // Members
       private:
       protected:
-      public:   
-        RadImg::SpMultCamImage    _spMCImg;
+        cv::Mat     _img;
 
-        cv::Mat             _dImg;
-        RenderGL::Texture   _dTex;
+        glm::ivec2  _nI;
+        glm::ivec2  _iS;
+
+        CoordLst    _coordLst;
+
+      public:   
 
       // Methods
       private:
       protected:
-      public:   
 
-        virtual void render(const glm::mat4 &mP,const glm::mat4 &mV,
-                            RenderGL::BasicShader *pS,
-                            RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
+      public:
+        EXPORT cv::Mat getImage(void)
+        { return _img; }
 
-        virtual int init(RadImg::SpMultCamImage &spMCImg);
-  
-        SarCpp(void);
-       ~SarCpp();
+        EXPORT void  *getImageData(void)
+        { return _img.data; }
+
+        EXPORT glm::ivec2 numImages(void)
+        { return _nI; }
+
+        EXPORT glm::ivec2 sizeSubImages(void)
+        { return _iS; }
+
+        EXPORT void  write(const std::filesystem::path &fPath)
+        { cv::imwrite(fPath.string(),_img); }
+
+        EXPORT void  write(const char *pFPath)
+        { write(std::filesystem::path(pFPath)); }
+         
+        EXPORT Image(void);
+        EXPORT virtual ~Image();
     };
+
+    typedef std::shared_ptr<Image>   SpImage;
   };
 };
 //---------------------------------------------------------------------

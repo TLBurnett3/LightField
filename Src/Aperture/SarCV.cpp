@@ -40,30 +40,32 @@ using namespace Aperture;
 //---------------------------------------------------------------------
 
 
-
 //---------------------------------------------------------------------
 // render
 //---------------------------------------------------------------------
 void SarCV::render(const glm::mat4 &mP,const glm::mat4 &mV,
-                   RenderGL::BasicShader *pS,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao)
+                   RenderGL::BasicShader *pS,
+                   RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao)
 {
-cv::Mat     tImg(_iS.y,_iS.x,CV_32FC3,cv::Scalar(0,0,0));
-cv::Mat     wImg(_iS.y,_iS.x,CV_32FC3);
+glm::ivec2  nI   = _spMCImgSet->numImages();
+glm::ivec2  iS   = _spMCImgSet->sizeSubImages();
 cv::Mat     mH  (2,3,CV_32FC1);
-glm::ivec2  aR   = glm::vec2(_nI >> 1) * _aP;
+glm::ivec2  aR   = glm::vec2(nI >> 1) * _aP;
 glm::ivec2  bI   = _iIdx - aR;
 glm::ivec2  eI   = _iIdx + aR;
 glm::ivec2  iI(0);
 float       n(0);
 
-  bI = glm::clamp(bI,glm::ivec2(0),_nI - 1);
-  eI = glm::clamp(eI,glm::ivec2(0),_nI - 1);
+  _tImg.setTo(cv::Scalar(0,0,0));
+
+  bI = glm::clamp(bI,glm::ivec2(0),nI - 1);
+  eI = glm::clamp(eI,glm::ivec2(0),nI - 1);
 
   for (iI.y = bI.y;iI.y <= eI.y;iI.y++)
   {
     for (iI.x = bI.x;iI.x <= eI.x;iI.x++)
     {
-    int              i    = (iI.y * _nI.x) + iI.x;
+    int              i    = (iI.y * nI.x) + iI.x;
     const glm::mat4  *pMH = &((*_pMHLst)[i]);
 
       // remember, GLM/OpenGL matrices are column major
@@ -74,17 +76,18 @@ float       n(0);
       ((float *)mH.data)[4] =  (*pMH)[1][1]; 
       ((float *)mH.data)[5] = -(*pMH)[3][1];
 
-      cv::warpAffine(_imgLst[i],wImg,mH,wImg.size());
-      tImg += wImg;
+      cv::warpAffine(_spMCImgSet->getSubImg(i)->_img,_wImg,mH,_wImg.size());
+
+      _tImg += _wImg;
+
       n++;
     }
   }
 
-  tImg /= n;
+  _tImg /= n;
 
-  tImg.convertTo(_dImg,CV_8UC3);
-  
- 
+  _tImg.convertTo(_dImg,CV_8UC3);
+   
   {
     pS->use();
     pS->bindMVP(mP * mV);
@@ -101,22 +104,18 @@ float       n(0);
 //---------------------------------------------------------------------
 // init
 //---------------------------------------------------------------------
-int SarCV::init(Core::ImgSet &imgSet,const glm::ivec2 &nI,const glm::ivec2 &iS)
+int SarCV::init(RadImg::SpMultCamImageSet &spMCImgSet)
 {
-int     rc  = 0;
-size_t  n   = imgSet.size();
+int         rc  = 0;
+glm::ivec2  iS  = spMCImgSet->sizeSubImages();
   
-  for (size_t i = 0;i < n;i++)
-  {
-  cv::Mat tmp;
+  _spMCImgSet = std::make_shared<RadImg::MultCamImageSet>();
 
-    imgSet.get(i)->_img.convertTo(tmp,CV_32FC3);
-    _imgLst.push_back(tmp);
-  }
+  _spMCImgSet->convert(*spMCImgSet,CV_32FC3);
 
+  _tImg.create(iS.y,iS.x,CV_32FC3);
+  _wImg.create(iS.y,iS.x,CV_32FC3);
   _dImg.create(iS.y,iS.x,CV_8UC3);
-  _nI = nI;
-  _iS = iS;
 
   return rc;
 }
@@ -127,7 +126,9 @@ size_t  n   = imgSet.size();
 // SarCV
 //---------------------------------------------------------------------
 SarCV::SarCV(void) : Sar("SarCV"),
-                         _imgLst(),
+                         _spMCImgSet(),
+                         _tImg(),
+                         _wImg(),
                          _dImg(),
                          _dTex()
 {

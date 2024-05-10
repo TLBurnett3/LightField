@@ -62,8 +62,6 @@ namespace Lf
       protected:
         std::string     _sName;
 
-        glm::ivec2      _iS;
-        glm::ivec2      _nI;
         glm::ivec2      _wS;
         glm::ivec2      _iIdx;
         float           _aP;
@@ -87,12 +85,6 @@ namespace Lf
 
         virtual void bindSubImageIdx(const glm::ivec2 &iIdx)
         { _iIdx = iIdx; }
-
-        virtual void bindSubImageSize(const glm::ivec2 &iS)
-        { _iS = iS; }
-
-        virtual void bindNumImages(const glm::ivec2 &nI)
-        { _nI = nI; }
 
         virtual void bindHomographies(const MatrixLst *pHMLst)
         { _pMHLst = pHMLst; }

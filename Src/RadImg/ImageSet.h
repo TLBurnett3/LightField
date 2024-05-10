@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// SarCpp.h
+// ImageSet.h
 // Thomas Burnett
 
 #pragma once
@@ -31,12 +31,18 @@
 //---------------------------------------------------------------------
 // Includes
 // System
+#include <memory>
+#include <filesystem>
+#include <vector>
 
 // 3rdPartyLibs
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <glm/glm.hpp>
 
 // LightField
-#include "Aperture/Sar.h"
-#include "RadImg/MultCamImage.h"
+#include "Core/Export.h"
+#include "RadImg/Image.h"
 //---------------------------------------------------------------------
 
 
@@ -44,9 +50,19 @@
 // Classes
 namespace Lf
 {
-  namespace Aperture
+  namespace RadImg
   {
-    class SarCpp : public Sar
+    typedef struct SubImage_Def
+    {
+      glm::ivec2  _idx;
+      glm::vec2   _pos;
+      glm::vec2   _uv;
+      cv::Mat     _img;
+    } SubImage;
+
+    typedef std::vector<SubImage>  SubImageLst;
+
+    class ImageSet 
     {
       // Defines
       private:
@@ -56,26 +72,52 @@ namespace Lf
       // Members
       private:
       protected:
-      public:   
-        RadImg::SpMultCamImage    _spMCImg;
+        SubImageLst   _subImageLst;
 
-        cv::Mat             _dImg;
-        RenderGL::Texture   _dTex;
+        glm::ivec2    _nI;
+        glm::ivec2    _iS;
+        float         _aP;
+
+      public:   
 
       // Methods
       private:
       protected:
-      public:   
 
-        virtual void render(const glm::mat4 &mP,const glm::mat4 &mV,
-                            RenderGL::BasicShader *pS,
-                            RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao);
+      public:
+        EXPORT float apperture(void)
+        { return _aP; }
 
-        virtual int init(RadImg::SpMultCamImage &spMCImg);
-  
-        SarCpp(void);
-       ~SarCpp();
+        EXPORT size_t size(void)
+        { return _subImageLst.size(); }
+
+        EXPORT glm::ivec2 numImages(void)
+        { return _nI; }
+
+        EXPORT glm::ivec2 sizeSubImages(void)
+        { return _iS; }
+
+        EXPORT SubImage *getSubImg(const size_t i)
+        { return &_subImageLst[i]; }
+
+        EXPORT SubImage *getSubImg(const glm::ivec2 &idx)
+        { 
+        size_t i = (idx.y * _nI.x) + idx.x;
+
+          return &_subImageLst[i]; 
+        }
+
+        EXPORT void convert(ImageSet &iSet,uint32_t c);
+
+        EXPORT int fitSize(const glm::ivec2 &mS);
+
+        EXPORT int load(const std::filesystem::path &dPath); 
+         
+        EXPORT ImageSet(void);
+        EXPORT virtual ~ImageSet();
     };
+
+    typedef std::shared_ptr<ImageSet>   SpImageSet;
   };
 };
 //---------------------------------------------------------------------

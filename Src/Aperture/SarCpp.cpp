@@ -46,22 +46,25 @@ using namespace Aperture;
 // Tries to mirror the GLSL version
 //---------------------------------------------------------------------
 void SarCpp::render(const glm::mat4 &mP,const glm::mat4 &mV,
-                    RenderGL::BasicShader *pS,RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao)
+                    RenderGL::BasicShader *pS,
+                    RenderGL::Texture &mcTex,RenderGL::VtxArrayObj &vao)
 {
 uchar      *pD  = _dImg.data;
-glm::vec2  nP   = (_iS * _nI) - 1;
-glm::ivec2 aR   = glm::vec2(_nI >> 1) * _aP;
+glm::ivec2 nI   = _spMCImg->numImages();
+glm::ivec2 iS   = _spMCImg->sizeSubImages();
+glm::vec2  nP   = (iS * nI) - 1;
+glm::ivec2 aR   = glm::vec2(nI >> 1) * _aP;
 glm::ivec2 bI   = _iIdx - aR;
 glm::ivec2 eI   = _iIdx + aR;
 glm::ivec2 oI(0);
 glm::ivec2 iI(0);
 
-  bI = glm::clamp(bI,glm::ivec2(0),_nI - 1);
-  eI = glm::clamp(eI,glm::ivec2(0),_nI - 1);
+  bI = glm::clamp(bI,glm::ivec2(0),nI - 1);
+  eI = glm::clamp(eI,glm::ivec2(0),nI - 1);
 
-  for (oI.y = 0;oI.y < _iS.y;oI.y++)
+  for (oI.y = 0;oI.y < iS.y;oI.y++)
   {
-    for (oI.x = 0;oI.x < _iS.x;oI.x++)
+    for (oI.x = 0;oI.x < iS.x;oI.x++)
     {
     glm::vec2   fx = oI;
     glm::vec3   clr(0.0f,0.0f,0.0f);
@@ -72,17 +75,17 @@ glm::ivec2 iI(0);
       {
         for (iI.x = bI.x;iI.x <= eI.x;iI.x++)
         {
-        int         i   = (iI.y * _nI.x) + iI.x;
-        glm::vec2   dx  = glm::vec2(iI) / glm::vec2(_nI); 
+        int         i   = (iI.y * nI.x) + iI.x;
+        glm::vec2   dx  = glm::vec2(iI) / glm::vec2(nI); 
         glm::vec4   tfx =  (*_pMHLst)[i] * glm::vec4(fx,0,1);
         glm::vec2   lfx = glm::vec2(tfx);    
 
-          lfx /= glm::vec2(_iS);
-          lfx /= glm::vec2(_nI);
+          lfx /= glm::vec2(iS);
+          lfx /= glm::vec2(nI);
           dx   = glm::clamp(dx + lfx,glm::vec2(0),glm::vec2(1));  
           dx  *= nP;                     
           
-          c = _mcImg.at<cv::Vec3b>((uint32_t)dx.y,(uint32_t)dx.x);
+          c = _spMCImg->getImage().at<cv::Vec3b>((uint32_t)dx.y,(uint32_t)dx.x);
 
           clr.r += c[0];
           clr.g += c[1];
@@ -116,15 +119,13 @@ glm::ivec2 iI(0);
 //---------------------------------------------------------------------
 // init
 //---------------------------------------------------------------------
-int SarCpp::init(cv::Mat &mcImg,const glm::ivec2 &nI,const glm::ivec2 &iS)
+int SarCpp::init(RadImg::SpMultCamImage &spMCImg)
 {
 int   rc = 0;
 
-  _mcImg = mcImg;
+  _spMCImg = spMCImg;
 
-  _dImg.create(iS.y,iS.x,CV_8UC3);
-  _nI = nI;
-  _iS = iS;
+  _dImg.create(spMCImg->sizeSubImages().y,spMCImg->sizeSubImages().x,CV_8UC3);
 
   return rc;
 }
@@ -135,7 +136,7 @@ int   rc = 0;
 // SarCpp
 //---------------------------------------------------------------------
 SarCpp::SarCpp(void) : Sar("SarCpp"),
-                         _mcImg(),
+                         _spMCImg(),
                          _dImg(),
                          _dTex()
 {

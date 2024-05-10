@@ -220,7 +220,7 @@ void Executor::mouseButton(const glm::fvec2 &vMp,const int action)
         _vMs = glm::vec2(1) - (vM / wD);
         _vMe = _vMs;
 
-        _iIdx = _vMs * glm::fvec2(_nI);
+        _iIdx = _vMs * glm::fvec2(_spMCImgSet->numImages());
 
         _bMouseMotion = true;
       }
@@ -255,8 +255,8 @@ char buf[512];
 
   sprintf(buf,"%s - (%d,%d) - (%d,%d) - Aperture: %.2f - Focus: %.2f - Idx: (%d,%d) - fps: %.2f",
               _sarLst[_sarIdx]->name().c_str(),
-              _nI.y,_nI.x,
-              _iS.y,_iS.x,
+              _spMCImgSet->numImages().y,_spMCImgSet->numImages().x,
+              _spMCImgSet->sizeSubImages().y,_spMCImgSet->sizeSubImages().x,
               _aP,
               _focus,
               _iIdx.x,_iIdx.y,
@@ -274,7 +274,7 @@ void Executor::updateHomographies(void)
 {
   for (size_t i = 0;i < _mHLst.size();i++)
   {
-  glm::vec2 uv = _imgSet.get(i)->_uv;
+  glm::vec2 uv = _spMCImgSet->getSubImg(i)->_uv;
   glm::vec3 vT = glm::vec3(uv.x * _focus * 2.0f,uv.y * _focus * 2.0f,1.0f);
 
     _mHLst[i] = glm::translate(glm::mat4(1),vT);
@@ -306,7 +306,7 @@ glm::mat4   mM(1);
   _pMapShader->bindTextureSampler(0);
   _pMapShader->bindMVP(mP * mV * mM);
   _pMapShader->bindImageIndex(_iIdx);
-  _pMapShader->bindNumImages(_nI);
+  _pMapShader->bindNumImages(_spMCImgSet->numImages());
   _pMapShader->bindAperture(_aP);
 
   mcTex.bind();
@@ -548,8 +548,8 @@ int  rc = 0;
 
   if (rc == 0)
   {
-  glm::ivec2          vS = _iS;
-  glm::ivec2          nV = _nI;
+  glm::ivec2          vS = _spMCImgSet->sizeSubImages();
+  glm::ivec2          nV = _spMCImgSet->numImages();
   cv::Scalar          clr(255,221,244); // pink lace
   int                 mode;
   RenderGL::VtxVNTLst quad;
@@ -559,11 +559,11 @@ int  rc = 0;
     mode = quad.createQuadXZ(glm::vec3(0),glm::vec2(_wS));
 
     _vao.upload(quad,mode);
-    _mcTex.upload(_mcImg);
+    _mcTex.upload(_spMCImg->getImage());
 
     glfwSetWindowSize(_pWindow,_wS.x,_wS.y);
 
-    _iIdx = _nI >> 1;
+    _iIdx = _spMCImgSet->numImages() >> 1;
   }
   
   return rc;
@@ -577,7 +577,7 @@ int Executor::initHomographies(void)
 {
 int rc = 0;
 
-  _mHLst.resize(_nI.x * _nI.y);
+  _mHLst.resize(_spMCImgSet->numImages().x * _spMCImgSet->numImages().y);
 
   for (size_t i = 0;i < _mHLst.size();i++)
   {
@@ -613,7 +613,7 @@ int Executor::initSarCpp(void)
 int    rc  = 0;
 SarCpp *pS = new SarCpp();
 
-  pS->init(_mcImg,_nI,_iS);
+  pS->init(_spMCImg);
   _sarLst[SAR_CPP] = pS;
 
   std::cout << "Created: " << pS->name() << std::endl;
@@ -630,7 +630,7 @@ int Executor::initSarCV(void)
 int   rc  = 0;
 SarCV *pS = new SarCV();
 
-  pS->init(_imgSet,_nI,_iS);
+  pS->init(_spMCImgSet);
   _sarLst[SAR_CV] = pS;
 
   std::cout << "Created: " << pS->name() << std::endl;
@@ -647,7 +647,7 @@ int Executor::initSarGL(void)
 int   rc  = 0;
 SarGL *pS = new SarGL();
 
-  pS->init(_nI,_iS);
+  pS->init(_spMCImgSet->numImages(),_spMCImgSet->sizeSubImages());
   _sarLst[SAR_GL] = pS;
 
   std::cout << "Created: " << pS->name() << std::endl;
@@ -722,7 +722,10 @@ int Executor::init(const char *pDir)
 {
 int rc  = 0;
 
-  rc = _imgSet.load(std::filesystem::path(pDir));
+  _spMCImgSet = std::make_shared<RadImg::MultCamImageSet>();
+  _spMCImg    = std::make_shared<RadImg::MultCamImage>();
+
+  rc = _spMCImgSet->load(std::filesystem::path(pDir));
 
   if (rc == 0)
     rc = initGLFW();
@@ -733,14 +736,14 @@ int rc  = 0;
 
     glGetIntegerv(GL_MAX_TEXTURE_SIZE,&mS);
 
-    rc = _imgSet.fitSize(glm::ivec2(mS));
+    rc = _spMCImgSet->fitSize(glm::ivec2(mS));
   }
 
   if (rc == 0)
-    rc = _imgSet.createPlenopticImage(_mcImg,_nI,_iS);
+    rc = _spMCImgSet->create(*_spMCImg);
 
   if (rc == 0)
-    cv::imwrite("SarImage.png",_mcImg);
+    _spMCImg->write("SarImage.png");
 
   if (rc == 0)
     rc = initGraphics();
@@ -792,10 +795,8 @@ void Executor::destroy(void)
 //---------------------------------------------------------------------
 Executor::Executor(void) : _pWindow(0),
                            _wS(2048),
-                           _imgSet(),
-                           _mcImg(),                         
-                           _nI(0),
-                           _iS(0),
+                           _spMCImgSet(),
+                           _spMCImg(),                         
                            _pShader(0),
                            _vao(),
                            _mcTex(),
