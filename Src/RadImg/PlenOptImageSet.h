@@ -45,30 +45,16 @@ namespace Lf
 {
   namespace RadImg
   {
-    class PlenOptImageSet 
+    class PlenOptImageSet : public ImageSet
     {
       // Defines
       private:
       protected:
       public:
-        typedef struct ImgData_Def
-        {
-          glm::ivec2  _idx;
-          glm::vec2   _pos;
-          glm::vec2   _uv;
-          cv::Mat     _img;
-        } ImgData;
-
-        typedef std::vector<ImgData>  ISet;
 
       // Members
       private:
       protected:
-        ISet        _imgSet;
-        glm::ivec2  _nI;
-        glm::ivec2  _iS;
-        float       _aP;
-
       public:   
 
       // Methods
@@ -76,23 +62,9 @@ namespace Lf
       protected:
 
       public:
-        EXPORT float apperture(void)
-        { return _aP; }
-
-        EXPORT size_t size(void)
-        { return _imgSet.size(); }
-
-        EXPORT ImgData *get(const size_t i)
-        { return &_imgSet[i]; }
-
-        EXPORT int createPlenopticImage(cv::Mat &img,glm::ivec2 &nH,glm::ivec2 &hS);
-
-        EXPORT int fitSize(const glm::ivec2 &mS);
-
-        EXPORT int load(const std::filesystem::path &dPath); 
-         
+          
         EXPORT PlenOptImageSet(void);
-        EXPORT ~PlenOptImageSet();
+        EXPORT virtual ~PlenOptImageSet();
     };
 
     typedef std::shared_ptr<PlenOptImageSet>   SpPlenOptImageSet;
