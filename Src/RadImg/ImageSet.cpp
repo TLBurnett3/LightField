@@ -49,16 +49,16 @@ void ImageSet::convert(ImageSet &iSet,uint32_t c)
 {
 size_t  n   = iSet.size();
 
-  _subImageLst.clear();
-  _subImageLst.resize(n);
+  _iLst.clear();
+  _iLst.resize(n);
 
   for (size_t i = 0;i < n;i++)
   {
-    iSet.getSubImg(i)->_img.convertTo(_subImageLst[i]._img,CV_32FC3);
+    iSet.getSubImg(i)->_img.convertTo(_iLst[i]._img,CV_32FC3);
 
-    _subImageLst[i]._idx = iSet.getSubImg(i)->_idx;
-    _subImageLst[i]._pos = iSet.getSubImg(i)->_pos;
-    _subImageLst[i]._uv  = iSet.getSubImg(i)->_uv;  
+    _iLst[i]._idx = iSet.getSubImg(i)->_idx;
+    _iLst[i]._pos = iSet.getSubImg(i)->_pos;
+    _iLst[i]._uv  = iSet.getSubImg(i)->_uv;  
   }
 
   _nI = iSet._nI;
@@ -84,8 +84,8 @@ uint32_t   s   = 0;
 
   if (s)
   {
-  SubImageLst::iterator ii   = _subImageLst.begin();
-  SubImageLst::iterator iEnd = _subImageLst.end();
+  SubImageLst::iterator ii   = _iLst.begin();
+  SubImageLst::iterator iEnd = _iLst.end();
     
     while (ii != iEnd)
     {
@@ -177,7 +177,7 @@ int         rc = 0;
           if (_iS == iS)
           {
             std::cout << "  Success" << std::endl;
-            _subImageLst.emplace_back(subImage);
+            _iLst.emplace_back(subImage);
           }
           else
           {
@@ -188,14 +188,14 @@ int         rc = 0;
       }   
     }
 
-    avg /= (float)_subImageLst.size();
+    avg /= (float)_iLst.size();
 
     {
     glm::vec2  uv = 0.9f / (aMax - aMin);
     float      s  = (uv.x < uv.y ? uv.x : uv.y);
 
-      for (size_t i = 0;i < _subImageLst.size();i++)
-        _subImageLst[i]._uv = s * (_subImageLst[i]._pos - avg);
+      for (size_t i = 0;i < _iLst.size();i++)
+        _iLst[i]._uv = s * (_iLst[i]._pos - avg);
     }
 
     _aP = glm::max(aMax.y - aMin.y,aMax.x - aMin.x);
@@ -209,9 +209,48 @@ int         rc = 0;
 
 
 //---------------------------------------------------------------------
+// write
+//---------------------------------------------------------------------
+int ImageSet::write(const std::filesystem::path &dPath,const std::string &fName) 
+{
+int         rc = -1;
+
+  if (!dPath.empty())
+  {
+  glm::ivec2  nIdx;
+  char        buf[512];
+  size_t      i(0);
+
+    if (!std::filesystem::exists(dPath))
+      std::filesystem::create_directory(dPath);
+
+    for (nIdx.y = 0;nIdx.y < _nI.y;nIdx.y++)
+    {  
+      for (nIdx.x = 0;nIdx.x < _nI.x;nIdx.x++)
+      {
+      std::filesystem::path fPath = dPath;
+
+        sprintf(buf,"_%06d_%06d.png",nIdx.y,nIdx.x);
+        fPath /= fName;
+        fPath += buf;
+
+        cv::imwrite(fPath.string().c_str(),_iLst[i]._img);
+
+        i++;
+      }
+    }
+
+    rc = 0;
+  }
+
+  return rc;  
+}
+
+
+//---------------------------------------------------------------------
 // ImageSet
 //---------------------------------------------------------------------
-ImageSet::ImageSet(void) :  _subImageLst(),
+ImageSet::ImageSet(void) :  _iLst(),
                             _nI(0),
                             _iS(0),
                             _aP(0)

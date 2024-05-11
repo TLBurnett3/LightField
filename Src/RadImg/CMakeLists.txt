@@ -16,6 +16,7 @@ set(HEADERS
   ImageSet.h
   MultCamImageSet.h
   PlenOptImageSet.h
+  EPIHorImageSet.h
   )
 
 set(SOURCE
@@ -25,6 +26,7 @@ set(SOURCE
   ImageSet.cpp
   MultCamImageSet.cpp
   PlenOptImageSet.cpp
+  EPIHorImageSet.cpp
   )
 
 add_library(${PROJECT_NAME} ${HEADERS} ${SOURCE})

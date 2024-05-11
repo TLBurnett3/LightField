@@ -41,10 +41,61 @@ using namespace RadImg;
 //---------------------------------------------------------------------
 
 
+
 //---------------------------------------------------------------------
-// createPlenopticImage 
-// Thomas Burnett
-// November  16, 2013
+// create 
+//---------------------------------------------------------------------
+int MultCamImageSet::create(EPIHorImageSet &is,const uint32_t row)
+{
+int rc = -1;
+
+  is._iLst.clear();
+  is._iLst.resize(_iS.y);
+
+  for (size_t i = 0;i < (size_t)_iS.y;i++)
+  {
+    is._iLst[i]._img.create(_nI.x,_iS.x,CV_8UC3);
+    is._iLst[i]._idx = glm::ivec2(0,_iS.y);
+    is._iLst[i]._pos = glm::ivec2(0,0);
+    is._iLst[i]._uv  = glm::ivec2(0,0);
+  }
+
+  if ((row == -1) || (row < _nI.y))
+  {
+  glm::ivec2  iIdx;
+  glm::ivec2  nIdx;
+  cv::Vec3b   c;
+  uint32_t    r = (row == -1) ? _nI.y >> 1 : row;
+  uint32_t    i = r * _nI.x;
+
+    for (nIdx.x = 0;nIdx.x < _nI.x;nIdx.x++)
+    {
+      for (iIdx.y = 0;iIdx.y < _iS.y;iIdx.y++)
+      {
+        for (iIdx.x = 0;iIdx.x < _iS.x;iIdx.x++)
+        {
+          c = _iLst[i]._img.at<cv::Vec3b>(iIdx.y,iIdx.x);
+
+          is._iLst[iIdx.y]._img.at<cv::Vec3b>(nIdx.x,iIdx.x) = c;
+        }
+      }
+
+      i++;
+    }
+
+    is._nI = glm::ivec2(1,_iS.y);
+    is._iS = glm::ivec2(_iS.x,_nI.x);
+    is._aP = 0;
+
+    rc = 0;
+  }
+
+  return rc;
+}
+
+
+//---------------------------------------------------------------------
+// create 
 //---------------------------------------------------------------------
 int MultCamImageSet::create(MultCamImage &mci)
 {
@@ -73,7 +124,7 @@ glm::ivec2  nIdx;
         {
           for (iIdx.x = 0;iIdx.x < _iS.x;iIdx.x++)
           {  
-            pS =  _subImageLst[(nIdx.y * _nI.x) + nIdx.x]._img.data;
+            pS =  _iLst[(nIdx.y * _nI.x) + nIdx.x]._img.data;
             pS += iIdx.y * _iS.x * 3;
             pS += iIdx.x * 3;
 

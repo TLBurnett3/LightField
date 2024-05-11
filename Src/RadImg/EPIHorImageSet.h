@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// ImageSet.h
+// EPIHorImageSet.h
 // Thomas Burnett
 
 #pragma once
@@ -31,18 +31,12 @@
 //---------------------------------------------------------------------
 // Includes
 // System
-#include <memory>
-#include <filesystem>
-#include <vector>
 
 // 3rdPartyLibs
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <glm/glm.hpp>
 
 // LightField
-#include "Core/Export.h"
-#include "RadImg/Image.h"
+#include "RadImg/ImageSet.h"
+#include "RadImg/MultCamImage.h"
 //---------------------------------------------------------------------
 
 
@@ -52,17 +46,7 @@ namespace Lf
 {
   namespace RadImg
   {
-    typedef struct SubImage_Def
-    {
-      glm::ivec2  _idx;
-      glm::vec2   _pos;
-      glm::vec2   _uv;
-      cv::Mat     _img;
-    } SubImage;
-
-    typedef std::vector<SubImage>  SubImageLst;
-
-    class ImageSet 
+    class EPIHorImageSet : public ImageSet
     {
       // Defines
       private:
@@ -72,53 +56,20 @@ namespace Lf
       // Members
       private:
       protected:
-        SubImageLst   _iLst;
-
-        glm::ivec2    _nI;
-        glm::ivec2    _iS;
-        float         _aP;
-
       public:   
 
       // Methods
       private:
       protected:
-
       public:
-        EXPORT float apperture(void)
-        { return _aP; }
 
-        EXPORT size_t size(void)
-        { return _iLst.size(); }
+        EXPORT EPIHorImageSet(void);
+        EXPORT virtual ~EPIHorImageSet();
 
-        EXPORT glm::ivec2 numImages(void)
-        { return _nI; }
-
-        EXPORT glm::ivec2 sizeSubImages(void)
-        { return _iS; }
-
-        EXPORT SubImage *getSubImg(const size_t i)
-        { return &_iLst[i]; }
-
-        EXPORT SubImage *getSubImg(const glm::ivec2 &idx)
-        { 
-        size_t i = (idx.y * _nI.x) + idx.x;
-
-          return &_iLst[i]; 
-        }
-
-        EXPORT void convert(ImageSet &iSet,uint32_t c);
-
-        EXPORT int fitSize(const glm::ivec2 &mS);
-
-        EXPORT int load (const std::filesystem::path &dPath); 
-        EXPORT int write(const std::filesystem::path &dPath,const std::string &fName); 
-         
-        EXPORT ImageSet(void);
-        EXPORT virtual ~ImageSet();
+      friend class MultCamImageSet;
     };
 
-    typedef std::shared_ptr<ImageSet>   SpImageSet;
+    typedef std::shared_ptr<EPIHorImageSet>   SpEPIHorImageSet;
   };
 };
 //---------------------------------------------------------------------
