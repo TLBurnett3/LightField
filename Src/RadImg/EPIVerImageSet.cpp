@@ -22,59 +22,39 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// MultCamImageSet.h
+// EPIVerImageSet.cpp 
 // Thomas Burnett
-
-#pragma once
 
 
 //---------------------------------------------------------------------
 // Includes
 // System
+#include <iostream>
 
 // 3rdPartyLibs
 
 // LightField
-#include "RadImg/ImageSet.h"
-#include "RadImg/MultCamImage.h"
-#include "RadImg/EPIHorImageSet.h"
 #include "RadImg/EPIVerImageSet.h"
+
+using namespace Lf;
+using namespace RadImg;
 //---------------------------------------------------------------------
 
 
+
 //---------------------------------------------------------------------
-// Classes
-namespace Lf
+// EPIVerImageSet
+//---------------------------------------------------------------------
+EPIVerImageSet::EPIVerImageSet(void) :  ImageSet()
 {
-  namespace RadImg
-  {
-    class MultCamImageSet : public ImageSet
-    {
-      // Defines
-      private:
-      protected:
-      public:
+}
 
-      // Members
-      private:
-      protected:
-      public:   
 
-      // Methods
-      private:
-      protected:
-
-      public:
-        EXPORT int create(MultCamImage    &mci);
-        EXPORT int create(EPIHorImageSet  &epi,const uint32_t row = -1);
-        EXPORT int create(EPIVerImageSet  &epi,const uint32_t col = -1);
-
-        EXPORT MultCamImageSet(void);
-        EXPORT virtual ~MultCamImageSet();
-    };
-
-    typedef std::shared_ptr<MultCamImageSet>   SpMultCamImageSet;
-  };
-};
 //---------------------------------------------------------------------
+// ~EPIVerImageSet
+//---------------------------------------------------------------------
+EPIVerImageSet::~EPIVerImageSet()
+{
+
+}
 

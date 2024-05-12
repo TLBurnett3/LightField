@@ -45,6 +45,58 @@ using namespace RadImg;
 //---------------------------------------------------------------------
 // create 
 //---------------------------------------------------------------------
+int MultCamImageSet::create(EPIVerImageSet &is,const uint32_t col)
+{
+int rc = -1;
+
+  is._iLst.clear();
+  is._iLst.resize(_iS.x);
+
+  for (size_t i = 0;i < (size_t)_iS.x;i++)
+  {
+    is._iLst[i]._img.create(_iS.y,_nI.y,CV_8UC3);
+    is._iLst[i]._idx = glm::ivec2(i,0);
+    is._iLst[i]._pos = glm::ivec2(0,0);
+    is._iLst[i]._uv  = glm::ivec2(0,0);
+  }
+
+  if ((col == -1) || (col < _nI.y))
+  {
+  glm::ivec2  iIdx;
+  glm::ivec2  nIdx;
+  cv::Vec3b   c;
+  uint32_t    i = (col == -1) ? _nI.y >> 1 : col;
+
+    for (nIdx.y = 0;nIdx.y < _nI.y;nIdx.y++)
+    {
+      for (iIdx.y = 0;iIdx.y < _iS.y;iIdx.y++)
+      {
+        for (iIdx.x = 0;iIdx.x < _iS.x;iIdx.x++)
+        {
+          c = _iLst[i]._img.at<cv::Vec3b>(iIdx.y,iIdx.x);
+
+          is._iLst[iIdx.x]._img.at<cv::Vec3b>(iIdx.y,nIdx.y) = c;
+        }
+      }
+
+      i += _nI.x;
+    }
+
+    is._nI = glm::ivec2(_iS.x,1);
+    is._iS = glm::ivec2(_iS.y,_nI.y);
+    is._aP = 0;
+
+    rc = 0;
+  }
+
+  return rc;
+}
+
+
+
+//---------------------------------------------------------------------
+// create 
+//---------------------------------------------------------------------
 int MultCamImageSet::create(EPIHorImageSet &is,const uint32_t row)
 {
 int rc = -1;
@@ -55,7 +107,7 @@ int rc = -1;
   for (size_t i = 0;i < (size_t)_iS.y;i++)
   {
     is._iLst[i]._img.create(_nI.x,_iS.x,CV_8UC3);
-    is._iLst[i]._idx = glm::ivec2(0,_iS.y);
+    is._iLst[i]._idx = glm::ivec2(0,i);
     is._iLst[i]._pos = glm::ivec2(0,0);
     is._iLst[i]._uv  = glm::ivec2(0,0);
   }

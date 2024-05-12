@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------
 
-// MultCamImageSet.h
+// EPIVerImageSet.h
 // Thomas Burnett
 
 #pragma once
@@ -37,8 +37,6 @@
 // LightField
 #include "RadImg/ImageSet.h"
 #include "RadImg/MultCamImage.h"
-#include "RadImg/EPIHorImageSet.h"
-#include "RadImg/EPIVerImageSet.h"
 //---------------------------------------------------------------------
 
 
@@ -48,7 +46,7 @@ namespace Lf
 {
   namespace RadImg
   {
-    class MultCamImageSet : public ImageSet
+    class EPIVerImageSet : public ImageSet
     {
       // Defines
       private:
@@ -63,17 +61,15 @@ namespace Lf
       // Methods
       private:
       protected:
-
       public:
-        EXPORT int create(MultCamImage    &mci);
-        EXPORT int create(EPIHorImageSet  &epi,const uint32_t row = -1);
-        EXPORT int create(EPIVerImageSet  &epi,const uint32_t col = -1);
 
-        EXPORT MultCamImageSet(void);
-        EXPORT virtual ~MultCamImageSet();
+        EXPORT EPIVerImageSet(void);
+        EXPORT virtual ~EPIVerImageSet();
+
+      friend class MultCamImageSet;
     };
 
-    typedef std::shared_ptr<MultCamImageSet>   SpMultCamImageSet;
+    typedef std::shared_ptr<EPIVerImageSet>   SpEPIVerImageSet;
   };
 };
 //---------------------------------------------------------------------
