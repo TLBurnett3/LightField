@@ -456,7 +456,7 @@ void Executor::destroy(void)
 //---------------------------------------------------------------------
 Executor::Executor(void) : _pWindow(0),
                            _pRadImage(0),
-                           _wS(2048),
+                           _wS(1280),
                            _vA(0),
                            _fov(90.0f),
                            _dC(0),
